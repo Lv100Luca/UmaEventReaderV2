@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net9.0-windows</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\UmaEventReaderV2.Abstractions\UmaEventReaderV2.Abstractions.csproj" />
       <ProjectReference Include="..\UmaEventReaderV2.Infrastructure\UmaEventReaderV2.Infrastructure.csproj" />
+      <ProjectReference Include="..\UmaEventReaderVs.WinForms\UmaEventReaderVs.WinForms.csproj" />
     </ItemGroup>
 
     <ItemGroup>

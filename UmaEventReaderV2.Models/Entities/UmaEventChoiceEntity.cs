@@ -1,4 +1,4 @@
-using UmaEventReader.Abstractions.Model.Enums;
+using UmaEventReaderV2.Models.Enums;
 
 namespace UmaEventReaderV2.Models.Entities;
 

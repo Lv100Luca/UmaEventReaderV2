@@ -1,4 +1,3 @@
-using UmaEventReader.Abstractions.Model.Enums;
 using UmaEventReaderV2.Infrastructure.dtos;
 using UmaEventReaderV2.Models.Entities;
 using UmaEventReaderV2.Models.Enums;

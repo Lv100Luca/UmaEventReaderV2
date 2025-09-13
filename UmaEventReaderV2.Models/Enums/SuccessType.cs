@@ -1,4 +1,4 @@
-namespace UmaEventReader.Abstractions.Model.Enums;
+namespace UmaEventReaderV2.Models.Enums;
 
 public enum SuccessType
 {

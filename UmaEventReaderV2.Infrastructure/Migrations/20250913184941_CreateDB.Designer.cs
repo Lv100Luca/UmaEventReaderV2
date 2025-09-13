@@ -10,7 +10,7 @@ using UmaEventReaderV2.Infrastructure;
 
 namespace UmaEventReaderV2.Infrastructure.Migrations
 {
-    [DbContext(typeof(UmaContext))]
+    [DbContext(typeof(UmaDbContext))]
     [Migration("20250913184941_CreateDB")]
     partial class CreateDB
     {

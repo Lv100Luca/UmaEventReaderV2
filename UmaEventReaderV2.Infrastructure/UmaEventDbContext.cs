@@ -4,7 +4,7 @@ namespace UmaEventReaderV2.Infrastructure;
 
 using Microsoft.EntityFrameworkCore;
 
-public class UmaContext : DbContext
+public class UmaDbContext : DbContext
 {
     public DbSet<UmaEventEntity> Events => Set<UmaEventEntity>();
     public DbSet<UmaEventChoiceEntity> Choices => Set<UmaEventChoiceEntity>();

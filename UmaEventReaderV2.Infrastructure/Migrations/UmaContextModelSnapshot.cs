@@ -9,7 +9,7 @@ using UmaEventReaderV2.Infrastructure;
 
 namespace UmaEventReaderV2.Infrastructure.Migrations
 {
-    [DbContext(typeof(UmaContext))]
+    [DbContext(typeof(UmaDbContext))]
     partial class UmaContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

@@ -11,7 +11,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{291BB449-C9D1-4389-9990-5FD1557528AF}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		umaDb.json = umaDb.json
 		compose.yaml = compose.yaml
 		README.md = README.md
 	EndProjectSection

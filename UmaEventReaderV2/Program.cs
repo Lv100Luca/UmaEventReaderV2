@@ -1,3 +1,18 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-Console.WriteLine("Hello, World!");
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using UmaEventReaderV2.Services;
+
+var builder = Host.CreateApplicationBuilder(args);
+
+builder.Services.AddSingleton<UmaEventReader>();
+
+
+var app = builder.Build();
+
+var scope = app.Services.CreateScope();
+
+var umaEventReader = scope.ServiceProvider.GetRequiredService<UmaEventReader>();
+
+umaEventReader.Run();

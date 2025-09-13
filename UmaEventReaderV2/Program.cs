@@ -11,6 +11,7 @@ var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddSingleton<UmaDbContext>();
 builder.Services.AddSingleton<IUmaEventRepository, UmaEventRepository>();
+builder.Services.AddSingleton<IUmaEventService, UmaEventService>();
 builder.Services.AddSingleton<UmaEventReader>();
 
 var app = builder.Build();

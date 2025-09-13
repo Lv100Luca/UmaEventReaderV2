@@ -4,7 +4,7 @@ namespace UmaEventReaderV2.Abstractions;
 
 public interface IUmaEventRepository
 {
+    UmaEventEntity? GetById(long id);
     IEnumerable<UmaEventEntity> GetAll();
-    IEnumerable<UmaEventEntity> GetAllByName(string eventName);
-    IEnumerable<UmaEventEntity> GetAllByChoiceText(string choiceText);
+    IQueryable<UmaEventEntity> Query();
 }

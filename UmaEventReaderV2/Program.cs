@@ -2,12 +2,16 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using UmaEventReaderV2.Abstractions;
+using UmaEventReaderV2.Infrastructure;
 using UmaEventReaderV2.Services;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.Services.AddSingleton<UmaEventReader>();
 
+builder.Services.AddSingleton<UmaDbContext>();
+builder.Services.AddSingleton<IUmaEventRepository, UmaEventRepository>();
+builder.Services.AddSingleton<UmaEventReader>();
 
 var app = builder.Build();
 

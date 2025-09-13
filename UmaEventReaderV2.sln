@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Infrastructure", "UmaEventReaderV2.Infrastructure\UmaEventReaderV2.Infrastructure.csproj", "{CC06E1EF-21BB-48D4-B141-30A344563BF0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderVs.WinForms", "UmaEventReaderVs.WinForms\UmaEventReaderVs.WinForms.csproj", "{848D01FF-F63A-493A-B5E4-FD69700DAFB0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,5 +45,9 @@ Global
 		{CC06E1EF-21BB-48D4-B141-30A344563BF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC06E1EF-21BB-48D4-B141-30A344563BF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC06E1EF-21BB-48D4-B141-30A344563BF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{848D01FF-F63A-493A-B5E4-FD69700DAFB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{848D01FF-F63A-493A-B5E4-FD69700DAFB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{848D01FF-F63A-493A-B5E4-FD69700DAFB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{848D01FF-F63A-493A-B5E4-FD69700DAFB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

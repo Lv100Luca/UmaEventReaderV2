@@ -5,7 +5,7 @@ namespace UmaEventReaderV2.Infrastructure;
 
 public class UmaDbInitializer
 {
-    private const string JsonFile = "umaDb.json";
+    private const string JsonFile = "umaEventData.json";
 
     public async static Task InitializeAsync(bool clearDb = false, CancellationToken cancellationToken = default)
     {

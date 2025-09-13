@@ -24,7 +24,7 @@
     </ItemGroup>
     <ItemGroup>
       <None Remove="umaDb.json" />
-      <Content Include="umaDb.json">
+      <Content Include="umaEventData.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>

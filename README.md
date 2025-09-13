@@ -24,7 +24,7 @@ If they are, move to the migrations step
 use this to create the migrations
 
 ```shell
-dotnet ef migrations add InitialCreate --project .\UmaEventReaderV2.Infrastructure.csproj --startup-project .\UmaEventReaderV2.Infrastructure.csproj --output-dir Migrations
+dotnet ef migrations add CreateDB --project ./UmaEventReaderV2.Infrastructure/UmaEventReaderV2.Infrastructure.csproj --startup-project ./UmaEventReaderV2.Infrastructure/UmaEventReaderV2.Infrastructure.csproj --output-dir Migrations
  ```
 
 ### Apply the migrations

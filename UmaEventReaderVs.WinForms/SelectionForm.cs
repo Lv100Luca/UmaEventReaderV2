@@ -1,8 +1,6 @@
 using System.ComponentModel;
-namespace UmaEventReader;
 
-using System.Drawing;
-using System.Windows.Forms;
+namespace UmaEventReaderVs.WinForms;
 
 public class SelectionForm : Form
 {

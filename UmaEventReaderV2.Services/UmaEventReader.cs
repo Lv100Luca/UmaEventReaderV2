@@ -24,16 +24,21 @@ public partial class UmaEventReader(
         {
             await Task.Delay(checkInterval);
 
-            if (await ProcessAreaAsync(screenshotAreaProvider.GetEventArea()))
+            //try and process a certain area of the screen to figure out the event
+            // should it fial -> try the next are
+
+            if (await TryProcessAreaAsync(screenshotAreaProvider.GetEventArea()))
                 continue;
 
-            if (await ProcessAreaAsync(screenshotAreaProvider.GetFallbackEventArea()))
+            if (await TryProcessAreaAsync(screenshotAreaProvider.GetFallbackEventArea()))
                 continue;
+
+            // todo: maybe check the choices as well to determine the event (later)
         }
         // ReSharper disable once FunctionNeverReturns
     }
 
-    private async Task<bool> ProcessAreaAsync(Rectangle area)
+    private async Task<bool> TryProcessAreaAsync(Rectangle area)
     {
         var result = await CaptureAndExtractScreenshotText(area);
 

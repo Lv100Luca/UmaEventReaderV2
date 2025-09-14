@@ -17,4 +17,10 @@
       <ProjectReference Include="..\UmaEventReaderV2.Services\UmaEventReaderV2.Services.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <None Update="tessdata\**\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
 </Project>

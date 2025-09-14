@@ -1,10 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System.Runtime.InteropServices;
+using CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using UmaEventReaderV2.Abstractions;
-using UmaEventReaderV2.Infrastructure;
+using UmaEventReaderV2;
+using UmaEventReaderV2.Extensions;
 using UmaEventReaderV2.Services;
 
 // todo: maybe move these to the `WinForms` Project somehow
@@ -17,13 +18,14 @@ Application.SetCompatibleTextRenderingDefault(false);
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.Services.AddSingleton<IScreenshotAreaProvider, StaticScreenshotAreaProvider>();
-// builder.Services.AddSingleton<IScreenshotAreaProvider, ScreenshotAreaSelector>();
+var parsedArgs = Parser.Default.ParseArguments<ProgramArgs>(args);
 
-builder.Services.AddSingleton<UmaDbContext>();
-builder.Services.AddSingleton<IUmaEventRepository, UmaEventRepository>();
-builder.Services.AddSingleton<IUmaEventService, UmaEventService>();
-builder.Services.AddSingleton<UmaEventReader>();
+Console.Out.WriteLine("Selected Area:" + parsedArgs.Value.SelectArea);
+
+builder.Services
+    .AddScreenshotAreaProvider(parsedArgs)
+    .AddUmaEventDbServices()
+    .AddSingleton<UmaEventReader>();
 
 var app = builder.Build();
 

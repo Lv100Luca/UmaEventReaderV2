@@ -3,6 +3,7 @@ using System.Drawing.Imaging;
 using System.Text.RegularExpressions;
 using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Models;
+using UmaEventReaderV2.Models.Entities;
 using UmaEventReaderV2.Services.Utility;
 
 namespace UmaEventReaderV2.Services;
@@ -54,17 +55,22 @@ public partial class UmaEventReader(
         if (!retry)
             previousText = cleanedText;
 
-        return RunSearch(cleanedText);
+        var events = RunSearch(cleanedText);
+
+        if (events.Count == 1 && result.Metadata.ProcessedImage is {} bmp)
+            SaveImage(bmp, events.First().EventName);
+
+        return events.Count > 0;
     }
 
-    private bool RunSearch(string eventName)
+    private List<UmaEventEntity> RunSearch(string eventName)
     {
         var events = eventService.GetAllWhereNameIsLike(eventName).ToList();
 
         foreach (var e in events)
             Console.Out.WriteLine(e);
 
-        return events.Count != 0;
+        return events;
     }
 
     private async Task<TextExtractorResult> CaptureAndExtractScreenshotText(Rectangle area)
@@ -77,7 +83,7 @@ public partial class UmaEventReader(
 
     private static bool ValidateText(TextExtractorResult result)
     {
-        return result.Metadata.MeanConfidence > ConfidenceThreshold && result.Text.Length >= 3;
+        return result.Metadata.MeanConfidence > ConfidenceThreshold && result.Text.Length >= 3 && !string.IsNullOrWhiteSpace(result.Text);
     }
 
     private static string Clean(string input)
@@ -90,6 +96,16 @@ public partial class UmaEventReader(
         input = NormalizeSpaces().Replace(input, " "); // normalize spaces
 
         return input;
+    }
+
+    private void SaveImage(Bitmap bmp, string filename)
+    {
+        var dir = "captures";
+        // create dir
+        Directory.CreateDirectory(dir);
+
+        var path = $"dir\\{filename}.png";
+        bmp.Save(path, ImageFormat.Png);
     }
 
     [GeneratedRegex(@"\s+")]

@@ -30,7 +30,8 @@ public class TesseractTextExtractor : ITextExtractor
             Text = page.GetText(),
             Metadata = new TextExtractorResultMetadata
             {
-                MeanConfidence = page.GetMeanConfidence()
+                MeanConfidence = page.GetMeanConfidence(),
+                ProcessedImage = bmpImage
             }
         };
         
@@ -40,12 +41,13 @@ public class TesseractTextExtractor : ITextExtractor
     private static TesseractEngine InitEngine()
     {
         var tessdataPath = Path.Combine(AppContext.BaseDirectory, TesseractTraineeDataPath);
-        return new TesseractEngine(tessdataPath,"eng", EngineMode.Default);
+        return new TesseractEngine(tessdataPath,"eng", EngineMode.TesseractAndLstm);
     }
 
     private void ConfigureEngine()
     {
         Engine.SetVariable("tessedit_char_whitelist", CharWhitelist);
+        Engine.SetVariable("debug_file", "NUL");
         Engine.DefaultPageSegMode = DefaultPageSegMode;
     }
 }

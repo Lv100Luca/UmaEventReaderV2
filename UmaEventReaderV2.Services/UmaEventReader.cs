@@ -57,8 +57,8 @@ public partial class UmaEventReader(
 
         var events = RunSearch(cleanedText);
 
-        if (events.Count == 1 && result.Metadata.ProcessedImage is {} bmp)
-            SaveImage(bmp, events.First().EventName);
+        if (events.Count == 1)
+            SaveImage(events.First().EventName, result.Metadata.ProcessedImage, result.Metadata.RawImage);
 
         return events.Count > 0;
     }
@@ -102,14 +102,25 @@ public partial class UmaEventReader(
         return input;
     }
 
-    private void SaveImage(Bitmap bmp, string filename)
+    // todo to service?
+    private static void SaveImage(string filename, Bitmap? processed, Bitmap? raw)
     {
-        var dir = "captures";
         // create dir
-        Directory.CreateDirectory(dir);
+        var dir = "captures";
 
-        var path = $"dir\\{filename}.png";
-        bmp.Save(path, ImageFormat.Png);
+        Directory.CreateDirectory(dir);
+        Directory.CreateDirectory(filename);
+
+        var rawPath = GetPath(filename, "raw");
+        raw?.Save(rawPath, ImageFormat.Png);
+
+        var processedPath = GetPath(filename, "processed");
+        processed?.Save(processedPath, ImageFormat.Png);
+    }
+
+    private static string GetPath(string filename, string prefix)
+    {
+        return $@"captures\{filename}\{prefix}_{filename}.png";
     }
 
     [GeneratedRegex(@"\s+")]

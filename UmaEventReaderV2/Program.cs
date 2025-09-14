@@ -5,6 +5,7 @@ using CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UmaEventReaderV2;
+using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Extensions;
 using UmaEventReaderV2.Services;
 
@@ -25,7 +26,9 @@ Console.Out.WriteLine("Selected Area:" + parsedArgs.Value.SelectArea);
 builder.Services
     .AddScreenshotAreaProvider(parsedArgs)
     .AddUmaEventDbServices()
-    .AddSingleton<UmaEventReader>();
+    .AddSingleton<UmaEventReader>()
+    .AddSingleton<ScreenshotProvider>()
+    .AddSingleton<ITextExtractor, TesseractTextExtractor>();
 
 var app = builder.Build();
 

@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Text.RegularExpressions;
 using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Models;
@@ -30,7 +31,7 @@ public partial class UmaEventReader(
             if (await TryProcessAreaAsync(screenshotAreaProvider.GetEventArea()))
                 continue;
 
-            if (await TryProcessAreaAsync(screenshotAreaProvider.GetFallbackEventArea()))
+            if (await TryProcessAreaAsync(screenshotAreaProvider.GetFallbackEventArea(), retry: true))
                 continue;
 
             // todo: maybe check the choices as well to determine the event (later)
@@ -38,7 +39,7 @@ public partial class UmaEventReader(
         // ReSharper disable once FunctionNeverReturns
     }
 
-    private async Task<bool> TryProcessAreaAsync(Rectangle area)
+    private async Task<bool> TryProcessAreaAsync(Rectangle area, bool retry = false)
     {
         var result = await CaptureAndExtractScreenshotText(area);
 
@@ -48,14 +49,15 @@ public partial class UmaEventReader(
         var cleanedText = Clean(result.Text);
 
         if (cleanedText == previousText)
-            return false;
+            return true;
 
-        previousText = cleanedText;
+        if (!retry)
+            previousText = cleanedText;
 
-        return RunSearchAsync(cleanedText);
+        return RunSearch(cleanedText);
     }
 
-    private bool RunSearchAsync(string eventName)
+    private bool RunSearch(string eventName)
     {
         var events = eventService.GetAllWhereNameIsLike(eventName).ToList();
 

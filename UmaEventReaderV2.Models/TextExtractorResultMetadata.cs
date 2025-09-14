@@ -6,4 +6,5 @@ public class TextExtractorResultMetadata
 {
     public float MeanConfidence { get; init; } = 0.0f;
     public Bitmap? ProcessedImage { get; init; }
+    public Bitmap? RawImage { get; set; }
 }

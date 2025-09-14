@@ -78,7 +78,11 @@ public partial class UmaEventReader(
         var rawScreenshot = screenshotProvider.TakeScreenshot(area);
         var processed = ImagePreProcessor.AddBorder(ImagePreProcessor.IsolateText(rawScreenshot), 5, Color.Black);
 
-        return await textExtractor.ExtractTextAsync(processed);
+        var result = await textExtractor.ExtractTextAsync(processed);
+
+        result.Metadata.RawImage = rawScreenshot;
+
+        return result;
     }
 
     private static bool ValidateText(TextExtractorResult result)

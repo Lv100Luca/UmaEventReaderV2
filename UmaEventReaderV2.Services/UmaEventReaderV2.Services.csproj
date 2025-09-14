@@ -7,11 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\UmaEventReaderV2.Abstractions\UmaEventReaderV2.Abstractions.csproj"/>
-        <ProjectReference Include="..\UmaEventReaderV2.Infrastructure\UmaEventReaderV2.Infrastructure.csproj"/>
-        <ProjectReference Include="..\UmaEventReaderVs.WinForms\UmaEventReaderVs.WinForms.csproj"/>
-        <PackageReference Include="Tesseract" Version="5.2.0"/>
-        <PackageReference Include="Tesseract.Drawing" Version="5.2.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.9" />
+        <ProjectReference Include="..\UmaEventReaderV2.Abstractions\UmaEventReaderV2.Abstractions.csproj" />
+        <ProjectReference Include="..\UmaEventReaderV2.Infrastructure\UmaEventReaderV2.Infrastructure.csproj" />
+        <ProjectReference Include="..\UmaEventReaderVs.WinForms\UmaEventReaderVs.WinForms.csproj" />
+        <PackageReference Include="Tesseract" Version="5.2.0" />
+        <PackageReference Include="Tesseract.Drawing" Version="5.2.0" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,4 +1,17 @@
-hi
+# Run the app
+This assumes you already setup the db
+
+## Run the Default
+The default works for fullscreen play 
+```shell
+dotnet run --project .\UmaEventReaderV2
+```
+
+## Select the Area
+you can also manually select the event area, should you be running in a smaller window
+```shell
+dotnet run --project .\UmaEventReaderV2 --select-area
+```
 
 # Setup the database
 

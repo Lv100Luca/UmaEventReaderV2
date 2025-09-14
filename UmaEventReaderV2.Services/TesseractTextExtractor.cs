@@ -39,7 +39,8 @@ public class TesseractTextExtractor : ITextExtractor
 
     private static TesseractEngine InitEngine()
     {
-        return new TesseractEngine(TesseractTraineeDataPath, "eng", EngineMode.Default);
+        var tessdataPath = Path.Combine(AppContext.BaseDirectory, TesseractTraineeDataPath);
+        return new TesseractEngine(tessdataPath,"eng", EngineMode.Default);
     }
 
     private void ConfigureEngine()

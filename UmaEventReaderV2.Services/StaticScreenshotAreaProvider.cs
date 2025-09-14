@@ -3,10 +3,10 @@ using UmaEventReaderV2.Abstractions;
 
 namespace UmaEventReaderV2.Services;
 
-public class StaticScreenshotAreaProvider : IScreenshotAreaProvider
+public class StaticScreenshotAreaProvider(EventAreaOffsetProvider offsetProvider) : IScreenshotAreaProvider
 {
     // todo make this configurable/ be able to pass this in
-    private const int Offset = 60;
+    private int Offset => offsetProvider.Offset;
 
     private const int X = 322;
     private const int Y = 269;

@@ -19,9 +19,10 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddScreenshotAreaProvider(this IServiceCollection services, ParserResult<ProgramArgs> args)
     {
+        services.AddSingleton<EventAreaOffsetProvider>(_ => new EventAreaOffsetProvider { Offset = 55 });
+
         if (args.Value.SelectArea)
             return services.AddSingleton<SelectAreaOverlay>()
-                .AddSingleton<EventAreaOffsetProvider>(_ => new EventAreaOffsetProvider { Offset = 60 })
                 .AddSingleton<IScreenshotAreaProvider, ScreenshotAreaSelector>();
 
         return services.AddSingleton<IScreenshotAreaProvider, StaticScreenshotAreaProvider>();

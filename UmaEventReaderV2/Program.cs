@@ -36,7 +36,7 @@ var scope = app.Services.CreateScope();
 
 var umaEventReader = scope.ServiceProvider.GetRequiredService<UmaEventReader>();
 
-umaEventReader.Run();
+await umaEventReader.RunAsync();
 
 return;
 

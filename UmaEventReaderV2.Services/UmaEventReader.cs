@@ -1,23 +1,93 @@
+using System.Drawing;
+using System.Text.RegularExpressions;
 using UmaEventReaderV2.Abstractions;
+using UmaEventReaderV2.Models;
+using UmaEventReaderV2.Services.Utility;
 
 namespace UmaEventReaderV2.Services;
 
-/// <summary>
-/// Main running loop of the application
-/// </summary>
-public class UmaEventReader(IUmaEventService eventService, IScreenshotAreaProvider screenshotAreaProvider)
+public partial class UmaEventReader(
+    IUmaEventService eventService,
+    IScreenshotAreaProvider screenshotAreaProvider,
+    ScreenshotProvider screenshotProvider,
+    ITextExtractor textExtractor
+)
 {
-    public void Run()
+    private readonly TimeSpan checkInterval = TimeSpan.FromSeconds(1);
+    private const float ConfidenceThreshold = 0.6f;
+
+    private string previousText = string.Empty;
+
+    public async Task RunAsync()
     {
-        var area = screenshotAreaProvider.GetEventArea();
+        while (true)
+        {
+            await Task.Delay(checkInterval);
 
-        Console.Out.WriteLine("Area" + area);;
+            if (await ProcessAreaAsync(screenshotAreaProvider.GetEventArea()))
+                continue;
 
-        // var text = "i would";
-        //
-        // var events = eventService.GetAllWhereChoiceTextIsLike(text);
-        //
-        // foreach (var e in events)
-        //     Console.WriteLine(e);
+            if (await ProcessAreaAsync(screenshotAreaProvider.GetFallbackEventArea()))
+                continue;
+        }
+        // ReSharper disable once FunctionNeverReturns
     }
+
+    private async Task<bool> ProcessAreaAsync(Rectangle area)
+    {
+        var result = await CaptureAndExtractScreenshotText(area);
+
+        if (!ValidateText(result))
+            return false;
+
+        var cleanedText = Clean(result.Text);
+
+        if (cleanedText == previousText)
+            return false;
+
+        previousText = cleanedText;
+
+        return RunSearchAsync(cleanedText);
+    }
+
+    private bool RunSearchAsync(string eventName)
+    {
+        var events = eventService.GetAllWhereNameIsLike(eventName).ToList();
+
+        foreach (var e in events)
+            Console.Out.WriteLine(e);
+
+        return events.Count != 0;
+    }
+
+    private async Task<TextExtractorResult> CaptureAndExtractScreenshotText(Rectangle area)
+    {
+        var rawScreenshot = screenshotProvider.TakeScreenshot(area);
+        var processed = ImagePreProcessor.AddBorder(ImagePreProcessor.IsolateText(rawScreenshot), 5, Color.Black);
+
+        return await textExtractor.ExtractTextAsync(processed);
+    }
+
+    private static bool ValidateText(TextExtractorResult result)
+    {
+        return result.Metadata.MeanConfidence > ConfidenceThreshold && result.Text.Length >= 3;
+    }
+
+    private static string Clean(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return string.Empty;
+
+        input = input.Replace("\r\n", "").Replace("\r", "").Trim();
+        input = NonAlphaNum().Replace(input, ""); // trim non-alphanum edges
+        input = NormalizeSpaces().Replace(input, " "); // normalize spaces
+
+        return input;
+    }
+
+    [GeneratedRegex(@"\s+")]
+    private static partial Regex NormalizeSpaces();
+
+    [GeneratedRegex(@"^[^\w\d]+|[^\w\d]+$")]
+    private static partial Regex NonAlphaNum();
 }

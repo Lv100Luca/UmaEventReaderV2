@@ -36,7 +36,7 @@ public class SpectreUmaFrontend : IUmaFrontend
                         new Layout(EventArea).Ratio(4),
                         new Layout("Search").Size(3)
                     ),
-                new Layout("Right").Size(50)
+                new Layout("Right").Size(30)
                     .SplitRows(
                         new Layout(CareerArea).Size(5),
                         new Layout(LogsArea)

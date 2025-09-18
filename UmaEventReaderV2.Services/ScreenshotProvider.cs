@@ -1,8 +1,9 @@
 using System.Drawing;
+using UmaEventReaderV2.Abstractions;
 
 namespace UmaEventReaderV2.Services;
 
-public class ScreenshotProvider
+public class ScreenshotProvider : IScreenshotProvider
 {
     public Bitmap TakeScreenshot(Rectangle area)
     {

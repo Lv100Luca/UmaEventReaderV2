@@ -67,7 +67,10 @@ public class SpectreUmaFrontend : IUmaFrontend
         //
         // layout["Left"]["Search"].Update(new Panel("Search:").Expand());
 
-
+        UpdatePanel(GetEventArea, "", "Event Area", horizontalAlignment: HorizontalAlignment.Center);
+        UpdatePanel(GetCareerArea, "", "Career Info", horizontalAlignment: HorizontalAlignment.Center);
+        UpdatePanel(GetLogsArea, "", "Logs");
+        UpdatePanel(GetSearchArea, "Search: ");
 
         // Start live renderer
         Task.Run(() =>
@@ -84,6 +87,11 @@ public class SpectreUmaFrontend : IUmaFrontend
 
         StartInputCapture();
     }
+
+    private Layout GetEventArea => layout[EventArea];
+    private Layout GetCareerArea => layout["Right"][CareerArea];
+    private Layout GetLogsArea => layout["Right"][LogsArea];
+    private Layout GetSearchArea => layout["Left"]["Search"];
 
     private void StartInputCapture()
     {
@@ -149,26 +157,14 @@ public class SpectreUmaFrontend : IUmaFrontend
 
     public Task ShowEventAsync(UmaEventEntity umaEvent)
     {
-        layout[EventArea].Update(
-            new Panel(Align.Center(new Markup($"{umaEvent}"), VerticalAlignment.Middle))
-            {
-                Border = BoxBorder.Rounded,
-                Header = new PanelHeader("Event Area", Justify.Center)
-            }.Expand()
-        );
+        UpdatePanel(GetEventArea, $"{umaEvent}", "Event Area", horizontalAlignment: HorizontalAlignment.Center);;
 
         return Task.CompletedTask;
     }
 
     public Task ShowCareerAsync(string careerInfo)
     {
-        layout["Right"][CareerArea].Update(
-            new Panel(Align.Center(new Markup($"{careerInfo}"), VerticalAlignment.Top))
-            {
-                Border = BoxBorder.Rounded,
-                Header = new PanelHeader("Career info", Justify.Center)
-            }.Expand()
-        );
+        UpdatePanel(GetCareerArea, careerInfo, "Career Info", horizontalAlignment: HorizontalAlignment.Center);
 
         return Task.CompletedTask;
     }
@@ -182,12 +178,7 @@ public class SpectreUmaFrontend : IUmaFrontend
         table.AddColumn("Log");
         foreach (var log in logs) table.AddRow(log);
 
-        layout["Right"][LogsArea].Update(new Panel(table)
-            {
-                Border = BoxBorder.Rounded,
-                Header = new PanelHeader("Log", Justify.Center)
-            }.Expand()
-        );
+        UpdatePanel(GetLogsArea, table, "Logs");
 
         return Task.CompletedTask;
     }
@@ -205,20 +196,18 @@ public class SpectreUmaFrontend : IUmaFrontend
             mode = currentInputMode;
         }
 
-        // Dynamic label
-        string label = mode switch
+        var label = mode switch
         {
             InputMode.Search => searching ? "[green]Search:[/]" : "Search:",
             InputMode.Career => "[yellow]Career:[/]",
             _ => "Input:"
         };
 
-        layout["Left"]["Search"].Update(
-            new Panel($"{label} {inputCopy}") { Border = BoxBorder.Rounded }.Expand()
-        );
+        UpdatePanel(GetSearchArea, $"{label} {inputCopy}", "Input");
 
         return Task.CompletedTask;
     }
+
 
     public string GetSearchQuery()
     {
@@ -244,14 +233,69 @@ public class SpectreUmaFrontend : IUmaFrontend
         lock (searchLock) return isSearching;
     }
 
-    private void UpdatePanel(string area, string text, VerticalAlignment alignment = VerticalAlignment.Top, string header = null)
+    private void UpdatePanel(Layout area,
+        string text,
+        string header = "",
+        VerticalAlignment alignment = VerticalAlignment.Top,
+        HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left)
     {
-        layout[area].Update(
-            new Panel(Align.Center(new Markup(text), alignment))
-            {
-                Border = BoxBorder.Rounded,
-                Header = header != null ? new PanelHeader(header, Justify.Center) : null
-            }.Expand()
-        );
+        switch (horizontalAlignment)
+        {
+            case HorizontalAlignment.Left:
+                area.Update(
+                    new Panel(Align.Left(new Markup(text), alignment))
+                    {
+                        Border = BoxBorder.Rounded,
+                        Header = new PanelHeader(header, Justify.Center)
+                    }.Expand()
+                );
+
+                break;
+            case HorizontalAlignment.Center:
+                area.Update(
+                    new Panel(Align.Center(new Markup(text), alignment))
+                    {
+                        Border = BoxBorder.Rounded,
+                        Header = new PanelHeader(header, Justify.Center)
+                    }.Expand()
+                );
+
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(horizontalAlignment), horizontalAlignment, null);
+        }
+    }
+
+    private void UpdatePanel(Layout area,
+        Table content,
+        string header = "",
+        VerticalAlignment alignment = VerticalAlignment.Top,
+        HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left)
+    {
+        switch (horizontalAlignment)
+        {
+            case HorizontalAlignment.Left:
+                area.Update(
+                    new Panel(Align.Left(content, alignment))
+                    {
+                        Border = BoxBorder.Rounded,
+                        Header = new PanelHeader(header, Justify.Center)
+                    }.Expand()
+                );
+
+                break;
+            case HorizontalAlignment.Center:
+                area.Update(
+                    new Panel(Align.Center(content, alignment))
+                    {
+                        Border = BoxBorder.Rounded,
+                        Header = new PanelHeader(header, Justify.Center)
+                    }.Expand()
+                );
+
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(horizontalAlignment), horizontalAlignment, null);
+        }
     }
 }

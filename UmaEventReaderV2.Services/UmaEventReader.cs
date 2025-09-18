@@ -11,7 +11,7 @@ namespace UmaEventReaderV2.Services;
 public partial class UmaEventReader(
     IUmaEventService eventService,
     IScreenshotAreaProvider screenshotAreaProvider,
-    ScreenshotProvider screenshotProvider,
+    IScreenshotProvider screenshotProvider,
     ITextExtractor textExtractor
 )
 {

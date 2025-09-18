@@ -27,7 +27,7 @@ builder.Services
     .AddScreenshotAreaProvider(parsedArgs)
     .AddUmaEventDbServices()
     .AddSingleton<UmaEventReader>()
-    .AddSingleton<ScreenshotProvider>()
+    .AddSingleton<IScreenshotProvider, ScreenshotProvider>()
     .AddSingleton<ITextExtractor, TesseractTextExtractor>();
 
 var app = builder.Build();

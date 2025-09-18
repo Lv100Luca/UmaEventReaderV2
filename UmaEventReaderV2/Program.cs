@@ -21,14 +21,13 @@ var builder = Host.CreateApplicationBuilder(args);
 
 var parsedArgs = Parser.Default.ParseArguments<ProgramArgs>(args);
 
-Console.Out.WriteLine("Selected Area:" + parsedArgs.Value.SelectArea);
-
 builder.Services
     .AddScreenshotAreaProvider(parsedArgs)
     .AddUmaEventDbServices()
     .AddSingleton<UmaEventReader>()
     .AddSingleton<IScreenshotProvider, ScreenshotProvider>()
-    .AddSingleton<ITextExtractor, TesseractTextExtractor>();
+    .AddSingleton<ITextExtractor, TesseractTextExtractor>()
+    .AddSingleton<IUmaFrontend, SpectreUmaFrontend>();
 
 var app = builder.Build();
 

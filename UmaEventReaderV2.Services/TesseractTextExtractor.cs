@@ -34,14 +34,6 @@ public partial class TesseractTextExtractor : ITextExtractor
 
         var conf = page.GetMeanConfidence();
 
-        var sb = new StringBuilder();
-
-        sb.AppendLine("Result")
-            .AppendLine($" - '{text}'")
-            .AppendLine($" - {conf}");
-
-        // Console.Out.WriteLine(sb.ToString());
-
         var result = new TextExtractorResult
         {
             Text = text,

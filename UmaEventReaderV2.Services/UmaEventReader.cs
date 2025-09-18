@@ -10,11 +10,12 @@ using UmaEventReaderV2.Services.Utility;
 
 namespace UmaEventReaderV2.Services;
 
-public partial class UmaEventReader(
+public class UmaEventReader(
     IUmaEventService eventService,
     IScreenshotAreaProvider screenshotAreaProvider,
     IScreenshotProvider screenshotProvider,
-    ITextExtractor textExtractor
+    ITextExtractor textExtractor,
+    IUmaFrontend frontend
 )
 {
     private readonly TimeSpan checkInterval = TimeSpan.FromSeconds(1);
@@ -44,7 +45,27 @@ public partial class UmaEventReader(
 
     private async Task<bool> TryProcessAreaAsync(Rectangle area, bool retry = false)
     {
-        var result = await CaptureAndExtractScreenshotText(area);
+        var frontendText = frontend.GetSearchQuery();
+
+        await frontend.LogAsync("TEXT: " + frontendText);
+
+        var searchText = TextExtractorResult.With(frontendText);
+        var captureText = await CaptureAndExtractScreenshotText(area);
+
+        TextExtractorResult? result = null;
+
+        if (captureText.Metadata.MeanConfidence < ConfidenceThreshold)
+        {
+            await frontend.LogAsync("using search");
+            result = searchText;
+        }
+        else
+        {
+            await frontend.LogAsync($"using capture '{captureText.Text}'");
+
+            result = captureText;
+            frontend.ResetSearchQuery();
+        }
 
         var debugSaveImage = false;
 
@@ -60,25 +81,31 @@ public partial class UmaEventReader(
         if (!retry)
             previousText = result.Text;
 
-        await Console.Out.WriteLineAsync(result.Text);
+        var sb = new StringBuilder();
 
-        var events = RunSearch(result.Text);
+        sb.AppendLine("Result")
+            .AppendLine($" - '{result.Text}'")
+            .AppendLine($" - {result.Metadata.MeanConfidence}");
+
+        await frontend.LogAsync(sb.ToString());
+
+        var events = await RunSearch(result.Text);
 
         if (events.Count == 1)
-        // foreach (var @event in events)
-        // {
+            // foreach (var @event in events)
+            // {
             SaveImage(events.First().EventName, result.Metadata.ProcessedImage, result.Metadata.RawImage);
         // }
 
         return events.Count > 0;
     }
 
-    private List<UmaEventEntity> RunSearch(string eventName)
+    private async Task<List<UmaEventEntity>> RunSearch(string eventName)
     {
         var events = eventService.GetAllWhereNameIsLike(eventName).ToList();
 
         foreach (var e in events)
-            Console.Out.WriteLine(e);
+            await frontend.ShowEventAsync(e);
 
         return events;
     }
@@ -97,7 +124,8 @@ public partial class UmaEventReader(
 
     private static bool ValidateText(TextExtractorResult result)
     {
-        return result.Metadata.MeanConfidence > ConfidenceThreshold && result.Text.Length >= 3 && !string.IsNullOrWhiteSpace(result.Text);
+        return result.Text.Length >= 3 &&
+               !string.IsNullOrWhiteSpace(result.Text);
     }
 
     // todo to service?
@@ -115,6 +143,7 @@ public partial class UmaEventReader(
     {
         using var md5 = MD5.Create();
         byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
+
         return new Guid(hash);
     }
 
@@ -128,14 +157,15 @@ public partial class UmaEventReader(
 
         // write eventName.txt only if it doesn’t exist
         var namePath = Path.Combine(eventDir, "eventName.txt");
+
         if (!File.Exists(namePath))
         {
             File.WriteAllText(namePath, eventName);
         }
 
         // save images with unique filenames
-        SaveWithIncrement(raw, eventDir, "raw");
-        SaveWithIncrement(processed, eventDir, "processed");
+        SaveIfNotExists(raw, eventDir, "raw");
+        SaveIfNotExists(processed, eventDir, "processed");
     }
 
     private static void SaveWithIncrement(Bitmap? bmp, string dir, string prefix)
@@ -155,6 +185,18 @@ public partial class UmaEventReader(
         bmp.Save(filePath, ImageFormat.Png);
     }
 
+    private static void SaveIfNotExists(Bitmap? bmp, string dir, string prefix)
+    {
+        if (bmp == null) return;
+
+        var filePath = Path.Combine(dir, $"{prefix}.png");
+
+        if (!File.Exists(filePath))
+        {
+            bmp.Save(filePath, ImageFormat.Png);
+        }
+    }
+
     private static void DebugSaveImage(TextExtractorResult result, string manEventName = "")
     {
         var baseDir = "captures";
@@ -165,6 +207,7 @@ public partial class UmaEventReader(
             debugPath = Path.Combine(debugPath, manEventName);
 
             var namePath = Path.Combine(debugPath, "eventName.txt");
+
             if (!File.Exists(namePath))
             {
                 File.WriteAllText(namePath, debugPath);

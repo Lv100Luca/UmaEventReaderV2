@@ -4,6 +4,17 @@ namespace UmaEventReaderV2.Services.Utility;
 
 public class ImagePreProcessor
 {
+    public static Bitmap Process(Bitmap input, bool skipBorder = false, bool skipInvert = false)
+    {
+        if (!skipInvert)
+            input = IsolateText(input);
+
+        if (!skipBorder)
+            input = AddBorder(input, 5, Color.Black);
+
+        return input;
+    }
+
     public static Bitmap IsolateText(Bitmap input, byte brightnessThreshold = 200)
     {
         var output = new Bitmap(input.Width, input.Height);

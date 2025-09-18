@@ -76,7 +76,7 @@ public partial class UmaEventReader(
     private async Task<TextExtractorResult> CaptureAndExtractScreenshotText(Rectangle area)
     {
         var rawScreenshot = screenshotProvider.TakeScreenshot(area);
-        var processed = ImagePreProcessor.AddBorder(ImagePreProcessor.IsolateText(rawScreenshot), 5, Color.Black);
+        var processed = ImagePreProcessor.Process(rawScreenshot, skipBorder: true);
 
         var result = await textExtractor.ExtractTextAsync(processed);
 

@@ -9,6 +9,8 @@ public class SpectreUmaFrontend : IUmaFrontend
     private readonly object searchLock = new();
 
     private string searchQuery = string.Empty;
+    private string typingBuffer = string.Empty; // user types here first
+
     private bool isSearching;
 
     private const string Root = "Root";
@@ -41,32 +43,6 @@ public class SpectreUmaFrontend : IUmaFrontend
                     )
             );
 
-        // layout[EventArea].Update(
-        //     new Panel(Align.Center(new Markup("Events"), VerticalAlignment.Middle))
-        //     {
-        //         Border = BoxBorder.Rounded,
-        //         Header = new PanelHeader("Event Area", Justify.Center)
-        //     }.Expand()
-        // );
-        //
-        // layout["Right"][CareerArea].Update(
-        //     new Panel(Align.Center(new Markup($"Career Info"), VerticalAlignment.Top))
-        //     {
-        //         Border = BoxBorder.Rounded,
-        //         Header = new PanelHeader("Career info", Justify.Center)
-        //     }.Expand()
-        // );
-        //
-        // layout["Right"][LogsArea].Update(
-        //     new Panel("Logs...")
-        //     {
-        //         Border = BoxBorder.Rounded,
-        //         Header = new PanelHeader("Logs", Justify.Center)
-        //     }
-        // );
-        //
-        // layout["Left"]["Search"].Update(new Panel("Search:").Expand());
-
         UpdatePanel(GetEventArea, "", "Event Area", horizontalAlignment: HorizontalAlignment.Center);
         UpdatePanel(GetCareerArea, "", "Career Info", horizontalAlignment: HorizontalAlignment.Center);
         UpdatePanel(GetLogsArea, "", "Logs");
@@ -80,7 +56,7 @@ public class SpectreUmaFrontend : IUmaFrontend
                 while (true)
                 {
                     ctx.Refresh();
-                    Thread.Sleep(100);
+                    Thread.Sleep(50);
                 }
             });
         });
@@ -112,30 +88,33 @@ public class SpectreUmaFrontend : IUmaFrontend
 
                         if (key.Key == ConsoleKey.Tab)
                         {
-                            // Toggle input mode
                             currentInputMode = currentInputMode == InputMode.Search ? InputMode.Career : InputMode.Search;
                         }
                         else if (key.Key == ConsoleKey.Enter)
                         {
                             if (currentInputMode == InputMode.Career && careerInput.Length > 0)
                             {
-                                // Confirm career input → top-right panel
                                 ShowCareerAsync(careerInput);
                                 careerInput = string.Empty;
-                                currentInputMode = InputMode.Search; // return to search
+                                currentInputMode = InputMode.Search;
+                            }
+                            else if (currentInputMode == InputMode.Search)
+                            {
+                                // Optional: confirm search immediately on Enter
+                                searchQuery = typingBuffer;
                             }
                         }
                         else if (key.Key == ConsoleKey.Backspace)
                         {
-                            if (currentInputMode == InputMode.Search && searchQuery.Length > 0)
-                                searchQuery = searchQuery[..^1];
+                            if (currentInputMode == InputMode.Search && typingBuffer.Length > 0)
+                                typingBuffer = typingBuffer[..^1];
                             else if (currentInputMode == InputMode.Career && careerInput.Length > 0)
                                 careerInput = careerInput[..^1];
                         }
                         else if (!char.IsControl(key.KeyChar))
                         {
                             if (currentInputMode == InputMode.Search)
-                                searchQuery += key.KeyChar;
+                                typingBuffer += key.KeyChar;
                             else if (currentInputMode == InputMode.Career)
                                 careerInput += key.KeyChar;
                         }
@@ -144,9 +123,16 @@ public class SpectreUmaFrontend : IUmaFrontend
                     await UpdateInputBarThreadSafe();
                 }
 
-                if ((DateTime.UtcNow - lastInput).TotalSeconds > 1)
+                // Debounce: commit typingBuffer to searchQuery after 1 second of inactivity
+                if (currentInputMode == InputMode.Search && (DateTime.UtcNow - lastInput).TotalSeconds > 1)
                 {
-                    lock (searchLock) isSearching = false;
+                    lock (searchLock)
+                    {
+                        if (searchQuery != null && typingBuffer != searchQuery)
+                            searchQuery = typingBuffer; // commit
+
+                        isSearching = false;
+                    }
                 }
 
                 await Task.Delay(50);
@@ -154,10 +140,9 @@ public class SpectreUmaFrontend : IUmaFrontend
         });
     }
 
-
     public Task ShowEventAsync(UmaEventEntity umaEvent)
     {
-        UpdatePanel(GetEventArea, $"{umaEvent}", "Event Area", horizontalAlignment: HorizontalAlignment.Center);;
+        UpdatePanel(GetEventArea, $"{umaEvent}", "Event Area", horizontalAlignment: HorizontalAlignment.Center);
 
         return Task.CompletedTask;
     }
@@ -191,7 +176,7 @@ public class SpectreUmaFrontend : IUmaFrontend
 
         lock (searchLock)
         {
-            inputCopy = currentInputMode == InputMode.Search ? searchQuery : careerInput;
+            inputCopy = currentInputMode == InputMode.Search ? typingBuffer : careerInput;
             searching = isSearching;
             mode = currentInputMode;
         }

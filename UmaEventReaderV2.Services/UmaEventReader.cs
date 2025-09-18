@@ -47,7 +47,7 @@ public class UmaEventReader(
     {
         var frontendText = frontend.GetSearchQuery();
 
-        await frontend.LogAsync("TEXT: " + frontendText);
+        // await frontend.LogAsync("TEXT: " + frontendText);
 
         var searchText = TextExtractorResult.With(frontendText);
         var captureText = await CaptureAndExtractScreenshotText(area);
@@ -56,12 +56,12 @@ public class UmaEventReader(
 
         if (captureText.Metadata.MeanConfidence < ConfidenceThreshold || captureText.Text.Length < 3)
         {
-            await frontend.LogAsync("using search");
+            // await frontend.LogAsync("using search");
             result = searchText;
         }
         else
         {
-            await frontend.LogAsync($"using capture '{captureText.Text}'");
+            // await frontend.LogAsync($"using capture '{captureText.Text}'");
 
             result = captureText;
             frontend.ResetSearchQuery();

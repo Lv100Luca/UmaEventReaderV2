@@ -6,7 +6,8 @@ public class SpectreUmaFrontend : IUmaFrontend
 {
     private readonly Layout layout;
     private readonly List<string> logs = new();
-    private readonly object searchLock = new(); // lock for thread-safety
+    private readonly object searchLock = new();
+
     private string searchQuery = string.Empty;
     private bool isSearching;
 
@@ -15,27 +16,58 @@ public class SpectreUmaFrontend : IUmaFrontend
     private const string CareerArea = "Career";
     private const string LogsArea = "Logs";
 
+    private enum InputMode
+    {
+        Search,
+        Career
+    }
+
+    private InputMode currentInputMode = InputMode.Search;
+    private string careerInput = string.Empty;
+
     public SpectreUmaFrontend()
     {
         layout = new Layout(Root)
             .SplitColumns(
-                new Layout("Left") // left column: Events + Search
+                new Layout("Left")
                     .SplitRows(
-                        new Layout(EventArea).Ratio(4),   // Event area (largest)
-                        new Layout("Search").Size(3)      // Search bar (fixed height)
+                        new Layout(EventArea).Ratio(4),
+                        new Layout("Search").Size(3)
                     ),
-                new Layout("Right").Size(50) // right column: Career + Logs
+                new Layout("Right").Size(50)
                     .SplitRows(
-                        new Layout(CareerArea).Size(5), // Career info
-                        new Layout(LogsArea)            // Logs
+                        new Layout(CareerArea).Size(5),
+                        new Layout(LogsArea)
                     )
             );
 
-        // Initial state
-        layout[EventArea].Update(new Panel("Waiting for events...").Expand());
-        layout["Left"]["Search"].Update(new Panel("Search:").Expand());
-        layout["Right"][CareerArea].Update(new Panel("Career info...").Expand());
-        layout["Right"][LogsArea].Update(new Panel("Logs...").Expand());
+        // layout[EventArea].Update(
+        //     new Panel(Align.Center(new Markup("Events"), VerticalAlignment.Middle))
+        //     {
+        //         Border = BoxBorder.Rounded,
+        //         Header = new PanelHeader("Event Area", Justify.Center)
+        //     }.Expand()
+        // );
+        //
+        // layout["Right"][CareerArea].Update(
+        //     new Panel(Align.Center(new Markup($"Career Info"), VerticalAlignment.Top))
+        //     {
+        //         Border = BoxBorder.Rounded,
+        //         Header = new PanelHeader("Career info", Justify.Center)
+        //     }.Expand()
+        // );
+        //
+        // layout["Right"][LogsArea].Update(
+        //     new Panel("Logs...")
+        //     {
+        //         Border = BoxBorder.Rounded,
+        //         Header = new PanelHeader("Logs", Justify.Center)
+        //     }
+        // );
+        //
+        // layout["Left"]["Search"].Update(new Panel("Search:").Expand());
+
+
 
         // Start live renderer
         Task.Run(() =>
@@ -45,33 +77,68 @@ public class SpectreUmaFrontend : IUmaFrontend
                 while (true)
                 {
                     ctx.Refresh();
-                    Thread.Sleep(50);
+                    Thread.Sleep(100);
                 }
             });
         });
 
-        var lastInput = DateTime.UtcNow;
+        StartInputCapture();
+    }
 
-        // Start background input capture (non-blocking search)
+    private void StartInputCapture()
+    {
         Task.Run(async () =>
         {
+            var lastInput = DateTime.UtcNow;
+
             while (true)
             {
                 if (Console.KeyAvailable)
                 {
                     var key = Console.ReadKey(intercept: true);
+                    lastInput = DateTime.UtcNow;
 
                     lock (searchLock)
                     {
                         isSearching = true;
 
-                        if (key.Key == ConsoleKey.Backspace && searchQuery.Length > 0)
-                            searchQuery = searchQuery[..^1];
+                        if (key.Key == ConsoleKey.Tab)
+                        {
+                            // Toggle input mode
+                            currentInputMode = currentInputMode == InputMode.Search ? InputMode.Career : InputMode.Search;
+                        }
+                        else if (key.Key == ConsoleKey.Enter)
+                        {
+                            if (currentInputMode == InputMode.Career && careerInput.Length > 0)
+                            {
+                                // Confirm career input → top-right panel
+                                ShowCareerAsync(careerInput);
+                                careerInput = string.Empty;
+                                currentInputMode = InputMode.Search; // return to search
+                            }
+                        }
+                        else if (key.Key == ConsoleKey.Backspace)
+                        {
+                            if (currentInputMode == InputMode.Search && searchQuery.Length > 0)
+                                searchQuery = searchQuery[..^1];
+                            else if (currentInputMode == InputMode.Career && careerInput.Length > 0)
+                                careerInput = careerInput[..^1];
+                        }
                         else if (!char.IsControl(key.KeyChar))
-                            searchQuery += key.KeyChar;
+                        {
+                            if (currentInputMode == InputMode.Search)
+                                searchQuery += key.KeyChar;
+                            else if (currentInputMode == InputMode.Career)
+                                careerInput += key.KeyChar;
+                        }
                     }
 
-                    await UpdateSearchBarThreadSafe(); // uses a snapshot copy inside the lock
+                    await UpdateInputBarThreadSafe();
+                }
+
+                if ((DateTime.UtcNow - lastInput).TotalSeconds > 1)
+                {
+                    lock (searchLock) isSearching = false;
                 }
 
                 await Task.Delay(50);
@@ -79,12 +146,15 @@ public class SpectreUmaFrontend : IUmaFrontend
         });
     }
 
+
     public Task ShowEventAsync(UmaEventEntity umaEvent)
     {
         layout[EventArea].Update(
-            new Panel(
-                Align.Center(new Markup($"{umaEvent}"), VerticalAlignment.Middle)
-            ).Expand()
+            new Panel(Align.Center(new Markup($"{umaEvent}"), VerticalAlignment.Middle))
+            {
+                Border = BoxBorder.Rounded,
+                Header = new PanelHeader("Event Area", Justify.Center)
+            }.Expand()
         );
 
         return Task.CompletedTask;
@@ -93,9 +163,11 @@ public class SpectreUmaFrontend : IUmaFrontend
     public Task ShowCareerAsync(string careerInfo)
     {
         layout["Right"][CareerArea].Update(
-            new Panel(
-                Align.Center(new Markup($"{careerInfo}"), VerticalAlignment.Top)
-            ).Expand()
+            new Panel(Align.Center(new Markup($"{careerInfo}"), VerticalAlignment.Top))
+            {
+                Border = BoxBorder.Rounded,
+                Header = new PanelHeader("Career info", Justify.Center)
+            }.Expand()
         );
 
         return Task.CompletedTask;
@@ -104,66 +176,82 @@ public class SpectreUmaFrontend : IUmaFrontend
     public Task LogAsync(string message)
     {
         logs.Add(message);
-        if (logs.Count > 15)
-            logs.RemoveAt(0);
+        if (logs.Count > 15) logs.RemoveAt(0);
 
         var table = new Table().Border(TableBorder.None).HideHeaders();
         table.AddColumn("Log");
-        foreach (var log in logs)
-            table.AddRow(log);
+        foreach (var log in logs) table.AddRow(log);
 
-        layout["Right"][LogsArea].Update(
-            new Panel(table).Expand()
+        layout["Right"][LogsArea].Update(new Panel(table)
+            {
+                Border = BoxBorder.Rounded,
+                Header = new PanelHeader("Log", Justify.Center)
+            }.Expand()
         );
 
         return Task.CompletedTask;
     }
 
-    // Thread-safe search bar update
-    private Task UpdateSearchBarThreadSafe()
+    private Task UpdateInputBarThreadSafe()
     {
-        string queryCopy;
+        string inputCopy;
+        bool searching;
+        InputMode mode;
+
         lock (searchLock)
         {
-            queryCopy = searchQuery;
+            inputCopy = currentInputMode == InputMode.Search ? searchQuery : careerInput;
+            searching = isSearching;
+            mode = currentInputMode;
         }
+
+        // Dynamic label
+        string label = mode switch
+        {
+            InputMode.Search => searching ? "[green]Search:[/]" : "Search:",
+            InputMode.Career => "[yellow]Career:[/]",
+            _ => "Input:"
+        };
 
         layout["Left"]["Search"].Update(
-            new Panel($"[yellow]Search:[/] {queryCopy}") { Border = BoxBorder.Rounded }.Expand()
+            new Panel($"{label} {inputCopy}") { Border = BoxBorder.Rounded }.Expand()
         );
 
         return Task.CompletedTask;
     }
 
-    // Thread-safe getter
     public string GetSearchQuery()
     {
-        lock (searchLock)
-        {
-            return searchQuery;
-        }
+        lock (searchLock) return searchQuery;
     }
 
-    // Thread-safe reset
     public void ResetSearchQuery()
     {
         lock (searchLock)
         {
-            if (isSearching)
-                return; // do nothing if the user is typing
+            // Only reset if not currently typing and input mode is Search
+            if (isSearching || currentInputMode != InputMode.Search)
+                return;
 
             searchQuery = string.Empty;
         }
 
-        _ = UpdateSearchBarThreadSafe(); // refresh the panel
+        _ = UpdateInputBarThreadSafe(); // update both bars
     }
-
 
     public bool IsSearching()
     {
-        lock (searchLock)
-        {
-            return isSearching;
-        }
+        lock (searchLock) return isSearching;
+    }
+
+    private void UpdatePanel(string area, string text, VerticalAlignment alignment = VerticalAlignment.Top, string header = null)
+    {
+        layout[area].Update(
+            new Panel(Align.Center(new Markup(text), alignment))
+            {
+                Border = BoxBorder.Rounded,
+                Header = header != null ? new PanelHeader(header, Justify.Center) : null
+            }.Expand()
+        );
     }
 }

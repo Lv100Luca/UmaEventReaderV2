@@ -54,7 +54,7 @@ public class UmaEventReader(
 
         TextExtractorResult? result = null;
 
-        if (captureText.Metadata.MeanConfidence < ConfidenceThreshold)
+        if (captureText.Metadata.MeanConfidence < ConfidenceThreshold || captureText.Text.Length < 3)
         {
             await frontend.LogAsync("using search");
             result = searchText;

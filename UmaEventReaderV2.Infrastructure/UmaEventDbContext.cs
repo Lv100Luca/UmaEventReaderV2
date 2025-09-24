@@ -13,7 +13,7 @@ public class UmaDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseNpgsql(
-            "Host=localhost;Port=5432;Database=uma_db;Username=umauser;Password=umapassword");
+            "Host=localhost;Port=35432;Database=uma_db;Username=umauser;Password=umapassword");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

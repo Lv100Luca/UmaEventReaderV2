@@ -159,6 +159,8 @@ public class SpectreUmaFrontend : IUmaFrontend
         logs.Add(message);
         if (logs.Count > 15) logs.RemoveAt(0);
 
+        logs.Reverse();
+
         var table = new Table().Border(TableBorder.None).HideHeaders();
         table.AddColumn("Log");
         foreach (var log in logs) table.AddRow(log);

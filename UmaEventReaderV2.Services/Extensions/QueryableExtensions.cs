@@ -10,6 +10,6 @@ public static class QueryableExtensions {
         if (string.IsNullOrWhiteSpace(term))
             return query;
 
-        return query.Where(e => EF.Functions.ILike(e.EventName, $"%{term}%"));
+        return query.Where(e => e.EventName.Contains(term, StringComparison.OrdinalIgnoreCase));
     }
 }

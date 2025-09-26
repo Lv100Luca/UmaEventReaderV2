@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace UmaEventReaderV2.Infrastructure.dtos;
+namespace UmaEventReaderV2.Models.dtos;
 
 public record UmaEventChoiceDto
 (

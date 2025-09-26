@@ -11,17 +11,13 @@ public class UmaEventService(IUmaEventRepository repository) : IUmaEventService
      {
          return repository.Query()
              .AsNoTracking()
-             .WhereEventNameContains(eventName)
-             .Include(e => e.Choices)
-             .ThenInclude(c => c.Outcomes);
+             .WhereEventNameContains(eventName);
      }
 
      public IEnumerable<UmaEventEntity> GetAllWhereChoiceTextIsLike(string choiceText)
      {
          return repository.Query()
              .AsNoTracking()
-             .Where(e => e.Choices.Any(c => EF.Functions.ILike(c.ChoiceText, $"%{choiceText}%")))
-             .Include(e => e.Choices)
-             .ThenInclude(c => c.Outcomes);
+             .Where(e => e.Choices.Any(c => c.ChoiceText.Contains(choiceText, StringComparison.OrdinalIgnoreCase)));
      }
 }

@@ -26,15 +26,18 @@ builder.Services
     .AddUmaEventDbServices()
     .AddSingleton<OcrService>()
     .AddSingleton<UmaEventReader>()
-    .AddSingleton<IScreenshotProvider, ScreenshotProvider>()
+    .AddSingleton<IScreenshotProvider, DebugScreenshotProvider>()
     .AddSingleton<ITextExtractor, TesseractTextExtractor>()
-    .AddSingleton<IUmaFrontend, SpectreUmaFrontend>();
+    .AddSingleton<SpectreUmaFrontend>();
 
 var app = builder.Build();
 
 var scope = app.Services.CreateScope();
 
 var umaEventReader = scope.ServiceProvider.GetRequiredService<UmaEventReader>();
+var frontend = scope.ServiceProvider.GetRequiredService<SpectreUmaFrontend>();
+
+frontend.Run();
 
 await umaEventReader.RunAsync();
 

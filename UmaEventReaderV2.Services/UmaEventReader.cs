@@ -16,7 +16,6 @@ public class UmaEventReader(
     private string previousText = string.Empty;
 
     public event Action<string>? OnLog;
-    public event Action<TextExtractorResult>? OnResult;
     public event Action<UmaEventEntity>? OnEventFound;
 
     public async Task RunAsync(CancellationToken cancellationToken = default)
@@ -35,7 +34,6 @@ public class UmaEventReader(
             previousText = result.Text;
 
             OnLog?.Invoke($"Result: '{result.Text}' ({result.Metadata.MeanConfidence:0.00})");
-            OnResult?.Invoke(result);
 
             var events = eventService.GetAllWhereNameIsLike(result.Text);
             foreach (var e in events)

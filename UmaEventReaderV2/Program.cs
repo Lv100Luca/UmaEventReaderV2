@@ -37,7 +37,7 @@ var scope = app.Services.CreateScope();
 var umaEventReader = scope.ServiceProvider.GetRequiredService<UmaEventReader>();
 var frontend = scope.ServiceProvider.GetRequiredService<SpectreUmaFrontend>();
 
-frontend.Run();
+_ = Task.Run(() => frontend.Run());
 
 await umaEventReader.RunAsync();
 

@@ -15,4 +15,6 @@ public interface IScreenshotAreaProvider
     /// Used for when the current event is prepended with a trainee icon
     /// </summary>
     Rectangle GetFallbackEventArea();
+
+    IEnumerable<Rectangle> GetAllAreas() => [GetEventArea(), GetFallbackEventArea()];
 }

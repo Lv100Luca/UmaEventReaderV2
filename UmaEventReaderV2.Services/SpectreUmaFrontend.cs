@@ -1,57 +1,35 @@
 using Spectre.Console;
-using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Models.Entities;
+using UmaEventReaderV2.Services;
 
-public class SpectreUmaFrontend : IUmaFrontend
+public class SpectreUmaFrontend
 {
-    private readonly Layout layout;
+    private Layout layout;
     private readonly List<string> logs = new();
-    private readonly object searchLock = new();
-
-    private string searchQuery = string.Empty;
-    private string typingBuffer = string.Empty; // user types here first
-
-    private bool isSearching;
 
     private const string Root = "Root";
     private const string EventArea = "Event";
     private const string CareerArea = "Career";
     private const string LogsArea = "Logs";
 
-    private enum InputMode
+    public SpectreUmaFrontend(UmaEventReader reader)
     {
-        Search,
-        Career
+        layout = InitializeLayout();
+
+        UpdatePanel(GetEventArea, "", "Event Area", HorizontalAlignment.Center);
+        UpdatePanel(GetCareerArea, "", "Career Info", HorizontalAlignment.Center);
+        UpdatePanel(GetLogsArea, "", "Logs");
+
+        reader.OnLog += Log;
+        reader.OnEventFound += ShowEvent;
     }
 
-    private InputMode currentInputMode = InputMode.Search;
-    private string careerInput = string.Empty;
 
-    public SpectreUmaFrontend()
+    public void Run()
     {
-        layout = new Layout(Root)
-            .SplitColumns(
-                new Layout("Left")
-                    .SplitRows(
-                        new Layout(EventArea).Ratio(4),
-                        new Layout("Search").Size(3)
-                    ),
-                new Layout("Right").Size(30)
-                    .SplitRows(
-                        new Layout(CareerArea).Size(5),
-                        new Layout(LogsArea)
-                    )
-            );
-
-        UpdatePanel(GetEventArea, "", "Event Area", horizontalAlignment: HorizontalAlignment.Center);
-        UpdatePanel(GetCareerArea, "", "Career Info", horizontalAlignment: HorizontalAlignment.Center);
-        UpdatePanel(GetLogsArea, "", "Logs");
-        UpdatePanel(GetSearchArea, "Search: ");
-
-        // Start live renderer
-        Task.Run(() =>
-        {
-            AnsiConsole.Live(layout).Start(ctx =>
+        AnsiConsole.Live(layout)
+            .AutoClear(false) // keeps panel after exit
+            .Start(ctx =>
             {
                 while (true)
                 {
@@ -59,230 +37,87 @@ public class SpectreUmaFrontend : IUmaFrontend
                     Thread.Sleep(50);
                 }
             });
-        });
-
-        StartInputCapture();
     }
 
     private Layout GetEventArea => layout[EventArea];
     private Layout GetCareerArea => layout["Right"][CareerArea];
     private Layout GetLogsArea => layout["Right"][LogsArea];
-    private Layout GetSearchArea => layout["Left"]["Search"];
 
-    private void StartInputCapture()
+    private void ShowEvent(UmaEventEntity umaEvent)
     {
-        Task.Run(async () =>
-        {
-            var lastInput = DateTime.UtcNow;
-
-            while (true)
-            {
-                if (Console.KeyAvailable)
-                {
-                    var key = Console.ReadKey(intercept: true);
-                    lastInput = DateTime.UtcNow;
-
-                    lock (searchLock)
-                    {
-                        isSearching = true;
-
-                        if (key.Key == ConsoleKey.Tab)
-                        {
-                            currentInputMode = currentInputMode == InputMode.Search ? InputMode.Career : InputMode.Search;
-                        }
-                        else if (key.Key == ConsoleKey.Enter)
-                        {
-                            if (currentInputMode == InputMode.Career && careerInput.Length > 0)
-                            {
-                                ShowCareerAsync(careerInput);
-                                careerInput = string.Empty;
-                                currentInputMode = InputMode.Search;
-                            }
-                            else if (currentInputMode == InputMode.Search)
-                            {
-                                // Optional: confirm search immediately on Enter
-                                searchQuery = typingBuffer;
-                            }
-                        }
-                        else if (key.Key == ConsoleKey.Backspace)
-                        {
-                            if (currentInputMode == InputMode.Search && typingBuffer.Length > 0)
-                                typingBuffer = typingBuffer[..^1];
-                            else if (currentInputMode == InputMode.Career && careerInput.Length > 0)
-                                careerInput = careerInput[..^1];
-                        }
-                        else if (!char.IsControl(key.KeyChar))
-                        {
-                            if (currentInputMode == InputMode.Search)
-                                typingBuffer += key.KeyChar;
-                            else if (currentInputMode == InputMode.Career)
-                                careerInput += key.KeyChar;
-                        }
-                    }
-
-                    await UpdateInputBarThreadSafe();
-                }
-
-                // Debounce: commit typingBuffer to searchQuery after 1 second of inactivity
-                if (currentInputMode == InputMode.Search && (DateTime.UtcNow - lastInput).TotalSeconds > 1)
-                {
-                    lock (searchLock)
-                    {
-                        if (searchQuery != null && typingBuffer != searchQuery)
-                            searchQuery = typingBuffer; // commit
-
-                        isSearching = false;
-                    }
-                }
-
-                await Task.Delay(50);
-            }
-        });
+        UpdatePanel(GetEventArea, umaEvent.ToString(), "Event Area", HorizontalAlignment.Center);
     }
 
-    public Task ShowEventAsync(UmaEventEntity umaEvent)
+    public void ShowCareer(string careerInfo)
     {
-        UpdatePanel(GetEventArea, $"{umaEvent}", "Event Area", horizontalAlignment: HorizontalAlignment.Center);
-
-        return Task.CompletedTask;
+        UpdatePanel(GetCareerArea, careerInfo, "Career Info", HorizontalAlignment.Center);
     }
 
-    public Task ShowCareerAsync(string careerInfo)
-    {
-        UpdatePanel(GetCareerArea, careerInfo, "Career Info", horizontalAlignment: HorizontalAlignment.Center);
-
-        return Task.CompletedTask;
-    }
-
-    public Task LogAsync(string message)
+    public void Log(string message)
     {
         logs.Add(message);
         if (logs.Count > 15) logs.RemoveAt(0);
 
-        logs.Reverse();
-
+        // Build log table
         var table = new Table().Border(TableBorder.None).HideHeaders();
         table.AddColumn("Log");
-        foreach (var log in logs) table.AddRow(log);
+
+        foreach (var log in logs.AsEnumerable().Reverse())
+            table.AddRow(log);
 
         UpdatePanel(GetLogsArea, table, "Logs");
-
-        return Task.CompletedTask;
-    }
-
-    private Task UpdateInputBarThreadSafe()
-    {
-        string inputCopy;
-        bool searching;
-        InputMode mode;
-
-        lock (searchLock)
-        {
-            inputCopy = currentInputMode == InputMode.Search ? typingBuffer : careerInput;
-            searching = isSearching;
-            mode = currentInputMode;
-        }
-
-        var label = mode switch
-        {
-            InputMode.Search => searching ? "[green]Search:[/]" : "Search:",
-            InputMode.Career => "[yellow]Career:[/]",
-            _ => "Input:"
-        };
-
-        UpdatePanel(GetSearchArea, $"{label} {inputCopy}", "Input");
-
-        return Task.CompletedTask;
-    }
-
-
-    public string GetSearchQuery()
-    {
-        lock (searchLock) return searchQuery;
-    }
-
-    public void ResetSearchQuery()
-    {
-        lock (searchLock)
-        {
-            // Only reset if not currently typing and input mode is Search
-            if (isSearching || currentInputMode != InputMode.Search)
-                return;
-
-            searchQuery = string.Empty;
-        }
-
-        _ = UpdateInputBarThreadSafe(); // update both bars
-    }
-
-    public bool IsSearching()
-    {
-        lock (searchLock) return isSearching;
     }
 
     private void UpdatePanel(Layout area,
         string text,
         string header = "",
-        VerticalAlignment alignment = VerticalAlignment.Top,
-        HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left)
+        HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
+        VerticalAlignment verticalAlignment = VerticalAlignment.Top)
     {
-        switch (horizontalAlignment)
+        var panel = horizontalAlignment switch
         {
-            case HorizontalAlignment.Left:
-                area.Update(
-                    new Panel(Align.Left(new Markup(text), alignment))
-                    {
-                        Border = BoxBorder.Rounded,
-                        Header = new PanelHeader(header, Justify.Center)
-                    }.Expand()
-                );
+            HorizontalAlignment.Left => new Panel(Align.Left(new Markup(text), verticalAlignment)),
+            HorizontalAlignment.Center => new Panel(Align.Center(new Markup(text), verticalAlignment)),
+            _ => throw new ArgumentOutOfRangeException(nameof(horizontalAlignment), horizontalAlignment, null)
+        };
 
-                break;
-            case HorizontalAlignment.Center:
-                area.Update(
-                    new Panel(Align.Center(new Markup(text), alignment))
-                    {
-                        Border = BoxBorder.Rounded,
-                        Header = new PanelHeader(header, Justify.Center)
-                    }.Expand()
-                );
-
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(horizontalAlignment), horizontalAlignment, null);
-        }
+        panel.Border = BoxBorder.Rounded;
+        panel.Header = new PanelHeader(header, Justify.Center);
+        area.Update(panel.Expand());
     }
 
     private void UpdatePanel(Layout area,
         Table content,
         string header = "",
-        VerticalAlignment alignment = VerticalAlignment.Top,
-        HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left)
+        HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
+        VerticalAlignment verticalAlignment = VerticalAlignment.Top)
     {
-        switch (horizontalAlignment)
+        var panel = horizontalAlignment switch
         {
-            case HorizontalAlignment.Left:
-                area.Update(
-                    new Panel(Align.Left(content, alignment))
-                    {
-                        Border = BoxBorder.Rounded,
-                        Header = new PanelHeader(header, Justify.Center)
-                    }.Expand()
-                );
+            HorizontalAlignment.Left => new Panel(Align.Left(content, verticalAlignment)),
+            HorizontalAlignment.Center => new Panel(Align.Center(content, verticalAlignment)),
+            _ => throw new ArgumentOutOfRangeException(nameof(horizontalAlignment), horizontalAlignment, null)
+        };
 
-                break;
-            case HorizontalAlignment.Center:
-                area.Update(
-                    new Panel(Align.Center(content, alignment))
-                    {
-                        Border = BoxBorder.Rounded,
-                        Header = new PanelHeader(header, Justify.Center)
-                    }.Expand()
-                );
+        panel.Border = BoxBorder.Rounded;
+        panel.Header = new PanelHeader(header, Justify.Center);
+        area.Update(panel.Expand());
+    }
 
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(horizontalAlignment), horizontalAlignment, null);
-        }
+
+    private static Layout InitializeLayout()
+    {
+        return new Layout(Root)
+            .SplitColumns(
+                new Layout("Left")
+                    .SplitRows(
+                        new Layout(EventArea).Ratio(4)
+                    ),
+                new Layout("Right").Size(30)
+                    .SplitRows(
+                        new Layout(CareerArea).Size(5),
+                        new Layout(LogsArea)
+                    )
+            );
     }
 }

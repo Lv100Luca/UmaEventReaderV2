@@ -24,6 +24,7 @@ var parsedArgs = Parser.Default.ParseArguments<ProgramArgs>(args);
 builder.Services
     .AddScreenshotAreaProvider(parsedArgs)
     .AddUmaEventDbServices()
+    .AddSingleton<OcrService>()
     .AddSingleton<UmaEventReader>()
     .AddSingleton<IScreenshotProvider, ScreenshotProvider>()
     .AddSingleton<ITextExtractor, TesseractTextExtractor>()

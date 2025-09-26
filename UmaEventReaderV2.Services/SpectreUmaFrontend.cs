@@ -1,4 +1,5 @@
 using Spectre.Console;
+using Spectre.Console.Rendering;
 using UmaEventReaderV2.Models.Entities;
 using UmaEventReaderV2.Services;
 
@@ -16,8 +17,8 @@ public class SpectreUmaFrontend
     {
         layout = InitializeLayout();
 
-        UpdatePanel(GetEventArea, "", "Event Area", HorizontalAlignment.Center);
-        UpdatePanel(GetCareerArea, "", "Career Info", HorizontalAlignment.Center);
+        UpdatePanel(GetEventArea, "", "Event Area");
+        UpdatePanel(GetCareerArea, "Placeholder", "Career Info");
         UpdatePanel(GetLogsArea, "", "Logs");
 
         reader.OnLog += Log;
@@ -45,12 +46,7 @@ public class SpectreUmaFrontend
 
     private void ShowEvent(UmaEventEntity umaEvent)
     {
-        UpdatePanel(GetEventArea, umaEvent.ToString(), "Event Area", HorizontalAlignment.Center);
-    }
-
-    public void ShowCareer(string careerInfo)
-    {
-        UpdatePanel(GetCareerArea, careerInfo, "Career Info", HorizontalAlignment.Center);
+        UpdatePanel(GetEventArea, umaEvent.ToString(), "Event Area", horizontalAlignment: HorizontalAlignment.Center);
     }
 
     public void Log(string message)
@@ -71,39 +67,33 @@ public class SpectreUmaFrontend
     private void UpdatePanel(Layout area,
         string text,
         string header = "",
-        HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
-        VerticalAlignment verticalAlignment = VerticalAlignment.Top)
+        VerticalAlignment verticalAlignment = VerticalAlignment.Top,
+        HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left)
     {
-        var panel = horizontalAlignment switch
-        {
-            HorizontalAlignment.Left => new Panel(Align.Left(new Markup(text), verticalAlignment)),
-            HorizontalAlignment.Center => new Panel(Align.Center(new Markup(text), verticalAlignment)),
-            _ => throw new ArgumentOutOfRangeException(nameof(horizontalAlignment), horizontalAlignment, null)
-        };
-
-        panel.Border = BoxBorder.Rounded;
-        panel.Header = new PanelHeader(header, Justify.Center);
-        area.Update(panel.Expand());
+        UpdatePanel(area, new Markup(text), header, verticalAlignment, horizontalAlignment);
     }
 
     private void UpdatePanel(Layout area,
-        Table content,
+        IRenderable content,
         string header = "",
-        HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
-        VerticalAlignment verticalAlignment = VerticalAlignment.Top)
+        VerticalAlignment verticalAlignment = VerticalAlignment.Top,
+        HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left)
     {
-        var panel = horizontalAlignment switch
+        var aligned = horizontalAlignment switch
         {
-            HorizontalAlignment.Left => new Panel(Align.Left(content, verticalAlignment)),
-            HorizontalAlignment.Center => new Panel(Align.Center(content, verticalAlignment)),
+            HorizontalAlignment.Left => Align.Left(content, verticalAlignment),
+            HorizontalAlignment.Center => Align.Center(content, verticalAlignment),
             _ => throw new ArgumentOutOfRangeException(nameof(horizontalAlignment), horizontalAlignment, null)
         };
 
-        panel.Border = BoxBorder.Rounded;
-        panel.Header = new PanelHeader(header, Justify.Center);
-        area.Update(panel.Expand());
-    }
+        area.Update(new Panel(aligned)
+        {
+            Border = BoxBorder.Rounded,
+            Header = new PanelHeader(header, Justify.Center)
+        }.Expand());
 
+        // context?.Refresh();
+    }
 
     private static Layout InitializeLayout()
     {

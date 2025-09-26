@@ -1,7 +1,6 @@
 using CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using UmaEventReaderV2.Abstractions;
-using UmaEventReaderV2.Infrastructure;
 using UmaEventReaderV2.Services;
 using UmaEventReaderVs.WinForms;
 
@@ -12,8 +11,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddUmaEventDbServices(this IServiceCollection services)
     {
         return services
-            .AddSingleton<UmaDbContext>()
-            .AddSingleton<IUmaEventRepository, UmaEventRepository>()
+            .AddSingleton<IUmaEventRepository, UmaEventMemoryRepository>()
             .AddSingleton<IUmaEventService, UmaEventService>();
     }
 

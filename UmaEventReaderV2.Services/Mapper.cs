@@ -1,8 +1,8 @@
-using UmaEventReaderV2.Infrastructure.dtos;
+using UmaEventReaderV2.Models.dtos;
 using UmaEventReaderV2.Models.Entities;
 using UmaEventReaderV2.Models.Enums;
 
-namespace UmaEventReaderV2.Infrastructure;
+namespace UmaEventReaderV2.Services;
 
 public static class Mapper
 {

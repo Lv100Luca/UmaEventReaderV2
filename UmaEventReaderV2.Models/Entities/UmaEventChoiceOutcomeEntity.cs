@@ -8,9 +8,6 @@ public class UmaEventChoiceOutcomeEntity
     public OutcomeType Type { get; set; }
     public string Value { get; set; } = string.Empty;
 
-    public long UmaEventChoiceId { get; set; }
-    public UmaEventChoiceEntity UmaEventChoice { get; set; }
-
     override public string ToString()
     {
         return Type switch

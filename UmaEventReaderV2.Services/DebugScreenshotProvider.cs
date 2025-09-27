@@ -16,8 +16,6 @@ public class DebugScreenshotProvider : IScreenshotProvider
         var image = images.First(i => GetFilename(i) == filename);
 
         return new Bitmap(image);
-
-        return null;
     }
 
     private string GetFilename(string path)

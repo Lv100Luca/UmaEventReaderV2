@@ -9,8 +9,5 @@ public class UmaEventChoiceEntity
     public string ChoiceText { get; set; } = string.Empty;
     public SuccessType SuccessType { get; set; }
 
-    public long UmaEventId { get; set; }   // FK
-    public UmaEventEntity UmaEvent { get; set; } = null!;
-
-    public List<UmaEventChoiceOutcomeEntity> Outcomes { get; set; } = new();
+    public Dictionary<long, UmaEventChoiceOutcomeEntity> Outcomes { get; set; } = new();
 }

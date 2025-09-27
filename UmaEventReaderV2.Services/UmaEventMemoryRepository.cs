@@ -9,7 +9,7 @@ public class UmaEventMemoryRepository : IUmaEventRepository
 {
     private const string JsonFile = "umaEventData.json";
 
-    private List<UmaEventEntity> events = [];
+    private Dictionary<long, UmaEventEntity> events = [];
 
     public UmaEventMemoryRepository()
     {
@@ -26,14 +26,7 @@ public class UmaEventMemoryRepository : IUmaEventRepository
         if (root is null)
             throw new Exception("Could not deserialize json");
 
-        var grouped = root.ChoiceArraySchema.EventChoices
-            .GroupBy(c => c.EventName);
-
-        foreach (var group in grouped)
-        {
-            var umaEvent = Mapper.ToUmaEvent(group.ToList());
-            events.Add(umaEvent);
-        }
+        events = UmaEventMapper.MapFromDtos(root.ChoiceArraySchema.EventChoices);
     }
 
     private static void EnsureFileExistsOrThrow(string umadbJson)
@@ -44,20 +37,17 @@ public class UmaEventMemoryRepository : IUmaEventRepository
 
     public UmaEventEntity? GetById(long id)
     {
-        var matches = events.Where(e => e.Id == id);
+        var found = events.TryGetValue(id, out var match);
 
-        if (events.Count > 1)
-            throw new Exception("More than one event with same id");
-
-        return matches.FirstOrDefault();
+        return found ? match : null;
     }
 
     public IEnumerable<UmaEventEntity> GetAll()
     {
-        return events;
+        return events.Values;
     }
 
-    public IQueryable<UmaEventEntity> Query()
+    public IQueryable<KeyValuePair<long, UmaEventEntity>> Query()
     {
         return events.AsQueryable();
     }

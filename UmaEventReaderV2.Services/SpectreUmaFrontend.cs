@@ -35,7 +35,7 @@ public class SpectreUmaFrontend
                 while (true)
                 {
                     ctx.Refresh();
-                    Thread.Sleep(50);
+                    Thread.Sleep(250);
                 }
             });
     }
@@ -70,7 +70,7 @@ public class SpectreUmaFrontend
         VerticalAlignment verticalAlignment = VerticalAlignment.Top,
         HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left)
     {
-        UpdatePanel(area, new Markup(text), header, verticalAlignment, horizontalAlignment);
+        UpdatePanel(area, new Markup(Markup.Escape(text)), header, verticalAlignment, horizontalAlignment);
     }
 
     private void UpdatePanel(Layout area,

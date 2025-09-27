@@ -5,10 +5,10 @@ namespace UmaEventReaderV2.Models.Entities;
 public class UmaEventEntity
 {
     public long Id { get; set; }
-    public string CharacterName { get; set; }
-    public string EventName { get; set; }
+    public string CharacterName { get; init; } = string.Empty;
+    public string EventName { get; init; } = string.Empty;
 
-    public List<UmaEventChoiceEntity> Choices { get; set; } = [];
+    public Dictionary<long, UmaEventChoiceEntity> Choices { get; init; } = [];
 
     override public string ToString()
     {
@@ -17,14 +17,14 @@ public class UmaEventEntity
         sb.AppendLine($"{EventName} ({CharacterName})");
         sb.AppendLine();
 
-        foreach (var choice in Choices)
+        foreach (var choice in Choices.Values)
         {
             sb.AppendLine($"  Choice #{choice.ChoiceNumber}: {choice.ChoiceText} ({choice.SuccessType})");
 
             if (choice.Outcomes.Count > 0)
             {
                 // Use ToString() on each outcome or customize
-                sb.AppendLine("    - Outcomes: " + string.Join(", ", choice.Outcomes));
+                sb.AppendLine("    - Outcomes: " + string.Join(", ", choice.Outcomes.Values));
             }
 
             sb.AppendLine();

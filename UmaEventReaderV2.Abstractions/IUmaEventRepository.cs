@@ -6,5 +6,5 @@ public interface IUmaEventRepository
 {
     UmaEventEntity? GetById(long id);
     IEnumerable<UmaEventEntity> GetAll();
-    IQueryable<UmaEventEntity> Query();
+    IQueryable<KeyValuePair<long, UmaEventEntity>> Query();
 }

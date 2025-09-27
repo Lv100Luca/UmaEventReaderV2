@@ -1,0 +1,23 @@
+@using UmaEventReaderV2.Models.Entities
+@inherits ComponentBase
+
+<MudCard Class="mb-3">
+    <MudCardHeader>
+        <MudText Typo="Typo.h6">@Event.EventName - @Event.CharacterName</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+        @foreach (var choice in Event.Choices.Values)
+        {
+            <MudPaper Class="pa-2 mb-2" Elevation="1">
+                <MudText>@choice.ChoiceText</MudText>
+                <MudText Color="Color.Secondary" Typo="Typo.caption">
+                    Outcomes: @string.Join(", ", choice.Outcomes.Values.Select(o => $"{o.Type}: {o.Value}"))
+                </MudText>
+            </MudPaper>
+        }
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter] public UmaEventEntity Event { get; set; } = new();
+}

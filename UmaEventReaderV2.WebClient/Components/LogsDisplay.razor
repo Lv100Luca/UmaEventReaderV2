@@ -1,0 +1,25 @@
+@using System.Collections.ObjectModel
+<div class="logs-container" @ref="logContainer">
+    @foreach (var log in Logs.Reverse())
+    {
+        <div>@log</div>
+    }
+</div>
+
+@code {
+    [Parameter] public ObservableCollection<string> Logs { get; set; } = new();
+
+    private ElementReference logContainer;
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Scroll to bottom **after render**
+        await ScrollLogsToBottom();
+    }
+
+    private async Task ScrollLogsToBottom()
+    {
+        await JS.InvokeVoidAsync("scrollToBottom", "logsContainer");
+    }
+}

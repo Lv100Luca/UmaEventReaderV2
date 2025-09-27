@@ -1,0 +1,19 @@
+.dashboard-container {
+    display: flex;
+    height: 100%;
+    gap: 1rem;
+}
+
+.logs-panel {
+    flex: 2;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    overflow-y: auto;
+}
+
+.events-panel {
+    flex: 8;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    overflow-y: auto;
+}

@@ -1,53 +1,51 @@
 @page "/"
+@using System.Collections.ObjectModel
 @using Microsoft.AspNetCore.SignalR.Client
+@using UmaEventReaderV2.Models
+@using UmaEventReaderV2.Models.Entities
 @inject HubConnection HubConnection
 
-<h3>Uma Events</h3>
+<h3>UmaEventReader Dashboard</h3>
 
-<p>@logMessage</p>
+<div class="dashboard-container">
+    <div class="events-panel">
+        <h4>Events (@events.Count)</h4>
+        @foreach (var e in events)
+        {
+            <EventDisplay Event="e"/>
+        }
+    </div>
 
-<ul>
-    @foreach (var e in events)
-    {
-        <li>@e.CharacterName - @e.EventName</li>
-    }
-</ul>
+    <div class="logs-panel">
+        <LogsDisplay Logs="logMessages"/>
+    </div>
+</div>
 
 @code {
-    private string logMessage = "";
-    private readonly List<EventDto> events = [];
+    private ObservableCollection<string> logMessages = new();
+    private ObservableCollection<UmaEventEntity> events = new();
 
     protected override async Task OnInitializedAsync()
     {
-        // Listen for logs from backend
         HubConnection.On<string>("OnLog", msg =>
         {
-            throw new Exception();
-            Console.Out.WriteLine(msg);
-
-            logMessage = msg;
+            logMessages.Add(msg);
             InvokeAsync(StateHasChanged);
         });
 
-        // Listen for events
-        HubConnection.On<EventDto>("OnEventFound", e =>
+        HubConnection.On<EventBatch>("OnEventFound", batch =>
         {
-            events.Add(e);
+            events.Clear();
+
+            foreach (var e in batch.Events)
+                events.Add(e);
+
             InvokeAsync(StateHasChanged);
         });
 
-        // Only start if not already started
         if (HubConnection.State == HubConnectionState.Disconnected)
         {
             await HubConnection.StartAsync();
         }
-    }
-
-
-    public class EventDto
-    {
-        public long Id { get; set; }
-        public string CharacterName { get; set; } = "";
-        public string EventName { get; set; } = "";
     }
 }

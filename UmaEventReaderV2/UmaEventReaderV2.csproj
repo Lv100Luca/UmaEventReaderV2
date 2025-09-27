@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\UmaEventReaderV2.Abstractions\UmaEventReaderV2.Abstractions.csproj" />
+      <ProjectReference Include="..\UmaEventReaderV2.Common\UmaEventReaderV2.Common.csproj" />
       <ProjectReference Include="..\UmaEventReaderV2.Services\UmaEventReaderV2.Services.csproj" />
     </ItemGroup>
 </Project>

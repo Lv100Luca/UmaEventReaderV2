@@ -10,7 +10,7 @@ namespace UmaEventReaderV2.Services;
 public partial class TesseractTextExtractor : ITextExtractor
 {
     private const string TesseractTraineeDataPath = "tessdata";
-    private const string CharWhitelist = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,!?'()#- ";
+    private const string CharWhitelist = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,!?'()#-☆♪ ";
     private const PageSegMode DefaultPageSegMode = PageSegMode.SingleLine;
 
     private TesseractEngine Engine { get; init; }
@@ -21,7 +21,7 @@ public partial class TesseractTextExtractor : ITextExtractor
         ConfigureEngine();
     }
 
-    public Task<TextExtractorResult> ExtractTextAsync(Bitmap bmpImage, bool raw = false)
+    public TextExtractorResult ExtractText(Bitmap bmpImage, bool raw = false)
     {
         var pix = PixConverter.ToPix(bmpImage);
 
@@ -34,7 +34,7 @@ public partial class TesseractTextExtractor : ITextExtractor
 
         var conf = page.GetMeanConfidence();
 
-        var result = new TextExtractorResult
+        return new TextExtractorResult
         {
             Text = text,
             Metadata = new TextExtractorResultMetadata
@@ -43,8 +43,6 @@ public partial class TesseractTextExtractor : ITextExtractor
                 ProcessedImage = bmpImage
             }
         };
-
-        return Task.FromResult(result);
     }
 
     private static TesseractEngine InitEngine()

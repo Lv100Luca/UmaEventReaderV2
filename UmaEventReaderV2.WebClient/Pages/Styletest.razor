@@ -1,0 +1,46 @@
+@page "/styletest"
+@using UmaEventReaderV2.Models.Entities
+@using UmaEventReaderV2.Models.Enums
+
+<h1>Styletest</h1>
+
+<h2>Outcomes</h2>
+
+<MudStack Style="max-width: 250px">
+    @foreach (OutcomeType type in Enum.GetValues(typeof(OutcomeType)))
+    {
+        <EventOutcome Outcome="@Get(type)"></EventOutcome>
+    }
+</MudStack>
+
+@code {
+    private UmaEventChoiceOutcomeEntity Get(OutcomeType type)
+    {
+        return new UmaEventChoiceOutcomeEntity
+        {
+            Id = 1,
+            Type = type,
+            Value = type.ToString()
+        };
+    }
+
+    private string GetOutcomeStyle(OutcomeType type) => type switch
+    {
+        OutcomeType.Speed => "background-color:#39beff; color:white;",
+        OutcomeType.Stamina => "background-color:#ff8675; color:white;",
+        OutcomeType.Power => "background-color:#ffa714; color:white;",
+        OutcomeType.Guts => "background-color:#f564aa; color:white;",
+        OutcomeType.Wit => "background-color:#1bd29c; color:white;",
+        OutcomeType.Mood => "background-color:#FFCA28; color:white;",
+        OutcomeType.AllStats => "background-color:#FF7043; color:white;",
+        OutcomeType.Friendship => "background-color:#EC407A; color:white;",
+        OutcomeType.SkillPts => "background-color:#7E57C2; color:white;",
+        OutcomeType.SkillHint => "background-color:#8D6E63; color:white;",
+        OutcomeType.Energy => "background-color:#FF8F00; color:white;",
+        OutcomeType.MaxEnergy => "background-color:#9E9E9E; color:white;",
+        OutcomeType.GoodCondition => "background-color:#f49143; color:white;",
+        OutcomeType.BadCondition => "background-color:#55a2f5; color:white;",
+        OutcomeType.EndOfEventChain => "background-color:#9E9E9E; color:white;",
+        _ => "background-color:#9E9E9E; color:white;"
+    };
+}

@@ -1,0 +1,11 @@
+@using UmaEventReaderV2.Models.Entities
+
+<MudChip T="UmaEventChoiceOutcomeEntity" Class="@Outcome.Type.ToString().ToLower()">
+    @Outcome
+</MudChip>
+
+@code {
+    [EditorRequired]
+    [Parameter]
+    public required UmaEventChoiceOutcomeEntity Outcome { get; set; }
+}

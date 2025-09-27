@@ -3,7 +3,7 @@
 }
 
 .event-card {
-    border: 1px solid #ccc;
+    border: 1px solid red;
     padding: 1rem;
     margin-bottom: 1rem;
     border-radius: 8px;

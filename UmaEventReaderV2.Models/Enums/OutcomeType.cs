@@ -15,6 +15,7 @@ public enum OutcomeType
     SkillHint,
     Energy,
     MaxEnergy,
-    Condition,
+    GoodCondition,
+    BadCondition,
     EndOfEventChain
 }

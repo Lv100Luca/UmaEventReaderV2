@@ -83,8 +83,11 @@ public static class UmaEventMapper
 
     private static UmaEventChoiceOutcomeEntity GetOutcome(string outcome, long id)
     {
-        if (IsCondition(outcome))
-            return new UmaEventChoiceOutcomeEntity { Id = id, Value = outcome, Type = OutcomeType.Condition };
+        if (IsGoodCondition(outcome))
+            return new UmaEventChoiceOutcomeEntity { Id = id, Value = outcome, Type = OutcomeType.GoodCondition };
+
+        if (IsBadCondition(outcome))
+            return new UmaEventChoiceOutcomeEntity { Id = id, Value = outcome, Type = OutcomeType.BadCondition };
 
         var parts = outcome.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
 
@@ -100,14 +103,21 @@ public static class UmaEventMapper
         return new UmaEventChoiceOutcomeEntity { Id = id, Value = outcome, Type = OutcomeType.Unknown };
     }
 
-    private static bool IsCondition(string outcome)
+    private static bool IsGoodCondition(string outcome)
     {
         outcome = outcome.Replace("(Random)", "").Trim();
 
-        return KnownConditions.Contains(outcome);
+        return KnownGoodConditions.Contains(outcome);
     }
 
-    private readonly static HashSet<string> KnownConditions = new(StringComparer.OrdinalIgnoreCase)
+    private static bool IsBadCondition(string outcome)
+    {
+        outcome = outcome.Replace("(Random)", "").Trim();
+
+        return KnownBadConditions.Contains(outcome);
+    }
+
+    private readonly static HashSet<string> KnownGoodConditions = new(StringComparer.OrdinalIgnoreCase)
     {
         "Practice Perfect ◯",
         "Practice Perfect◎",
@@ -115,6 +125,10 @@ public static class UmaEventMapper
         "Charming ◯",
         "Fast Learner",
         "Hot Topic",
+    };
+
+    private readonly static HashSet<string> KnownBadConditions = new(StringComparer.OrdinalIgnoreCase)
+    {
         "Practice Poor",
         "Under The Weather",
         "Migraine",

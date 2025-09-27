@@ -1,23 +1,62 @@
 @using UmaEventReaderV2.Models.Entities
+@using UmaEventReaderV2.Models.Enums
 @inherits ComponentBase
 
-<MudCard Class="mb-3">
-    <MudCardHeader>
+<MudCard Class="mb-3" Style="border: 1px solid lightgrey">
+    <MudCardHeader Class="pa-2">
         <MudText Typo="Typo.h6">@Event.EventName - @Event.CharacterName</MudText>
     </MudCardHeader>
-    <MudCardContent>
-        @foreach (var choice in Event.Choices.Values)
-        {
-            <MudPaper Class="pa-2 mb-2" Elevation="1">
-                <MudText>#@choice.ChoiceNumber - @choice.ChoiceText (@choice.SuccessType)</MudText>
-                <MudText Color="Color.Secondary" Typo="Typo.caption">
-                    Outcomes: @string.Join(", ", choice.Outcomes.Values)
-                </MudText>
-            </MudPaper>
-        }
+    <MudCardContent Class="pr-2 pl-2 pt-0 pb-2">
+        <MudStack>
+
+            @foreach (var (choiceEntity, choices) in GetGroupedChoices())
+            {
+                <MudCard Elevation="1" Style="border: 1px solid lightgrey">
+                    <MudCardHeader Class="pa-2" Style="padding: 1rem">
+                        <MudText Typo="Typo.subtitle1">#@choiceEntity.ChoiceNumber - @choiceEntity.ChoiceText</MudText>
+                    </MudCardHeader>
+                    <MudCardContent Class="pa-2">
+                        @{
+                            var groupedList = choices.ToList();
+                        }
+
+                        @for (int i = 0; i < groupedList.Count; i++)
+                        {
+                            var (successType, umaEventChoiceEntities) = groupedList[i];
+
+                            <div class="success-type-container">
+                                <MudText Typo="Typo.body2" Class="ml-2">@successType</MudText>
+
+                                @foreach (var outcome in umaEventChoiceEntities.SelectMany(choice => choice.Outcomes))
+                                {
+                                    <EventOutcome Outcome="@outcome.Value"/>
+                                }
+                            </div>
+
+                            @if (i < groupedList.Count - 1)
+                            {
+                                <MudDivider Class="my-2"/>
+                            }
+                        }
+                    </MudCardContent>
+                </MudCard>
+            }
+        </MudStack>
     </MudCardContent>
 </MudCard>
 
+
 @code {
     [Parameter] public UmaEventEntity Event { get; set; } = new();
+
+    private Dictionary<UmaEventChoiceEntity, Dictionary<SuccessType, List<UmaEventChoiceEntity>>> GetGroupedChoices()
+    {
+        return Event.Choices.Values
+            .GroupBy(c => new { c.ChoiceNumber, c.ChoiceText }) // group by the *event choice itself*
+            .ToDictionary(
+                g => g.First(), // pick the first as representative event choice
+                g => g.GroupBy(c => c.SuccessType) // group inside by SuccessType
+                    .ToDictionary(sg => sg.Key, sg => sg.ToList())
+            );
+    }
 }

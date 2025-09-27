@@ -11,7 +11,7 @@
             <MudPaper Class="pa-2 mb-2" Elevation="1">
                 <MudText>#@choice.ChoiceNumber - @choice.ChoiceText (@choice.SuccessType)</MudText>
                 <MudText Color="Color.Secondary" Typo="Typo.caption">
-                    Outcomes: @string.Join(", ", choice.Outcomes.Values.Select(o => $"{o.Type}: {o.Value}"))
+                    Outcomes: @string.Join(", ", choice.Outcomes.Values)
                 </MudText>
             </MudPaper>
         }

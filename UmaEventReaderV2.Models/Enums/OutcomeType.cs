@@ -16,4 +16,5 @@ public enum OutcomeType
     Energy,
     MaxEnergy,
     Condition,
+    EndOfEventChain
 }

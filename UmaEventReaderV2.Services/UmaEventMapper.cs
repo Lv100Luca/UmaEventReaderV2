@@ -67,6 +67,7 @@ public static class UmaEventMapper
     private static Dictionary<long, UmaEventChoiceOutcomeEntity> ParseOutcomes(string allOutcomes)
     {
         var outcomes = new Dictionary<long, UmaEventChoiceOutcomeEntity>();
+
         if (string.IsNullOrWhiteSpace(allOutcomes)) return outcomes;
 
         var parts = allOutcomes.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
@@ -87,11 +88,15 @@ public static class UmaEventMapper
             return new UmaEventChoiceOutcomeEntity { Id = id, Value = outcome, Type = OutcomeType.Condition };
 
         var parts = outcome.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+
         if (parts.Length == 2 && Enum.TryParse(parts[1].Replace(" ", ""), true, out OutcomeType type))
             return new UmaEventChoiceOutcomeEntity { Id = id, Value = parts[0], Type = type };
 
         if (outcome.Contains("Skill Hint", StringComparison.OrdinalIgnoreCase))
             return new UmaEventChoiceOutcomeEntity { Id = id, Value = outcome, Type = OutcomeType.SkillHint };
+
+        if (outcome.Contains("End of Chain Event", StringComparison.OrdinalIgnoreCase))
+            return new UmaEventChoiceOutcomeEntity { Id = id, Value = outcome, Type = OutcomeType.EndOfEventChain };
 
         return new UmaEventChoiceOutcomeEntity { Id = id, Value = outcome, Type = OutcomeType.Unknown };
     }
@@ -99,6 +104,7 @@ public static class UmaEventMapper
     private static bool IsCondition(string outcome)
     {
         outcome = outcome.Replace("(Random)", "").Trim();
+
         return KnownConditions.Contains(outcome);
     }
 

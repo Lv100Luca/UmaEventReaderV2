@@ -6,6 +6,7 @@ public class SelectionForm : Form
 {
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Rectangle SelectedRegion { get; private set; }
+
     private Point _startPoint;
     private Rectangle _currentRect;
 

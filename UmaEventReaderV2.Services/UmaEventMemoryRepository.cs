@@ -7,7 +7,6 @@ namespace UmaEventReaderV2.Services;
 
 public class UmaEventMemoryRepository(IUmaEventJsonProvider jsonProvider) : IUmaEventRepository
 {
-
     private Dictionary<long, UmaEventEntity> events = [];
 
     public async Task InitializeDataAsync()
@@ -21,8 +20,6 @@ public class UmaEventMemoryRepository(IUmaEventJsonProvider jsonProvider) : IUma
 
         events = UmaEventMapper.MapFromDtos(root.ChoiceArraySchema.EventChoices);
     }
-
-
 
     public UmaEventEntity? GetById(long id)
     {

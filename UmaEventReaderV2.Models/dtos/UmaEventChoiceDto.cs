@@ -4,8 +4,7 @@ namespace UmaEventReaderV2.Models.dtos;
 
 public record UmaEventChoiceDto
 (
-    [property: JsonPropertyName("id")]
-    string Id,
+    [property: JsonPropertyName("id")] string Id,
     [property: JsonPropertyName("event_name")]
     string EventName,
     [property: JsonPropertyName("character_name")]

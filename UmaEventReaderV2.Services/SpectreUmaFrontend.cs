@@ -1,7 +1,6 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
 using UmaEventReaderV2.Models;
-using UmaEventReaderV2.Models.Entities;
 using UmaEventReaderV2.Services;
 
 public class SpectreUmaFrontend
@@ -47,7 +46,8 @@ public class SpectreUmaFrontend
 
     private void ShowEvent(EventBatch umaEvent)
     {
-        UpdatePanel(GetEventArea, umaEvent.Events.FirstOrDefault()?.ToString(), "Event Area", horizontalAlignment: HorizontalAlignment.Center);
+        UpdatePanel(GetEventArea, umaEvent.Events.FirstOrDefault()?.ToString(), "Event Area",
+            horizontalAlignment: HorizontalAlignment.Center);
     }
 
     public void Log(string message)

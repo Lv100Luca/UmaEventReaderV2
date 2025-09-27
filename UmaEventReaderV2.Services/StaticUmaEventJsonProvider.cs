@@ -13,6 +13,6 @@ public class StaticUmaEventJsonProvider : IUmaEventJsonProvider
         if (!File.Exists(path))
             throw new FileNotFoundException("Could not find json file", path);
 
-        return  await File.ReadAllTextAsync(path);
+        return await File.ReadAllTextAsync(path);
     }
 }

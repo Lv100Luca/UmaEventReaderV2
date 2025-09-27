@@ -3,7 +3,6 @@ using UmaEventReaderV2.Abstractions;
 
 namespace UmaEventReaderV2.Services;
 
-
 // todo move this to separate thing and put into pipeline?
 public class PlaywrightUmaEventJsonProvider : IUmaEventJsonProvider
 {
@@ -26,6 +25,7 @@ public class PlaywrightUmaEventJsonProvider : IUmaEventJsonProvider
     public async Task<string> GetJsonFileAsync()
     {
         using var playwright = await Playwright.CreateAsync();
+
         await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
             Headless = true
@@ -35,6 +35,7 @@ public class PlaywrightUmaEventJsonProvider : IUmaEventJsonProvider
         var page = await context.NewPageAsync();
 
         var jsonUrl = "";
+
         page.Request += (_, request) =>
         {
             if (request.Url.Contains("/api/tool_structural_mappings/554.json"))

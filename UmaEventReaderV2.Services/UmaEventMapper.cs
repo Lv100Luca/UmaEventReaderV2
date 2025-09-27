@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UmaEventReaderV2.Models.dtos;
 using UmaEventReaderV2.Models.Entities;
 using UmaEventReaderV2.Models.Enums;
@@ -60,6 +57,7 @@ public static class UmaEventMapper
 
             eventsDict[eventId] = eventEntity;
         }
+
         Console.Out.WriteLine($"Successfully loaded {eventsDict.Count} events from json");
 
         return eventsDict;

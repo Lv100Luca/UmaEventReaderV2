@@ -7,7 +7,12 @@ namespace UmaEventReaderV2.Services;
 
 public class UmaEventService(IUmaEventRepository repository) : IUmaEventService
 {
-     public IEnumerable<UmaEventEntity> GetAllWhereNameIsLike(string eventName)
+    public async Task InitializeDataAsync()
+    {
+        await repository.InitializeDataAsync();
+    }
+
+    public IEnumerable<UmaEventEntity> GetAllWhereNameIsLike(string eventName)
      {
          return repository.Query()
              .WhereEventNameContains(eventName);

@@ -24,6 +24,8 @@ public class UmaEventReader(
     {
         try
         {
+            await eventService.InitializeDataAsync();
+
             while (!cancellationToken.IsCancellationRequested)
             {
                 await Task.Delay(checkInterval, cancellationToken);

@@ -1,10 +1,11 @@
 using System.Drawing;
+using Microsoft.Extensions.Options;
 
 namespace UmaEventReaderV2.Services;
 
-public class EventAreaOffsetProvider(EventAreaOffsetOptions options)
+public class EventAreaOffsetProvider(IOptions<EventAreaOffsetOptions> options)
 {
-    public required int Offset { get; init; }
+    public required int Offset { get; init; } = options.Value.Offset;
 
     public Rectangle OffsetRectangle(Rectangle eventArea)
     {

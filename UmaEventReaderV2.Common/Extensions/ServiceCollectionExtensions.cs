@@ -35,7 +35,11 @@ public static class ServiceCollectionExtensions
             .AddSingleton<UmaEventReader>()
             .AddSingleton<IScreenshotProvider, ScreenshotProvider>()
 #if DEBUG
-            .AddSingleton<ITextExtractor, DebugTextExtractor>();
+            .AddDebugTextExtractor(o =>
+            {
+                o.Result = "I'm not Afraid!";
+                o.Confidence = 1f;
+            });
 #else
             .AddSingleton<ITextExtractor, TesseractTextExtractor>();
 #endif

@@ -1,35 +1,10 @@
 using Microsoft.Playwright;
+using UmaEventReaderV2.Abstractions;
 
 namespace UmaEventReaderV2.Services;
 
-public class UmaEventJsonProvider
+public class PlaywrightUmaEventJsonProvider : IUmaEventJsonProvider
 {
-    private readonly static HttpClient Http = new();
-
-    private static string GetMappingUrl()
-    {
-        var unixTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-
-        return $"https://game8.co/api/tool_structural_mappings/554.json?updatedAt={unixTimestamp}";
-    }
-
-    public async static Task<string> GetMappingJsonAsync()
-    {
-        var url = GetMappingUrl();
-
-        using var client = new HttpClient();
-
-        // Browser-like headers
-        SetHttpClientHeaders(client);
-
-        var response = await client.GetAsync(url);
-
-        if (response.IsSuccessStatusCode)
-            return await response.Content.ReadAsStringAsync();
-
-        throw new Exception("Failed to get mapping json");
-    }
-
     private static void SetHttpClientHeaders(HttpClient client)
     {
         client.DefaultRequestHeaders.Add("User-Agent",
@@ -46,7 +21,7 @@ public class UmaEventJsonProvider
             "gtuid=de114a98-1d43-499a-9018-c4b34b2202d2; _session_id=e650b83e9dcd1ef7e900622c95fe68f3; gtsid=bf3bd09e-d79a-43b4-b6a0-4355f8dbd037");
     }
 
-    public async static Task<string> GetMappingJson()
+    public async Task<string> GetJsonFileAsync()
     {
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions

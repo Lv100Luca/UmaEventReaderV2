@@ -60,6 +60,7 @@ public static class UmaEventMapper
 
             eventsDict[eventId] = eventEntity;
         }
+        Console.Out.WriteLine($"Successfully loaded {eventsDict.Count} events from json");
 
         return eventsDict;
     }

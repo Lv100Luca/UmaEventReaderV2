@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2", "UmaEventReaderV2\UmaEventReaderV2.csproj", "{A5708061-C9FD-4A7B-9838-3D9A6E060B20}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Models", "UmaEventReaderV2.Models\UmaEventReaderV2.Models.csproj", "{E725A21A-3B67-449A-BC7F-CD5C59C98526}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Services", "UmaEventReaderV2.Services\UmaEventReaderV2.Services.csproj", "{6110AC18-CA47-4A07-82D8-8E2D855CC042}"
@@ -24,16 +22,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.WebClient"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Common", "UmaEventReaderV2.Common\UmaEventReaderV2.Common.csproj", "{B1263862-58E4-4EC4-8E02-0345819A2AB0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Console", "UmaEventReaderV2.Console\UmaEventReaderV2.Console.csproj", "{33503A27-7FC2-4A0C-83AD-978E4DA4E70C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A5708061-C9FD-4A7B-9838-3D9A6E060B20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A5708061-C9FD-4A7B-9838-3D9A6E060B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A5708061-C9FD-4A7B-9838-3D9A6E060B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A5708061-C9FD-4A7B-9838-3D9A6E060B20}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E725A21A-3B67-449A-BC7F-CD5C59C98526}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E725A21A-3B67-449A-BC7F-CD5C59C98526}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E725A21A-3B67-449A-BC7F-CD5C59C98526}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -70,5 +66,9 @@ Global
 		{B1263862-58E4-4EC4-8E02-0345819A2AB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1263862-58E4-4EC4-8E02-0345819A2AB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1263862-58E4-4EC4-8E02-0345819A2AB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33503A27-7FC2-4A0C-83AD-978E4DA4E70C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33503A27-7FC2-4A0C-83AD-978E4DA4E70C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33503A27-7FC2-4A0C-83AD-978E4DA4E70C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33503A27-7FC2-4A0C-83AD-978E4DA4E70C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

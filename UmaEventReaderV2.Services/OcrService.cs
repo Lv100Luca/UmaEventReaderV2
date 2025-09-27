@@ -7,9 +7,9 @@ namespace UmaEventReaderV2.Services;
 
 public class OcrService(IScreenshotProvider screenshotProvider, ITextExtractor textExtractor)
 {
-    public TextExtractorResult ExtractText(Rectangle area)
+    public TextExtractorResult ExtractText(ScreenshotArea area)
     {
-        var raw = screenshotProvider.TakeScreenshot(area);
+        var raw = screenshotProvider.TakeScreenshot(area.Area);
         var processed = ImagePreProcessor.Process(raw, skipBorder: true);
 
         var result = textExtractor.ExtractText(processed);

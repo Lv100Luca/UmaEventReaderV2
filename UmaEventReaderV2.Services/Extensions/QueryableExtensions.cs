@@ -5,7 +5,8 @@ namespace UmaEventReaderV2.Services.Extensions;
 public static class QueryableExtensions
 {
     public static IEnumerable<UmaEventEntity> WhereEventNameContains(
-        this IQueryable<KeyValuePair<long, UmaEventEntity>> query, string term)
+        this IQueryable<KeyValuePair<long, UmaEventEntity>> query,
+        string term)
     {
         if (string.IsNullOrWhiteSpace(term))
             return query.Select(kv => kv.Value).AsEnumerable();

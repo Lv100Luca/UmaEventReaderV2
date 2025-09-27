@@ -1,4 +1,3 @@
-using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Common.Extensions;
 using UmaEventReaderV2.Services;
 using UmaEventReaderV2.Web;

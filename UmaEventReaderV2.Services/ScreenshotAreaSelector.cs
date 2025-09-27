@@ -31,3 +31,4 @@
 //         return offsetProvider.OffsetRectangle((Rectangle)SelectedArea);
 //     }
 // }
+

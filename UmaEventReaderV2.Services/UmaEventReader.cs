@@ -26,28 +26,23 @@ public class UmaEventReader(
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                OnLog?.Invoke("Checking for events...");
                 await Task.Delay(checkInterval, cancellationToken);
 
                 var result = await TryProcessAreasAsync(screenshotAreaProvider.GetAllAreas());
-
-                await Console.Out.WriteLineAsync($"Result: '{result?.Text}' ({result?.Metadata.MeanConfidence:0.00})");
 
                 if (result == null)
                     continue;
 
                 if (result.Text != previousText)
                 {
-                    await Console.Out.WriteLineAsync("Found new Event");
-
                     previousText = result.Text;
 
-                    OnLog?.Invoke($"Result: '{result.Text}' ({result.Metadata.MeanConfidence:0.00})");
+                    OnLog?.Invoke(result.ToString());
 
                     events = eventService.GetAllWhereNameIsLike(result.Text).ToList();
-                }
 
-                await Console.Out.WriteLineAsync($"Emitting {events.Count} events");
+                    OnLog?.Invoke($"Emitting {events.Count} events");
+                }
 
                 EmitEvents(events);
             }

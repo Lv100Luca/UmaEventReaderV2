@@ -12,7 +12,7 @@ builder.Services
     .AddSingleton<EventAreaOffsetProvider>(_ => new EventAreaOffsetProvider { Offset = 55 })
     .AddSingleton<OcrService>()
     .AddSingleton<UmaEventReader>()
-    .AddSingleton<IScreenshotProvider, DebugScreenshotProvider>()
+    .AddSingleton<IScreenshotProvider, ScreenshotProvider>()
     .AddSingleton<ITextExtractor, TesseractTextExtractor>()
     .AddSingleton<EventHubBroadcaster>(); // Registered but not yet instantiated
 

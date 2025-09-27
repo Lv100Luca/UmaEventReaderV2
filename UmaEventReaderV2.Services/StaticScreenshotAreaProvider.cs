@@ -1,5 +1,6 @@
 using System.Drawing;
 using UmaEventReaderV2.Abstractions;
+using UmaEventReaderV2.Models;
 
 namespace UmaEventReaderV2.Services;
 
@@ -13,13 +14,25 @@ public class StaticScreenshotAreaProvider(EventAreaOffsetProvider offsetProvider
     private const int Width = 411;
     private const int Height = 49;
 
-    public Rectangle GetEventArea()
+    public ScreenshotArea GetEventArea()
     {
-        return new Rectangle(X, Y, Width, Height);
+        var rect = new Rectangle(X, Y, Width, Height);
+
+        return new ScreenshotArea
+        {
+            Name = "Full Event Area",
+            Area = rect
+        };
     }
 
-    public Rectangle GetFallbackEventArea()
+    public ScreenshotArea GetOffsetEventArea()
     {
-        return new Rectangle(X + Offset, Y, Width - Offset, Height);
+        var rect = new Rectangle(X + Offset, Y, Width - Offset, Height);
+
+        return new ScreenshotArea
+        {
+            Name = "Offset Event Area",
+            Area = rect
+        };
     }
 }

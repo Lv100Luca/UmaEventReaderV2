@@ -1,4 +1,5 @@
 using System.Drawing;
+using UmaEventReaderV2.Models;
 
 namespace UmaEventReaderV2.Abstractions;
 
@@ -7,14 +8,14 @@ public interface IScreenshotAreaProvider
     /// <summary>
     /// Returns the Area of a career event
     /// </summary>
-    Rectangle GetEventArea();
+    ScreenshotArea GetEventArea();
 
     /// <summary>
     /// Returns a slightly offset area of the career event.
     /// Area is shifted slightly to the right.
     /// Used for when the current event is prepended with a trainee icon
     /// </summary>
-    Rectangle GetFallbackEventArea();
+    ScreenshotArea GetOffsetEventArea();
 
-    IEnumerable<Rectangle> GetAllAreas() => [GetEventArea(), GetFallbackEventArea()];
+    IEnumerable<ScreenshotArea> GetAllAreas() => [GetEventArea(), GetOffsetEventArea()];
 }

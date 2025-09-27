@@ -1,4 +1,4 @@
-using System.Drawing;
+using System.Text;
 using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Models;
 using UmaEventReaderV2.Models.Entities;
@@ -12,13 +12,10 @@ public class UmaEventReader(
     float confidenceThreshold = 0.6f)
 {
     private readonly TimeSpan checkInterval = TimeSpan.FromSeconds(1);
-
     private string previousText = string.Empty;
 
     public event Action<string>? OnLog;
     public event Action<EventBatch>? OnEventFound;
-
-    private List<UmaEventEntity> events = [];
 
     public async Task RunAsync(CancellationToken cancellationToken = default)
     {
@@ -30,7 +27,7 @@ public class UmaEventReader(
             {
                 await Task.Delay(checkInterval, cancellationToken);
 
-                var result = TryProcessAreas(screenshotAreaProvider.GetAllAreas());
+                var result = TryProcessAreas(screenshotAreaProvider.GetAllAreas(), out var events);
 
                 if (result == null)
                     continue;
@@ -38,11 +35,7 @@ public class UmaEventReader(
                 if (result.Text != previousText)
                 {
                     previousText = result.Text;
-
                     OnLog?.Invoke(result.ToString());
-
-                    events = eventService.GetAllWhereNameIsLike(result.Text).ToList();
-
                     OnLog?.Invoke($"Emitting {events.Count} events");
                 }
 
@@ -65,16 +58,36 @@ public class UmaEventReader(
         OnEventFound?.Invoke(batch);
     }
 
-    private TextExtractorResult? TryProcessAreas(IEnumerable<Rectangle> areas)
+    private TextExtractorResult? TryProcessAreas(IEnumerable<ScreenshotArea> areas, out List<UmaEventEntity> foundEvents)
     {
+        foundEvents = [];
+
         foreach (var area in areas)
         {
             var result = ocrService.ExtractText(area);
 
-            if (TextValidator.IsValid(result, confidenceThreshold))
+            if (!TextValidator.IsValid(result, confidenceThreshold))
+                continue;
+
+            var events = eventService.GetAllWhereNameIsLike(result.Text).ToList();
+
+            var log = new StringBuilder()
+                .AppendLine($"Processed {area.Name}")
+                .AppendLine($"- '{result.Text}'")
+                .AppendLine($"- {events.Count} events found")
+                .ToString();
+
+            OnLog?.Invoke(log);
+
+            if (events.Count != 0)
+            {
+                foundEvents = events;
+
                 return result;
+            }
         }
 
-        return null;
+
+        return null; // no area yielded any events
     }
 }

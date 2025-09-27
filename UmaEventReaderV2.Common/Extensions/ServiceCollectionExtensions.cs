@@ -27,7 +27,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddUmaEventReaderServices(
         this IServiceCollection services)
     {
-        return services.AddSingleton<IUmaEventRepository, UmaEventMemoryRepository>()
+        return services
+            .AddSingleton<IUmaEventJsonProvider, StaticUmaEventJsonProvider>()
+            .AddSingleton<IUmaEventRepository, UmaEventMemoryRepository>()
             .AddSingleton<IUmaEventService, UmaEventService>()
             .AddSingleton<IScreenshotAreaProvider, StaticScreenshotAreaProvider>()
             .AddEventAreaOffsetProvider(options => options.Offset = 55)

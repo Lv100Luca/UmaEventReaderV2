@@ -5,20 +5,14 @@ using UmaEventReaderV2.Models.Entities;
 
 namespace UmaEventReaderV2.Services;
 
-public class UmaEventMemoryRepository : IUmaEventRepository
+public class UmaEventMemoryRepository(IUmaEventJsonProvider jsonProvider) : IUmaEventRepository
 {
-    // private const string JsonFile = "umaEventData.json";
 
     private Dictionary<long, UmaEventEntity> events = [];
 
     public async Task InitializeDataAsync()
     {
-        // var path = Path.Combine(AppContext.BaseDirectory, JsonFile);
-        //
-        // EnsureFileExistsOrThrow(path);
-        // var json = File.ReadAllText(path);
-
-        var json = await UmaEventJsonProvider.GetMappingJson();
+        var json = await jsonProvider.GetJsonFileAsync();
 
         var root = JsonSerializer.Deserialize<RootDto>(json);
 
@@ -28,11 +22,7 @@ public class UmaEventMemoryRepository : IUmaEventRepository
         events = UmaEventMapper.MapFromDtos(root.ChoiceArraySchema.EventChoices);
     }
 
-    private static void EnsureFileExistsOrThrow(string umadbJson)
-    {
-        if (!File.Exists(umadbJson))
-            throw new Exception($"File '{umadbJson}' does not exist.");
-    }
+
 
     public UmaEventEntity? GetById(long id)
     {

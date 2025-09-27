@@ -29,28 +29,29 @@ public static class UmaEventMapper
 
             foreach (var dto in group)
             {
-                if (!long.TryParse(dto.ChoiceNumber, out var choiceId))
+                if (!int.TryParse(dto.ChoiceNumber, out var choiceId))
                     throw new InvalidOperationException($"Invalid Choice Number: {dto.ChoiceNumber}");
 
-                // Get or create the choice entity
-                if (!eventEntity.Choices.TryGetValue(choiceId, out var choiceEntity))
+                if (!long.TryParse(dto.Id, out var id))
+                    throw new InvalidOperationException($"Invalid Choice Id: {dto.Id}");
+
+                var choiceEntity = new UmaEventChoiceEntity
                 {
-                    choiceEntity = new UmaEventChoiceEntity
-                    {
-                        Id = choiceId,
-                        ChoiceNumber = (int)choiceId,
-                        ChoiceText = dto.ChoiceText,
-                        SuccessType = Enum.TryParse(dto.SuccessType, out SuccessType s) ? s : SuccessType.None,
-                        Outcomes = new Dictionary<long, UmaEventChoiceOutcomeEntity>()
-                    };
-                    eventEntity.Choices[choiceId] = choiceEntity;
-                }
+                    Id = id,
+                    ChoiceNumber = choiceId,
+                    ChoiceText = dto.ChoiceText,
+                    SuccessType = Enum.TryParse(dto.SuccessType, out SuccessType s) ? s : SuccessType.None,
+                    Outcomes = new Dictionary<long, UmaEventChoiceOutcomeEntity>()
+                };
+
+                eventEntity.Choices[id] = choiceEntity;
 
                 // Split the outcomes of this DTO into individual entries
                 var newOutcomes = ParseOutcomes(dto.AllOutcomes);
 
                 // Add each outcome with a unique ID
-                long maxId = choiceEntity.Outcomes.Count > 0 ? choiceEntity.Outcomes.Keys.Max() : 0;
+                var maxId = choiceEntity.Outcomes.Count > 0 ? choiceEntity.Outcomes.Keys.Max() : 0;
+
                 foreach (var kv in newOutcomes)
                 {
                     choiceEntity.Outcomes[++maxId] = kv.Value;

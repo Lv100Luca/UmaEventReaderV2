@@ -1,0 +1,55 @@
+﻿@page "/weather"
+@using System.Collections.ObjectModel
+@using Microsoft.AspNetCore.SignalR.Client
+@using UmaEventReaderV2.Models
+@using UmaEventReaderV2.Models.Entities
+@inject HubConnection HubConnection
+
+<h3>UmaEventReader Logs</h3>
+
+<div>
+    <p><strong>Latest log:</strong> @logMessage</p>
+
+    <h4>Events: @events.Count()</h4>
+    <ul>
+        @foreach (var e in events)
+        {
+            <EventDisplay Event="e"></EventDisplay>
+        }
+    </ul>
+</div>
+
+@code {
+    private string logMessage = "";
+    private ObservableCollection<UmaEventEntity> events = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Listen for log messages from backend
+        HubConnection.On<string>("OnLog", msg =>
+        {
+            Console.Out.WriteLine("a");
+
+            logMessage = msg;
+            InvokeAsync(StateHasChanged);
+        });
+
+        // Listen for events from backend
+        HubConnection.On<EventBatch>("OnEventFound", batch =>
+        {
+            Console.Out.WriteLine("TEST");
+
+            events.Clear();
+
+            foreach (var e in batch.Events)
+                events.Add(e);
+
+            InvokeAsync(StateHasChanged);
+        });
+
+        if (HubConnection.State == HubConnectionState.Disconnected)
+        {
+            await HubConnection.StartAsync();
+        }
+    }
+}

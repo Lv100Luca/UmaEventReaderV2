@@ -13,14 +13,15 @@ public class UmaEventMemoryRepository : IUmaEventRepository
 
     public UmaEventMemoryRepository()
     {
-        EnsureFileExistsOrThrow(JsonFile);
-
         Map();
     }
 
     private void Map()
     {
-        var json = File.ReadAllText(JsonFile);
+        var path = Path.Combine(AppContext.BaseDirectory, JsonFile);
+
+        EnsureFileExistsOrThrow(path);
+        var json = File.ReadAllText(path);
         var root = JsonSerializer.Deserialize<RootDto>(json);
 
         if (root is null)

@@ -1,5 +1,6 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
+using UmaEventReaderV2.Models;
 using UmaEventReaderV2.Models.Entities;
 using UmaEventReaderV2.Services;
 
@@ -44,9 +45,9 @@ public class SpectreUmaFrontend
     private Layout GetCareerArea => layout["Right"][CareerArea];
     private Layout GetLogsArea => layout["Right"][LogsArea];
 
-    private void ShowEvent(UmaEventEntity umaEvent)
+    private void ShowEvent(EventBatch umaEvent)
     {
-        UpdatePanel(GetEventArea, umaEvent.ToString(), "Event Area", horizontalAlignment: HorizontalAlignment.Center);
+        UpdatePanel(GetEventArea, umaEvent.Events.FirstOrDefault()?.ToString(), "Event Area", horizontalAlignment: HorizontalAlignment.Center);
     }
 
     public void Log(string message)
@@ -65,12 +66,12 @@ public class SpectreUmaFrontend
     }
 
     private void UpdatePanel(Layout area,
-        string text,
+        string? text,
         string header = "",
         VerticalAlignment verticalAlignment = VerticalAlignment.Top,
         HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left)
     {
-        UpdatePanel(area, new Markup(Markup.Escape(text)), header, verticalAlignment, horizontalAlignment);
+        UpdatePanel(area, new Markup(Markup.Escape(text ?? "No Text")), header, verticalAlignment, horizontalAlignment);
     }
 
     private void UpdatePanel(Layout area,

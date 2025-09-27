@@ -1,0 +1,44 @@
+@using UmaEventReaderV2.Models.Entities
+
+<div class="event-card">
+    <h4>@Event.CharacterName - @Event.EventName</h4>
+
+    @if (Event.Choices.Any())
+    {
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Choice #</th>
+                <th>Text</th>
+                <th>Success Type</th>
+                <th>Outcomes</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var choice in Event.Choices.Values)
+            {
+                <tr>
+                    <td>@choice.ChoiceNumber</td>
+                    <td>@choice.ChoiceText</td>
+                    <td>@choice.SuccessType</td>
+                    <td>
+                        @foreach (var outcome in choice.Outcomes.Values)
+                        {
+                            <div>@outcome.Type: @outcome.Value</div>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No choices available.</p>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public required UmaEventEntity Event { get; set; }
+}

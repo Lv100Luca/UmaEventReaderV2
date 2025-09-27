@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0-windows</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -9,7 +9,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.9" />
         <ProjectReference Include="..\UmaEventReaderV2.Abstractions\UmaEventReaderV2.Abstractions.csproj" />
-        <ProjectReference Include="..\UmaEventReaderVs.WinForms\UmaEventReaderVs.WinForms.csproj" />
+<!--        <ProjectReference Include="..\UmaEventReaderVs.WinForms\UmaEventReaderVs.WinForms.csproj" />-->
         <PackageReference Include="Spectre.Console" Version="0.51.1" />
         <PackageReference Include="Tesseract" Version="5.2.0" />
         <PackageReference Include="Tesseract.Drawing" Version="5.2.0" />
@@ -17,6 +17,18 @@
 
     <ItemGroup>
       <PackageReference Include="System.Drawing.Common" Version="9.0.9" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="tessdata\**\*">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="umaEventData.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
 </Project>

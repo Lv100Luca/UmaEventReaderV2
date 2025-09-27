@@ -2,7 +2,6 @@ using CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Services;
-using UmaEventReaderVs.WinForms;
 
 namespace UmaEventReaderV2.Extensions;
 
@@ -19,9 +18,9 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<EventAreaOffsetProvider>(_ => new EventAreaOffsetProvider { Offset = 55 });
 
-        if (args.Value.SelectArea)
-            return services.AddSingleton<SelectAreaOverlay>()
-                .AddSingleton<IScreenshotAreaProvider, ScreenshotAreaSelector>();
+        // if (args.Value.SelectArea)
+            // return services.AddSingleton<SelectAreaOverlay>()
+                // .AddSingleton<IScreenshotAreaProvider, ScreenshotAreaSelector>();
 
         return services.AddSingleton<IScreenshotAreaProvider, StaticScreenshotAreaProvider>();
     }

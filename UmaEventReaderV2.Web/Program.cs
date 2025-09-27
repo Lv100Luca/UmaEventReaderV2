@@ -1,4 +1,5 @@
 using UmaEventReaderV2.Abstractions;
+using UmaEventReaderV2.Common.Extensions;
 using UmaEventReaderV2.Services;
 using UmaEventReaderV2.Web;
 using UmaEventReaderV2.Web.Hubs;
@@ -7,13 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Register shared services
 builder.Services
-    .AddSingleton<IUmaEventRepository, UmaEventMemoryRepository>()
-    .AddSingleton<IUmaEventService, UmaEventService>()
-    .AddSingleton<EventAreaOffsetProvider>(_ => new EventAreaOffsetProvider { Offset = 55 })
-    .AddSingleton<OcrService>()
-    .AddSingleton<UmaEventReader>()
-    .AddSingleton<IScreenshotProvider, ScreenshotProvider>()
-    .AddSingleton<ITextExtractor, TesseractTextExtractor>()
+    .AddUmaEventReaderServices()
     .AddSingleton<EventHubBroadcaster>(); // Registered but not yet instantiated
 
 builder.Services.AddCors(options =>
@@ -26,9 +21,6 @@ builder.Services.AddCors(options =>
             .AllowCredentials(); // Required for SignalR
     });
 });
-
-// Screenshot area provider
-builder.Services.AddSingleton<IScreenshotAreaProvider, StaticScreenshotAreaProvider>();
 
 // Web-specific
 builder.Services.AddSignalR();

@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Web", "Uma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.WebClient", "UmaEventReaderV2.WebClient\UmaEventReaderV2.WebClient.csproj", "{15085BA8-255A-4BE7-A7FE-E41D0557BCB4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Common", "UmaEventReaderV2.Common\UmaEventReaderV2.Common.csproj", "{B1263862-58E4-4EC4-8E02-0345819A2AB0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,5 +66,9 @@ Global
 		{B7FDD0EF-268F-4519-8ECB-94AE63190510}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7FDD0EF-268F-4519-8ECB-94AE63190510}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7FDD0EF-268F-4519-8ECB-94AE63190510}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1263862-58E4-4EC4-8E02-0345819A2AB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1263862-58E4-4EC4-8E02-0345819A2AB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1263862-58E4-4EC4-8E02-0345819A2AB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1263862-58E4-4EC4-8E02-0345819A2AB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

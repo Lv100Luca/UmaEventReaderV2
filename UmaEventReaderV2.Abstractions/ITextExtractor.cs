@@ -5,5 +5,5 @@ namespace UmaEventReaderV2.Abstractions;
 
 public interface ITextExtractor
 {
-    public Task<TextExtractorResult> ExtractTextAsync(Bitmap bmpImage, bool raw = false);
+    public TextExtractorResult ExtractText(Bitmap bmpImage, bool raw = false);
 }

@@ -1,11 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using UmaEventReaderV2;
-using UmaEventReaderV2.Abstractions;
-using UmaEventReaderV2.Extensions;
+using UmaEventReaderV2.Common.Extensions;
 using UmaEventReaderV2.Services;
 
 // todo: maybe move these to the `WinForms` Project somehow
@@ -18,15 +15,8 @@ using UmaEventReaderV2.Services;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-var parsedArgs = Parser.Default.ParseArguments<ProgramArgs>(args);
-
 builder.Services
-    .AddScreenshotAreaProvider(parsedArgs)
-    .AddUmaEventDbServices()
-    .AddSingleton<OcrService>()
-    .AddSingleton<UmaEventReader>()
-    .AddSingleton<IScreenshotProvider, ScreenshotProvider>()
-    .AddSingleton<ITextExtractor, TesseractTextExtractor>()
+    .AddUmaEventReaderServices()
     .AddSingleton<SpectreUmaFrontend>();
 
 var app = builder.Build();

@@ -28,7 +28,7 @@ public class UmaEventReader(
             {
                 await Task.Delay(checkInterval, cancellationToken);
 
-                var result = await TryProcessAreasAsync(screenshotAreaProvider.GetAllAreas());
+                var result = TryProcessAreas(screenshotAreaProvider.GetAllAreas());
 
                 if (result == null)
                     continue;
@@ -63,11 +63,11 @@ public class UmaEventReader(
         OnEventFound?.Invoke(batch);
     }
 
-    private async Task<TextExtractorResult?> TryProcessAreasAsync(IEnumerable<Rectangle> areas)
+    private TextExtractorResult? TryProcessAreas(IEnumerable<Rectangle> areas)
     {
         foreach (var area in areas)
         {
-            var result = await ocrService.ExtractText(area);
+            var result = ocrService.ExtractText(area);
 
             if (TextValidator.IsValid(result, confidenceThreshold))
                 return result;

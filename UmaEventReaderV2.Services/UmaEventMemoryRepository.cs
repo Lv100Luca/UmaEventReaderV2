@@ -7,21 +7,19 @@ namespace UmaEventReaderV2.Services;
 
 public class UmaEventMemoryRepository : IUmaEventRepository
 {
-    private const string JsonFile = "umaEventData.json";
+    // private const string JsonFile = "umaEventData.json";
 
     private Dictionary<long, UmaEventEntity> events = [];
 
-    public UmaEventMemoryRepository()
+    public async Task InitializeDataAsync()
     {
-        Map();
-    }
+        // var path = Path.Combine(AppContext.BaseDirectory, JsonFile);
+        //
+        // EnsureFileExistsOrThrow(path);
+        // var json = File.ReadAllText(path);
 
-    private void Map()
-    {
-        var path = Path.Combine(AppContext.BaseDirectory, JsonFile);
+        var json = await UmaEventJsonProvider.GetMappingJson();
 
-        EnsureFileExistsOrThrow(path);
-        var json = File.ReadAllText(path);
         var root = JsonSerializer.Deserialize<RootDto>(json);
 
         if (root is null)

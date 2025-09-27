@@ -9,6 +9,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.9" />
         <ProjectReference Include="..\UmaEventReaderV2.Abstractions\UmaEventReaderV2.Abstractions.csproj" />
+        <PackageReference Include="Microsoft.Playwright" Version="1.55.0" />
 <!--        <ProjectReference Include="..\UmaEventReaderVs.WinForms\UmaEventReaderVs.WinForms.csproj" />-->
         <PackageReference Include="Spectre.Console" Version="0.51.1" />
         <PackageReference Include="Tesseract" Version="5.2.0" />

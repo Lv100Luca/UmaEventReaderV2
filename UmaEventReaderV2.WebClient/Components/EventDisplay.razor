@@ -8,39 +8,26 @@
     </MudCardHeader>
     <MudCardContent Class="pr-2 pl-2 pt-0 pb-2">
         <MudStack>
+        @foreach (var choiceGroup in GetGroupedChoices())
+        {
+            var choice = choiceGroup.Key;
+            <MudText Typo="Typo.subtitle1">
+                @choice.ChoiceNumber - @choice.ChoiceText
+            </MudText>
 
-            @foreach (var (choiceEntity, choices) in GetGroupedChoices())
+            @foreach (var outcomeGroup in choiceGroup.Value)
             {
-                <MudCard Elevation="1" Style="border: 1px solid lightgrey">
-                    <MudCardHeader Class="pa-2" Style="padding: 1rem">
-                        <MudText Typo="Typo.subtitle1">#@choiceEntity.ChoiceNumber - @choiceEntity.ChoiceText</MudText>
-                    </MudCardHeader>
-                    <MudCardContent Class="pa-2">
-                        @{
-                            var groupedList = choices.ToList();
-                        }
+                var successType = outcomeGroup.Key;
+                <MudText Typo="Typo.body2" Class="ml-2">@successType</MudText>
 
-                        @for (int i = 0; i < groupedList.Count; i++)
-                        {
-                            var (successType, umaEventChoiceEntities) = groupedList[i];
-
-                            <div class="success-type-container">
-                                <MudText Typo="Typo.body2" Class="ml-2">@successType</MudText>
-
-                                @foreach (var outcome in umaEventChoiceEntities.SelectMany(choice => choice.Outcomes))
-                                {
-                                    <EventOutcome Outcome="@outcome.Value"/>
-                                }
-                            </div>
-
-                            @if (i < groupedList.Count - 1)
-                            {
-                                <MudDivider Class="my-2"/>
-                            }
-                        }
-                    </MudCardContent>
-                </MudCard>
+                <MudPaper Class="pa-2 mb-2 ml-4" Elevation="1">
+                    @foreach (var outcome in outcomeGroup.Value)
+                    {
+                        <EventOutcome Outcome="@outcome"/>
+                    }
+                </MudPaper>
             }
+        }
         </MudStack>
     </MudCardContent>
 </MudCard>
@@ -49,14 +36,18 @@
 @code {
     [Parameter] public UmaEventEntity Event { get; set; } = new();
 
-    private Dictionary<UmaEventChoiceEntity, Dictionary<SuccessType, List<UmaEventChoiceEntity>>> GetGroupedChoices()
+    private Dictionary<(int ChoiceNumber, string ChoiceText), Dictionary<SuccessType, List<UmaEventChoiceOutcomeEntity>>> GetGroupedChoices()
     {
         return Event.Choices.Values
-            .GroupBy(c => new { c.ChoiceNumber, c.ChoiceText }) // group by the *event choice itself*
+            .GroupBy(c => (c.ChoiceNumber, c.ChoiceText))
             .ToDictionary(
-                g => g.First(), // pick the first as representative event choice
-                g => g.GroupBy(c => c.SuccessType) // group inside by SuccessType
-                    .ToDictionary(sg => sg.Key, sg => sg.ToList())
+                g => g.Key,
+                g => g.GroupBy(c => c.SuccessType)
+                    .ToDictionary(
+                        sg => sg.Key,
+                        sg => sg.SelectMany(c => c.Outcomes.Values).ToList()
+                    )
             );
     }
+
 }

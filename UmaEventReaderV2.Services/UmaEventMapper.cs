@@ -16,58 +16,93 @@ public static class UmaEventMapper
             if (!long.TryParse(group.First().Id, out var eventId))
                 throw new InvalidOperationException($"Invalid Event Id: {group.First().Id}");
 
-            var ev = new UmaEvent
+            var umaEvent = new UmaEvent
             {
                 Name = group.Key.EventName,
                 CharacterName = group.Key.CharacterName,
-                Choices = []
+                Choices = new List<UmaEventChoice>()
             };
 
-            var choicesGrouped = group.GroupBy(d => (d.ChoiceNumber, d.ChoiceText));
-
-            foreach (var choiceGroup in choicesGrouped)
+            foreach (var dto in group)
             {
-                if (!int.TryParse(choiceGroup.Key.ChoiceNumber, out var choiceNum))
-                    throw new InvalidOperationException($"Invalid Choice Number: {choiceGroup.Key.ChoiceNumber}");
+                if (!int.TryParse(dto.ChoiceNumber, out var choiceNumber))
+                    throw new InvalidOperationException($"Invalid Choice Number: {dto.ChoiceNumber}");
 
-                var choice = new UmaEventChoice
+                var successType = ParseSuccessType(dto.SuccessType);
+
+                // Find existing choice or create a new one
+                var choice = umaEvent.Choices
+                    .FirstOrDefault(c => c.ChoiceNumber == choiceNumber && c.ChoiceText == dto.ChoiceText);
+
+                if (choice == null)
                 {
-                    Header = new UmaEventChoiceHeader
+                    choice = new UmaEventChoice
                     {
-                        Number = choiceNum,
-                        Text = choiceGroup.Key.ChoiceText
-                    },
-                    Outcomes = new Dictionary<SuccessType, List<UmaEventChoiceOutcome>>()
-                };
+                        Header = new UmaEventChoiceHeader
+                        {
+                            Number = choiceNumber,
+                            Text = dto.ChoiceText
+                        },
+                        Outcomes = new List<UmaEventChoiceOutcomeGroup>()
+                    };
 
-                foreach (var dto in choiceGroup)
-                {
-                    var successType = Enum.TryParse(dto.SuccessType, true, out SuccessType parsed)
-                        ? parsed
-                        : SuccessType.None;
-
-                    var outcomes = ParseOutcomes(dto.AllOutcomes);
-
-                    if (!choice.Outcomes.ContainsKey(successType))
-                        choice.Outcomes[successType] = new List<UmaEventChoiceOutcome>();
-
-                    choice.Outcomes[successType].AddRange(outcomes);
+                    umaEvent.Choices.Add(choice);
                 }
 
-                ev.Choices.Add(choice);
+                // Parse the outcomes from the DTO
+                var parsedOutcomes = ParseOutcomes(dto.AllOutcomes);
+
+                // Find existing outcome group for this success type or create a new one
+                var outcomeGroup = choice.Outcomes.FirstOrDefault(g => g.SuccessType.Type == successType.Type &&
+                                                                       g.SuccessType.Additional == successType.Additional);
+
+                if (outcomeGroup == null)
+                {
+                    outcomeGroup = new UmaEventChoiceOutcomeGroup
+                    {
+                        SuccessType = successType,
+                        Outcomes = new List<UmaEventChoiceOutcome>()
+                    };
+
+                    choice.Outcomes.Add(outcomeGroup);
+                }
+
+                outcomeGroup.Outcomes.AddRange(parsedOutcomes);
             }
 
-            eventsDict[eventId] = ev;
+            eventsDict[eventId] = umaEvent;
         }
 
-        Console.Out.WriteLine($"Successfully loaded {eventsDict.Count} events from json");
         return eventsDict;
+    }
+
+    private static UmaEventChoiceSuccessType ParseSuccessType(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw) || raw == "-")
+            return new UmaEventChoiceSuccessType { Type = SuccessType.None };
+
+        var parts = raw.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (parts.Length == 2)
+        {
+            return new UmaEventChoiceSuccessType
+            {
+                Type = SuccessType.Random,
+                Additional = parts[1]
+            };
+        }
+
+        return Enum.TryParse<SuccessType>(raw, true, out var parsed)
+            ? new UmaEventChoiceSuccessType { Type = parsed }
+            : throw new InvalidOperationException($"Invalid Success Type: {raw}");
     }
 
     private static List<UmaEventChoiceOutcome> ParseOutcomes(string allOutcomes)
     {
         var outcomes = new List<UmaEventChoiceOutcome>();
-        if (string.IsNullOrWhiteSpace(allOutcomes)) return outcomes;
+
+        if (string.IsNullOrWhiteSpace(allOutcomes))
+            return outcomes;
 
         var parts = allOutcomes.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
@@ -104,12 +139,14 @@ public static class UmaEventMapper
     private static bool IsGoodCondition(string outcome)
     {
         outcome = outcome.Replace("(Random)", "").Trim();
+
         return KnownGoodConditions.Contains(outcome);
     }
 
     private static bool IsBadCondition(string outcome)
     {
         outcome = outcome.Replace("(Random)", "").Trim();
+
         return KnownBadConditions.Contains(outcome);
     }
 

@@ -20,16 +20,16 @@
 
                     <MudCardContent Class="pa-2">
                         <MudStack Spacing="2">
-                            @foreach (var (successType, umaEventChoiceOutcomes) in choice.Outcomes.OrderBy(x => x.Key))
+                            @foreach (var outcomeGroup in choice.Outcomes.OrderBy(x => x.SuccessType.Type))
                             {
                                 <div class="success-type">
                                     <MudText Typo="Typo.body2"
                                              Class="ml-2 mb-1">
-                                        <b>@successType</b>
+                                        <b>@outcomeGroup.SuccessType</b>
                                     </MudText>
 
                                     <MudStack Row Spacing="1">
-                                        @foreach (var outcome in umaEventChoiceOutcomes)
+                                        @foreach (var outcome in outcomeGroup.Outcomes)
                                         {
                                             <EventOutcome Outcome="@outcome"/>
                                         }
@@ -49,50 +49,4 @@
 
 @code {
     [Parameter] public UmaEvent Event { get; set; } = new();
-
-    private UmaEvent testEvent;
-
-    protected override void OnInitialized()
-    {
-        // Mock event for testing
-        testEvent = new UmaEvent
-        {
-            Name = "Turbo Is Strong!",
-            Choices = new List<UmaEventChoice>
-            {
-                new UmaEventChoice
-                {
-                    Header = new UmaEventChoiceHeader { Number = 1, Text = "Go full throttle on that Turbo engine!" },
-                    Outcomes = new Dictionary<SuccessType, List<UmaEventChoiceOutcome>>
-                    {
-                        [SuccessType.Fail] = new()
-                        {
-                            new UmaEventChoiceOutcome { Type = OutcomeType.Energy, Value = "-10" },
-                            new UmaEventChoiceOutcome { Type = OutcomeType.Speed, Value = "5" },
-                            new UmaEventChoiceOutcome { Type = OutcomeType.SkillHint, Value = "Early Lead +3" },
-                        },
-                        [SuccessType.Success] = new()
-                        {
-                            new UmaEventChoiceOutcome { Type = OutcomeType.Energy, Value = "-10" },
-                            new UmaEventChoiceOutcome { Type = OutcomeType.Speed, Value = "25" },
-                            new UmaEventChoiceOutcome { Type = OutcomeType.Friendship, Value = "5" },
-                            new UmaEventChoiceOutcome { Type = OutcomeType.SkillHint, Value = "Taking the Lead +3" },
-                        }
-                    }
-                },
-                new UmaEventChoice
-                {
-                    Header = new UmaEventChoiceHeader { Number = 2, Text = "Catch your breath!" },
-                    Outcomes = new Dictionary<SuccessType, List<UmaEventChoiceOutcome>>
-                    {
-                        [SuccessType.None] = new()
-                        {
-                            new UmaEventChoiceOutcome { Type = OutcomeType.Energy, Value = "15" },
-                            new UmaEventChoiceOutcome { Type = OutcomeType.SkillHint, Value = "Watchful Eye +1" }
-                        }
-                    }
-                }
-            }
-        };
-    }
 }

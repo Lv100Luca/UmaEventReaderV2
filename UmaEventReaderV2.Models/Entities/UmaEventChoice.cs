@@ -9,7 +9,7 @@ public class UmaEventChoice
     public int ChoiceNumber => Header.Number;
     public string ChoiceText => Header.Text;
 
-    public Dictionary<SuccessType, List<UmaEventChoiceOutcome>> Outcomes { get; set; } = [];
+    public List<UmaEventChoiceOutcomeGroup> Outcomes { get; set; } = [];
 }
 
 public class UmaEventChoiceHeader
@@ -21,12 +21,20 @@ public class UmaEventChoiceHeader
 /// <summary>
 /// helper wrapper for `Random 1` and `Random 2` success types, helpes with grouping
 /// </summary>
-/// <param name="Type">The success type</param>
-/// <param name="Additional">Additional info parsed with the success type</param>
-public record UmaEventChoiceSuccessType(SuccessType Type, string Additional = "")
+public class UmaEventChoiceSuccessType
 {
+    public SuccessType Type { get; init; }
+
+    public string Additional { get; init; } = "";
+
     override public string ToString()
     {
         return Type != SuccessType.Random ? $"{Type}" : $"{Type} ({Additional})";
     }
+}
+
+public class UmaEventChoiceOutcomeGroup
+{
+    public UmaEventChoiceSuccessType SuccessType { get; set; } = default!;
+    public List<UmaEventChoiceOutcome> Outcomes { get; set; } = new();
 }

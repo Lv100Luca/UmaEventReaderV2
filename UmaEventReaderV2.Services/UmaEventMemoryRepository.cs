@@ -1,13 +1,13 @@
 using System.Text.Json;
 using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Models.dtos;
-using UmaEventReaderV2.Models.Entities;
+using UmaEvent = UmaEventReaderV2.Models.Entities.UmaEvent;
 
 namespace UmaEventReaderV2.Services;
 
 public class UmaEventMemoryRepository(IUmaEventJsonProvider jsonProvider) : IUmaEventRepository
 {
-    private Dictionary<long, UmaEventEntity> events = [];
+    private Dictionary<long, UmaEvent> events = [];
 
     public async Task InitializeDataAsync()
     {
@@ -21,19 +21,19 @@ public class UmaEventMemoryRepository(IUmaEventJsonProvider jsonProvider) : IUma
         events = UmaEventMapper.MapFromDtos(root.ChoiceArraySchema.EventChoices);
     }
 
-    public UmaEventEntity? GetById(long id)
+    public UmaEvent? GetById(long id)
     {
         var found = events.TryGetValue(id, out var match);
 
         return found ? match : null;
     }
 
-    public IEnumerable<UmaEventEntity> GetAll()
+    public IEnumerable<UmaEvent> GetAll()
     {
         return events.Values;
     }
 
-    public IQueryable<KeyValuePair<long, UmaEventEntity>> Query()
+    public IQueryable<KeyValuePair<long, UmaEvent>> Query()
     {
         return events.AsQueryable();
     }

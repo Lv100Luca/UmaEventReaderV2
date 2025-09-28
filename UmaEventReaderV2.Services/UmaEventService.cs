@@ -11,7 +11,7 @@ public class UmaEventService(IUmaEventRepository repository) : IUmaEventService
         await repository.InitializeDataAsync();
     }
 
-    public IEnumerable<UmaEventEntity> GetAllWhereNameIsLike(string eventName)
+    public IEnumerable<UmaEvent> GetAllWhereNameIsLike(string eventName)
     {
         return repository.Query()
             .WhereEventNameContains(eventName);

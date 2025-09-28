@@ -14,11 +14,10 @@
 </MudStack>
 
 @code {
-    private UmaEventChoiceOutcomeEntity Get(OutcomeType type)
+    private UmaEventChoiceOutcome Get(OutcomeType type)
     {
-        return new UmaEventChoiceOutcomeEntity
+        return new UmaEventChoiceOutcome
         {
-            Id = 1,
             Type = type,
             Value = type.ToString()
         };

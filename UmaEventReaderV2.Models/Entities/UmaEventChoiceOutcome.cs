@@ -2,9 +2,8 @@ using UmaEventReaderV2.Models.Enums;
 
 namespace UmaEventReaderV2.Models.Entities;
 
-public class UmaEventChoiceOutcomeEntity
+public class UmaEventChoiceOutcome
 {
-    public long Id { get; set; }
     public OutcomeType Type { get; set; }
     public string Value { get; set; } = string.Empty;
 

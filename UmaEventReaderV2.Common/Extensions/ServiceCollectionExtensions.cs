@@ -28,8 +28,8 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services)
     {
         return services
-            // .AddSingleton<IUmaEventJsonProvider, PlaywrightUmaEventJsonProvider>()
-            .AddSingleton<IUmaEventJsonProvider, StaticUmaEventJsonProvider>()
+            .AddSingleton<IUmaEventJsonProvider, PlaywrightUmaEventJsonProvider>()
+            // .AddSingleton<IUmaEventJsonProvider, StaticUmaEventJsonProvider>()
             .AddSingleton<IUmaEventRepository, UmaEventMemoryRepository>()
             .AddSingleton<IUmaEventService, UmaEventService>()
             .AddSingleton<IScreenshotAreaProvider, StaticScreenshotAreaProvider>()
@@ -40,7 +40,10 @@ public static class ServiceCollectionExtensions
 #if DEBUG
             .AddDebugTextExtractor(o =>
             {
-                o.Result = "I'm not Afraid!";
+                // todo debug this
+                // o.Result = "I'm not Afraid!";
+                o.Result = "Sunny Day Standoff";
+                // o.Result = "Who Do You Run For?";
                 o.Confidence = 1f;
             });
 #else

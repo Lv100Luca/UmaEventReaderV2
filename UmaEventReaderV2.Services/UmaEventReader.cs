@@ -48,7 +48,7 @@ public class UmaEventReader(
         }
     }
 
-    private void EmitEvents(IEnumerable<UmaEventEntity> e)
+    private void EmitEvents(IEnumerable<UmaEvent> e)
     {
         var batch = new EventBatch
         {
@@ -58,7 +58,7 @@ public class UmaEventReader(
         OnEventFound?.Invoke(batch);
     }
 
-    private TextExtractorResult? TryProcessAreas(IEnumerable<ScreenshotArea> areas, out List<UmaEventEntity> foundEvents)
+    private TextExtractorResult? TryProcessAreas(IEnumerable<ScreenshotArea> areas, out List<UmaEvent> foundEvents)
     {
         foundEvents = [];
 

@@ -6,7 +6,7 @@ namespace UmaEventReaderV2.Web.Hubs;
 public class EventHub : Hub
 {
     // called by backend when a new event is found
-    public async Task BroadcastEvent(UmaEventEntity umaEvent)
+    public async Task BroadcastEvent(UmaEvent umaEvent)
     {
         await Clients.All.SendAsync("OnEventFound", umaEvent);
     }

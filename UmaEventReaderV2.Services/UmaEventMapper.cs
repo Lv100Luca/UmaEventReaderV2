@@ -6,114 +6,110 @@ namespace UmaEventReaderV2.Services;
 
 public static class UmaEventMapper
 {
-    public static Dictionary<long, UmaEventEntity> MapFromDtos(IEnumerable<UmaEventChoiceDto> dtos)
+    public static Dictionary<long, UmaEvent> MapFromDtos(IEnumerable<UmaEventChoiceDto> dtos)
     {
         var grouped = dtos.GroupBy(d => (d.EventName, d.CharacterName));
-        var eventsDict = new Dictionary<long, UmaEventEntity>();
+        var eventsDict = new Dictionary<long, UmaEvent>();
 
         foreach (var group in grouped)
         {
             if (!long.TryParse(group.First().Id, out var eventId))
                 throw new InvalidOperationException($"Invalid Event Id: {group.First().Id}");
 
-            var eventEntity = new UmaEventEntity
+            var ev = new UmaEvent
             {
-                Id = eventId,
-                EventName = group.Key.EventName,
+                Name = group.Key.EventName,
                 CharacterName = group.Key.CharacterName,
-                Choices = new Dictionary<long, UmaEventChoiceEntity>()
+                Choices = []
             };
 
-            foreach (var dto in group)
+            var choicesGrouped = group.GroupBy(d => (d.ChoiceNumber, d.ChoiceText));
+
+            foreach (var choiceGroup in choicesGrouped)
             {
-                if (!int.TryParse(dto.ChoiceNumber, out var choiceId))
-                    throw new InvalidOperationException($"Invalid Choice Number: {dto.ChoiceNumber}");
+                if (!int.TryParse(choiceGroup.Key.ChoiceNumber, out var choiceNum))
+                    throw new InvalidOperationException($"Invalid Choice Number: {choiceGroup.Key.ChoiceNumber}");
 
-                if (!long.TryParse(dto.Id, out var id))
-                    throw new InvalidOperationException($"Invalid Choice Id: {dto.Id}");
-
-                var choiceEntity = new UmaEventChoiceEntity
+                var choice = new UmaEventChoice
                 {
-                    Id = id,
-                    ChoiceNumber = choiceId,
-                    ChoiceText = dto.ChoiceText,
-                    SuccessType = Enum.TryParse(dto.SuccessType, out SuccessType s) ? s : SuccessType.None,
-                    Outcomes = new Dictionary<long, UmaEventChoiceOutcomeEntity>()
+                    Header = new UmaEventChoiceHeader
+                    {
+                        Number = choiceNum,
+                        Text = choiceGroup.Key.ChoiceText
+                    },
+                    Outcomes = new Dictionary<SuccessType, List<UmaEventChoiceOutcome>>()
                 };
 
-                eventEntity.Choices[id] = choiceEntity;
-
-                // Split the outcomes of this DTO into individual entries
-                var newOutcomes = ParseOutcomes(dto.AllOutcomes);
-
-                // Add each outcome with a unique ID
-                var maxId = choiceEntity.Outcomes.Count > 0 ? choiceEntity.Outcomes.Keys.Max() : 0;
-
-                foreach (var kv in newOutcomes)
+                foreach (var dto in choiceGroup)
                 {
-                    choiceEntity.Outcomes[++maxId] = kv.Value;
+                    var successType = Enum.TryParse(dto.SuccessType, true, out SuccessType parsed)
+                        ? parsed
+                        : SuccessType.None;
+
+                    var outcomes = ParseOutcomes(dto.AllOutcomes);
+
+                    if (!choice.Outcomes.ContainsKey(successType))
+                        choice.Outcomes[successType] = new List<UmaEventChoiceOutcome>();
+
+                    choice.Outcomes[successType].AddRange(outcomes);
                 }
+
+                ev.Choices.Add(choice);
             }
 
-            eventsDict[eventId] = eventEntity;
+            eventsDict[eventId] = ev;
         }
 
         Console.Out.WriteLine($"Successfully loaded {eventsDict.Count} events from json");
-
         return eventsDict;
     }
 
-    private static Dictionary<long, UmaEventChoiceOutcomeEntity> ParseOutcomes(string allOutcomes)
+    private static List<UmaEventChoiceOutcome> ParseOutcomes(string allOutcomes)
     {
-        var outcomes = new Dictionary<long, UmaEventChoiceOutcomeEntity>();
-
+        var outcomes = new List<UmaEventChoiceOutcome>();
         if (string.IsNullOrWhiteSpace(allOutcomes)) return outcomes;
 
         var parts = allOutcomes.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        long idCounter = 0;
 
         foreach (var part in parts)
         {
-            idCounter++;
-            outcomes[idCounter] = GetOutcome(part, idCounter);
+            outcomes.Add(GetOutcome(part));
         }
 
         return outcomes;
     }
 
-    private static UmaEventChoiceOutcomeEntity GetOutcome(string outcome, long id)
+    private static UmaEventChoiceOutcome GetOutcome(string outcome)
     {
         if (IsGoodCondition(outcome))
-            return new UmaEventChoiceOutcomeEntity { Id = id, Value = outcome, Type = OutcomeType.GoodCondition };
+            return new UmaEventChoiceOutcome { Value = outcome, Type = OutcomeType.GoodCondition };
 
         if (IsBadCondition(outcome))
-            return new UmaEventChoiceOutcomeEntity { Id = id, Value = outcome, Type = OutcomeType.BadCondition };
+            return new UmaEventChoiceOutcome { Value = outcome, Type = OutcomeType.BadCondition };
 
         var parts = outcome.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
 
         if (parts.Length == 2 && Enum.TryParse(parts[1].Replace(" ", ""), true, out OutcomeType type))
-            return new UmaEventChoiceOutcomeEntity { Id = id, Value = parts[0], Type = type };
+            return new UmaEventChoiceOutcome { Value = parts[0], Type = type };
 
         if (outcome.Contains("Skill Hint", StringComparison.OrdinalIgnoreCase))
-            return new UmaEventChoiceOutcomeEntity { Id = id, Value = outcome, Type = OutcomeType.SkillHint };
+            return new UmaEventChoiceOutcome { Value = outcome, Type = OutcomeType.SkillHint };
 
         if (outcome.Contains("End of Chain Event", StringComparison.OrdinalIgnoreCase))
-            return new UmaEventChoiceOutcomeEntity { Id = id, Value = outcome, Type = OutcomeType.EndOfEventChain };
+            return new UmaEventChoiceOutcome { Value = outcome, Type = OutcomeType.EndOfEventChain };
 
-        return new UmaEventChoiceOutcomeEntity { Id = id, Value = outcome, Type = OutcomeType.Unknown };
+        return new UmaEventChoiceOutcome { Value = outcome, Type = OutcomeType.Unknown };
     }
 
     private static bool IsGoodCondition(string outcome)
     {
         outcome = outcome.Replace("(Random)", "").Trim();
-
         return KnownGoodConditions.Contains(outcome);
     }
 
     private static bool IsBadCondition(string outcome)
     {
         outcome = outcome.Replace("(Random)", "").Trim();
-
         return KnownBadConditions.Contains(outcome);
     }
 

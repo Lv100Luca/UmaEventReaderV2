@@ -11,7 +11,7 @@ public class DebugImageSaver
     public const string RawPrefix = "raw";
     public const string ProcessedPrefix = "processed";
 
-    public static void SaveImage(UmaEventEntity umaEvent, Bitmap? processed, Bitmap? raw)
+    public static void SaveImage(UmaEvent umaEvent, Bitmap? processed, Bitmap? raw)
     {
         var eventHash = umaEvent.GetHashCode();
         var eventDir = Path.Combine(CaptureFolder, eventHash.ToString());
@@ -23,7 +23,7 @@ public class DebugImageSaver
 
         if (!File.Exists(namePath))
         {
-            File.WriteAllText(namePath, umaEvent.EventName);
+            File.WriteAllText(namePath, umaEvent.Name);
         }
 
         // save images with unique filenames

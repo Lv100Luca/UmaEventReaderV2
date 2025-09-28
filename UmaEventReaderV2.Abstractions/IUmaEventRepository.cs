@@ -6,7 +6,7 @@ public interface IUmaEventRepository
 {
     Task InitializeDataAsync();
 
-    UmaEventEntity? GetById(long id);
-    IEnumerable<UmaEventEntity> GetAll();
-    IQueryable<KeyValuePair<long, UmaEventEntity>> Query();
+    UmaEvent? GetById(long id);
+    IEnumerable<UmaEvent> GetAll();
+    IQueryable<KeyValuePair<long, UmaEvent>> Query();
 }

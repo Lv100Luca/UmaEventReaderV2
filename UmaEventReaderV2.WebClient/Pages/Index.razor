@@ -5,11 +5,10 @@
 @using UmaEventReaderV2.Models.Entities
 @inject HubConnection HubConnection
 
-<h3>UmaEventReader Dashboard</h3>
+<h1>UmaEventReader Dashboard</h1>
 
 <div class="dashboard-container">
     <div class="events-panel">
-        <h4>Events (@events.Count)</h4>
         @foreach (var e in events)
         {
             <EventDisplay Event="e"/>
@@ -17,13 +16,14 @@
     </div>
 
     <div class="logs-panel">
+        <h3>Logs</h3>
         <LogsDisplay Logs="logMessages"/>
     </div>
 </div>
 
 @code {
     private ObservableCollection<string> logMessages = new();
-    private ObservableCollection<UmaEventEntity> events = new();
+    private ObservableCollection<UmaEvent> events = new();
 
     protected override async Task OnInitializedAsync()
     {

@@ -6,5 +6,5 @@ public interface IUmaEventService
 {
     Task InitializeDataAsync();
 
-    IEnumerable<UmaEventEntity> GetAllWhereNameIsLike(string eventName);
+    IEnumerable<UmaEvent> GetAllWhereNameIsLike(string eventName);
 }

@@ -1,3 +1,8 @@
+Ideas
+- use `Introducing x` event to set current character
+- rework mapping of events choices and outcomes
+- factor in `Random 1` and `Random 2`
+
 # Run the app
 This assumes you already setup the db
 

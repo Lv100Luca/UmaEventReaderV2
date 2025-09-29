@@ -11,8 +11,10 @@ public class UmaEventReader(
     IUmaEventService eventService,
     float confidenceThreshold = 0.6f)
 {
-    private readonly TimeSpan checkInterval = TimeSpan.FromSeconds(1);
-    private string previousText = string.Empty;
+    private readonly TimeSpan checkInterval = TimeSpan.FromMilliseconds(100);
+
+    private string lastText = string.Empty;
+    private List<string> lastEventIds = [];
 
     public event Action<string>? OnLog;
     public event Action<EventBatch>? OnEventFound;
@@ -28,18 +30,22 @@ public class UmaEventReader(
                 await Task.Delay(checkInterval, cancellationToken);
 
                 var result = TryProcessAreas(screenshotAreaProvider.GetAllAreas(), out var events);
-
                 if (result == null)
                     continue;
 
-                if (result.Text != previousText)
+                if (result.Text != lastText)
                 {
-                    previousText = result.Text;
+                    lastText = result.Text;
                     OnLog?.Invoke(result.ToString());
-                    OnLog?.Invoke($"Emitting {events.Count} events");
+                    OnLog?.Invoke($"Detected text: '{lastText}', found {events.Count} events");
                 }
 
-                EmitEvents(events);
+                var currentIds = events.Select(e => e.Name).OrderBy(x => x).ToList();
+                if (!currentIds.SequenceEqual(lastEventIds))
+                {
+                    lastEventIds = currentIds;
+                    EmitEvents(events);
+                }
             }
         }
         catch (Exception ex)
@@ -77,16 +83,14 @@ public class UmaEventReader(
                 .AppendLine($"- {events.Count} events found")
                 .ToString();
 
-            OnLog?.Invoke(log);
+            Console.Out.WriteLine(log);
 
-            if (events.Count != 0)
+            if (events.Count > 0)
             {
                 foundEvents = events;
-
                 return result;
             }
         }
-
 
         return null; // no area yielded any events
     }

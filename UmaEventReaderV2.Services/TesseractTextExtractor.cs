@@ -9,7 +9,7 @@ namespace UmaEventReaderV2.Services;
 public partial class TesseractTextExtractor : ITextExtractor
 {
     private const string TesseractTraineeDataPath = "tessdata";
-    private const string CharWhitelist = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,!?'()#-☆♪ ";
+    private const string CharWhitelist = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:.,!?'()#-☆♪ ";
     private const PageSegMode DefaultPageSegMode = PageSegMode.SingleLine;
 
     private TesseractEngine Engine { get; init; }

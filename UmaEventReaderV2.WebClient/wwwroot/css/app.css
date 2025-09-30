@@ -99,8 +99,33 @@ html, body {
 }
 
 .allstats {
-    background-color: #FF7043 !important;
+    min-height: 100%;
+    background: linear-gradient(
+            -30deg,
+            #39beff 0%,
+            #ff8675 10%,
+            #ffa714 20%,
+            #f564aa 30%,
+            #1bd29c 40%,
+            #39beff 50%,
+            #ff8675 60%,
+            #ffa714 70%,
+            #f564aa 80%,
+            #1bd29c 90%,
+            #39beff 100%
+    );
+    background-size: 400% 400%;
+    background-position: bottom right;
+
+    animation: rainbowFlow 2s linear infinite;
 }
+
+@keyframes rainbowFlow {
+    to {
+        background-position: 33.33% 33.33%;
+    }
+}
+
 
 .friendship {
     background-color: #408bec !important;

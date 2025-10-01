@@ -1,9 +1,9 @@
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+:root {
+    --navbar-height: 80px;
 }
 
-.content {
-    height: 100%;
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 #blazor-error-ui {
@@ -99,7 +99,6 @@ html, body {
 }
 
 .allstats {
-    min-height: 100%;
     background: linear-gradient(
             -30deg,
             #39beff 0%,

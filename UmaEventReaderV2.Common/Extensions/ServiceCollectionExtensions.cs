@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Services;
+using UmaEventReaderV2.Services.Emitters;
 
 namespace UmaEventReaderV2.Common.Extensions;
 
@@ -30,6 +31,7 @@ public static class ServiceCollectionExtensions
         return services
             .AddSingleton<IUmaEventJsonProvider, PlaywrightUmaEventJsonProvider>()
             // .AddSingleton<IUmaEventJsonProvider, StaticUmaEventJsonProvider>()
+            .AddSingleton<IEventEmitter, CachingEventEmitter>()
             .AddSingleton<IUmaEventRepository, UmaEventMemoryRepository>()
             .AddSingleton<IUmaEventService, UmaEventService>()
             .AddSingleton<IScreenshotAreaProvider, StaticScreenshotAreaProvider>()

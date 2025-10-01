@@ -9,6 +9,7 @@ public class UmaEventReader(
     IScreenshotAreaProvider screenshotAreaProvider,
     OcrService ocrService,
     IUmaEventService eventService,
+    IEventEmitter eventEmitter,
     float confidenceThreshold = 0.6f)
 {
     private readonly TimeSpan checkInterval = TimeSpan.FromMilliseconds(100);
@@ -16,8 +17,8 @@ public class UmaEventReader(
     private string lastText = string.Empty;
     private List<string> lastEventIds = [];
 
-    public event Action<string>? OnLog;
-    public event Action<EventBatch>? OnEventFound;
+    // public event Action<string>? OnLog;
+    // public event Action<EventBatch>? OnEventFound;
 
     public async Task RunAsync(CancellationToken cancellationToken = default)
     {
@@ -30,39 +31,25 @@ public class UmaEventReader(
                 await Task.Delay(checkInterval, cancellationToken);
 
                 var result = TryProcessAreas(screenshotAreaProvider.GetAllAreas(), out var events);
+
                 if (result == null)
                     continue;
 
-                if (result.Text != lastText)
-                {
-                    lastText = result.Text;
-                    OnLog?.Invoke(result.ToString());
-                    OnLog?.Invoke($"Detected text: '{lastText}', found {events.Count} events");
-                }
-
-                // TODO(LDI): emit repeat event only every x repetitions
-                // var currentIds = events.Select(e => e.Name).OrderBy(x => x).ToList();
-                // if (!currentIds.SequenceEqual(lastEventIds))
+                // TODO(LDI): log emitter?
+                // if (result.Text != lastText)
                 // {
-                    // lastEventIds = currentIds;
-                    EmitEvents(events);
+                //     lastText = result.Text;
+                //     OnLog?.Invoke(result.ToString());
+                //     OnLog?.Invoke($"Detected text: '{lastText}', found {events.Count} events");
                 // }
+
+                await eventEmitter.EmitEventsAsync(events);
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
         }
-    }
-
-    private void EmitEvents(IEnumerable<UmaEvent> e)
-    {
-        var batch = new EventBatch
-        {
-            Events = e
-        };
-
-        OnEventFound?.Invoke(batch);
     }
 
     private TextExtractorResult? TryProcessAreas(IEnumerable<ScreenshotArea> areas, out List<UmaEvent> foundEvents)
@@ -78,17 +65,18 @@ public class UmaEventReader(
 
             var events = eventService.GetAllWhereNameIsLike(result.Text).ToList();
 
-            var log = new StringBuilder()
-                .AppendLine($"Processed {area.Name}")
-                .AppendLine($"- '{result.Text}'")
-                .AppendLine($"- {events.Count} events found")
-                .ToString();
+            // var log = new StringBuilder()
+            //     .AppendLine($"Processed {area.Name}")
+            //     .AppendLine($"- '{result.Text}'")
+            //     .AppendLine($"- {events.Count} events found")
+            //     .ToString();
 
-            Console.Out.WriteLine(log);
+            // Console.Out.WriteLine(log);
 
             if (events.Count > 0)
             {
                 foundEvents = events;
+
                 return result;
             }
         }

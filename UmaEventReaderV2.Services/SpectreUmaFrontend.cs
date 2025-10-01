@@ -1,19 +1,21 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
+using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Models;
-using UmaEventReaderV2.Services;
+
+namespace UmaEventReaderV2.Services;
 
 public class SpectreUmaFrontend
 {
-    private Layout layout;
-    private readonly List<string> logs = new();
+    private readonly Layout layout;
+    private readonly List<string> logs = [];
 
     private const string Root = "Root";
     private const string EventArea = "Event";
     private const string CareerArea = "Career";
     private const string LogsArea = "Logs";
 
-    public SpectreUmaFrontend(UmaEventReader reader)
+    public SpectreUmaFrontend(IEventEmitter eventEmitter)
     {
         layout = InitializeLayout();
 
@@ -21,8 +23,8 @@ public class SpectreUmaFrontend
         UpdatePanel(GetCareerArea, "Placeholder", "Career Info");
         UpdatePanel(GetLogsArea, "", "Logs");
 
-        reader.OnLog += Log;
-        reader.OnEventFound += ShowEvent;
+        // reader.OnLog += Log;
+        eventEmitter.OnEventFound += ShowEvent;
     }
 
 
@@ -37,6 +39,7 @@ public class SpectreUmaFrontend
                     ctx.Refresh();
                     Thread.Sleep(250);
                 }
+                // ReSharper disable once FunctionNeverReturns
             });
     }
 

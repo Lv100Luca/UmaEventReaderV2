@@ -1,0 +1,32 @@
+@using UmaEventReaderV2.Models.Entities
+<MudCard Elevation="0" Class="mb-3" Style="border: 2px solid lightgrey">
+    <MudCardHeader Class="pa-2">
+        <MudText Typo="Typo.subtitle1">
+            #@Choice.Header.Number - @Choice.Header.Text
+        </MudText>
+    </MudCardHeader>
+
+    <MudCardContent Class="pa-2">
+        <MudStack Spacing="2">
+            @foreach (var outcomeGroup in Choice.Outcomes.OrderBy(x => x.SuccessType.Type))
+            {
+                <div class="success-type">
+                    <MudText Typo="Typo.body2"
+                             Class="ml-2 mb-1">
+                        <b>@outcomeGroup.SuccessType</b>
+                    </MudText>
+
+                    <MudStack Row Spacing="1">
+                        @foreach (var outcome in outcomeGroup.Outcomes)
+                        {
+                            <EventOutcome Outcome="@outcome"/>
+                        }
+                    </MudStack>
+                </div>
+            }
+        </MudStack>
+    </MudCardContent>
+</MudCard>
+@code {
+    [Parameter, EditorRequired] public required UmaEventChoice Choice { get; init; }
+}

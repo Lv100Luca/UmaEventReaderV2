@@ -12,7 +12,7 @@ public class UmaEventReader(
     IEventEmitter eventEmitter,
     float confidenceThreshold = 0.6f)
 {
-    private readonly TimeSpan checkInterval = TimeSpan.FromMilliseconds(100);
+    private readonly TimeSpan checkInterval = TimeSpan.FromMilliseconds(250);
 
     private string lastText = string.Empty;
     private List<string> lastEventIds = [];

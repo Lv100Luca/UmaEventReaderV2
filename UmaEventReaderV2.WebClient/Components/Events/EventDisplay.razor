@@ -1,0 +1,21 @@
+@using UmaEventReaderV2.Models.Entities
+@inherits ComponentBase
+
+<MudCard Elevation="0" Class="mb-3" Style="border: 2px solid lightgrey">
+    <MudCardHeader Class="pa-2">
+        <MudText Typo="Typo.h6">@Event.Name - @Event.CharacterName</MudText>
+    </MudCardHeader>
+
+    <MudCardContent Class="pr-2 pl-2 pt-0 pb-2">
+        <MudStack Spacing="0">
+            @foreach (var choice in Event.Choices)
+            {
+                <EventChoice Choice="choice"></EventChoice>
+            }
+        </MudStack>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter] public required UmaEvent Event { get; set; }
+}

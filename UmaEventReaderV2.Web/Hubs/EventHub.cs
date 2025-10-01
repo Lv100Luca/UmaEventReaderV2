@@ -15,4 +15,9 @@ public class EventHub : Hub
     {
         await Clients.All.SendAsync("OnLog", message);
     }
+
+    public async Task Test()
+    {
+        await Console.Out.WriteLineAsync("TESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTEST");
+    }
 }

@@ -40,12 +40,13 @@ public class UmaEventReader(
                     OnLog?.Invoke($"Detected text: '{lastText}', found {events.Count} events");
                 }
 
-                var currentIds = events.Select(e => e.Name).OrderBy(x => x).ToList();
-                if (!currentIds.SequenceEqual(lastEventIds))
-                {
-                    lastEventIds = currentIds;
+                // TODO(LDI): emit repeat event only every x repetitions
+                // var currentIds = events.Select(e => e.Name).OrderBy(x => x).ToList();
+                // if (!currentIds.SequenceEqual(lastEventIds))
+                // {
+                    // lastEventIds = currentIds;
                     EmitEvents(events);
-                }
+                // }
             }
         }
         catch (Exception ex)

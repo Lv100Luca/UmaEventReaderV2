@@ -23,13 +23,7 @@ public class CachingEventEmitter(ILogger<CachingEventEmitter> logger) : IEventEm
 
         if (batch.Equals(lastEmittedBatch) &&
             DateTime.Now - lastEmittedTime < cacheTime)
-        {
-            logger.LogInformation("Blocked emit of repeat event");
-
             return;
-        }
-
-        logger.LogInformation("emitting event");
 
         lastEmittedTime = DateTime.Now;
         lastEmittedBatch = batch;

@@ -1,8 +1,14 @@
 @page "/styletest"
+@using Microsoft.AspNetCore.SignalR.Client
 @using UmaEventReaderV2.Models.Entities
 @using UmaEventReaderV2.Models.Enums
+@inject HubConnection hub
 
 <h1>Styletest</h1>
+
+<h2>Test Endpoints</h2>
+
+<MudButton Class="allstats" OnClick="Callback">TEST</MudButton>
 
 <h2>Outcomes</h2>
 
@@ -42,4 +48,9 @@
         OutcomeType.EndOfEventChain => "background-color:#9E9E9E; color:white;",
         _ => "background-color:#9E9E9E; color:white;"
     };
+
+    private async Task Callback(MouseEventArgs obj)
+    {
+        await hub.InvokeAsync("Test");
+    }
 }

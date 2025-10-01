@@ -1,0 +1,13 @@
+nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    height: var(--navbar-height);
+    width: 100%;
+
+    padding: 1rem;
+
+    border-bottom: 1px solid lightgrey;
+    background-color: #f8f9fa;
+}

@@ -18,21 +18,16 @@
 </div>
 
 @code {
-    private ObservableCollection<string> logMessages = new();
-    private ObservableCollection<UmaEvent> events = new();
-
-    public void Click()
-    {
-        HubConnection.InvokeAsync("Test");
-    }
+    // private ObservableCollection<string> logMessages = new();
+    private readonly ObservableCollection<UmaEvent> events = [];
 
     protected override async Task OnInitializedAsync()
     {
-        HubConnection.On<string>("OnLog", msg =>
-        {
-            logMessages.Add(msg);
-            InvokeAsync(StateHasChanged);
-        });
+        // HubConnection.On<string>("OnLog", msg =>
+        // {
+            // logMessages.Add(msg);
+            // InvokeAsync(StateHasChanged);
+        // });
 
         HubConnection.On<EventBatch>("OnEventFound", batch =>
         {

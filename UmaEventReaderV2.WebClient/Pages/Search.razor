@@ -1,9 +1,10 @@
 @page "/Search"
 @using System.Collections.ObjectModel
-@using Microsoft.AspNetCore.SignalR.Client
+@using UmaEventReaderV2.Models
 @using UmaEventReaderV2.Models.Entities
+@using UmaEventReaderV2.WebClient.Extensions
 
-@inject HubConnection Hub
+@inject UmaEventHub Hub
 
 <MudStack>
     <MudTextField T="string" Variant="Variant.Outlined" Placeholder="Search Event" ValueChanged="@Callback"/>
@@ -16,30 +17,15 @@
 </MudStack>
 
 @code {
-    public string searchText { get; set; } = "";
-
     private readonly ObservableCollection<UmaEvent> umaEvents = [];
 
-    protected override async Task OnInitializedAsync()
+    private async Task Callback(string searchText)
     {
-        if (Hub.State == HubConnectionState.Disconnected)
+        var searchModel = new EventSearchModel
         {
-            await Hub.StartAsync();
-        }
+            Name = searchText
+        };
 
-        Console.Out.WriteLine(Hub.State);
-    }
-
-    private async Task Callback()
-    {
-        if (Hub.State == HubConnectionState.Disconnected)
-        {
-            await Hub.StartAsync();
-        }
-
-        var result = await Hub.InvokeAsync<IEnumerable<UmaEvent>>("Search", searchText);
-
-        foreach (var umaEvent in result)
-            await Console.Out.WriteLineAsync(umaEvent.Name);
+        umaEvents.Fill(await Hub.InvokeSearchAsync(searchModel));
     }
 }

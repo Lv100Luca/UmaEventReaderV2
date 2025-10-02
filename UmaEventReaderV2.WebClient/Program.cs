@@ -20,4 +20,6 @@ builder.Services.AddSingleton(sp =>
     return hubConnection;
 });
 
+builder.Services.AddSingleton<UmaEventHub>();
+
 await builder.Build().RunAsync();

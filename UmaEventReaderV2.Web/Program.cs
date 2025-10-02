@@ -21,6 +21,7 @@ builder.Services.AddCors(options =>
     });
 });
 
+
 // Web-specific
 builder.Services.AddSignalR();
 builder.Services.AddControllers();

@@ -16,6 +16,11 @@ public class TextExtractorResult
         };
     }
 
+    public static TextExtractorResult Empty => new()
+    {
+        Text = ""
+    };
+
     override public string ToString()
     {
         var sb = new StringBuilder();

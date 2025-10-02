@@ -4,5 +4,5 @@ namespace UmaEventReaderV2.Abstractions;
 
 public interface IScreenshotProvider
 {
-    public Bitmap TakeScreenshot(Rectangle area);
+    public Bitmap? TakeScreenshot(Rectangle area);
 }

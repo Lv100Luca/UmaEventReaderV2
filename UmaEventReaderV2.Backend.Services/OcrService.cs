@@ -9,6 +9,10 @@ public class OcrService(IScreenshotProvider screenshotProvider, ITextExtractor t
     public TextExtractorResult ExtractText(ScreenshotArea area)
     {
         var raw = screenshotProvider.TakeScreenshot(area.Area);
+
+        if (raw is null)
+            return TextExtractorResult.Empty;
+
         var processed = ImagePreProcessor.Process(raw, skipBorder: true);
 
         var result = textExtractor.ExtractText(processed);

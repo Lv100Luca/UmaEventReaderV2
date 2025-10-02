@@ -1,5 +1,6 @@
 @page "/styletest"
 @using Microsoft.AspNetCore.SignalR.Client
+@using UmaEventReaderV2.Models
 @using UmaEventReaderV2.Models.Entities
 @using UmaEventReaderV2.Models.Enums
 @inject HubConnection hub
@@ -51,6 +52,20 @@
 
     private async Task Callback(MouseEventArgs obj)
     {
+
         await hub.InvokeAsync("Test");
+
+        var model = new EventSearchModel
+        {
+            Name = "Test",
+            SearchMode = SearchMode.Contains
+        };
+
+        var result = await hub.InvokeAsync<IEnumerable<UmaEvent>>("Search", model);
+
+        foreach (var umaEvent in result)
+        {
+            Console.Out.WriteLine(umaEvent.Name);
+        }
     }
 }

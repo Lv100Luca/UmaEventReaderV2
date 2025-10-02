@@ -1,0 +1,45 @@
+@page "/Search"
+@using System.Collections.ObjectModel
+@using Microsoft.AspNetCore.SignalR.Client
+@using UmaEventReaderV2.Models.Entities
+
+@inject HubConnection Hub
+
+<MudStack>
+    <MudTextField T="string" Variant="Variant.Outlined" Placeholder="Search Event" ValueChanged="@Callback"/>
+    <MudStack>
+        @foreach (var umaEvent in umaEvents)
+        {
+            <EventDisplay Event="umaEvent"></EventDisplay>
+        }
+    </MudStack>
+</MudStack>
+
+@code {
+    public string searchText { get; set; } = "";
+
+    private readonly ObservableCollection<UmaEvent> umaEvents = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Hub.State == HubConnectionState.Disconnected)
+        {
+            await Hub.StartAsync();
+        }
+
+        Console.Out.WriteLine(Hub.State);
+    }
+
+    private async Task Callback()
+    {
+        if (Hub.State == HubConnectionState.Disconnected)
+        {
+            await Hub.StartAsync();
+        }
+
+        var result = await Hub.InvokeAsync<IEnumerable<UmaEvent>>("Search", searchText);
+
+        foreach (var umaEvent in result)
+            await Console.Out.WriteLineAsync(umaEvent.Name);
+    }
+}

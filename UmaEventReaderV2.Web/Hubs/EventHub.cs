@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.SignalR;
+using UmaEventReaderV2.Abstractions;
+using UmaEventReaderV2.Models;
 using UmaEventReaderV2.Models.Entities;
+using UmaEventReaderV2.Services;
 
 namespace UmaEventReaderV2.Web.Hubs;
 
-public class EventHub : Hub
+public class EventHub(IUmaEventService eventService) : Hub
 {
     // called by backend when a new event is found
     public async Task BroadcastEvent(UmaEvent umaEvent)
@@ -16,8 +19,8 @@ public class EventHub : Hub
         await Clients.All.SendAsync("OnLog", message);
     }
 
-    public async Task Test()
+    public async Task<IEnumerable<UmaEvent>> Search(EventSearchModel request)
     {
-        await Console.Out.WriteLineAsync("TESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTEST");
+        return eventService.GetAllWhereNameIsLike(request.Name);
     }
 }

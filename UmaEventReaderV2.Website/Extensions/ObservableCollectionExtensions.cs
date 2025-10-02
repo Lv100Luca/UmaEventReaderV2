@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace UmaEventReaderV2.WebClient.Extensions;
+namespace UmaEventReaderV2.Website.Extensions;
 
 public static class ObservableCollectionExtensions
 {

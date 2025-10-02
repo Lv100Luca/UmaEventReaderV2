@@ -1,7 +1,7 @@
 using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Common.Models;
 
-namespace UmaEventReaderV2.Services;
+namespace UmaEventReaderV2.Services.Emitters;
 
 public class EventEmitter : IEventEmitter
 {

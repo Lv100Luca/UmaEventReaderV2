@@ -1,12 +1,13 @@
+using Microsoft.AspNetCore.SignalR.Client;
 using Spectre.Console;
 using Spectre.Console.Rendering;
-using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Common.Models;
 
-namespace UmaEventReaderV2.Services;
+namespace UmaEventReaderV2.Console;
 
 public class SpectreUmaFrontend
 {
+    private readonly HubConnection hubConnection;
     private readonly Layout layout;
     private readonly List<string> logs = [];
 
@@ -15,21 +16,24 @@ public class SpectreUmaFrontend
     private const string CareerArea = "Career";
     private const string LogsArea = "Logs";
 
-    public SpectreUmaFrontend(IEventEmitter eventEmitter)
+    public SpectreUmaFrontend(HubConnection hubConnection)
     {
+        this.hubConnection = hubConnection;
+
         layout = InitializeLayout();
 
         UpdatePanel(GetEventArea, "", "Event Area");
         UpdatePanel(GetCareerArea, "Placeholder", "Career Info");
         UpdatePanel(GetLogsArea, "", "Logs");
 
-        // reader.OnLog += Log;
-        eventEmitter.OnEventFound += ShowEvent;
+        hubConnection.On<EventBatch>("OnEventFound", ShowEvent);
     }
 
-
-    public void Run()
+    public async Task RunAsync()
     {
+        await hubConnection.StartAsync();
+        AnsiConsole.MarkupLine("[green]Connected to SignalR hub[/]");
+
         AnsiConsole.Live(layout)
             .AutoClear(false) // keeps panel after exit
             .Start(ctx =>
@@ -49,7 +53,7 @@ public class SpectreUmaFrontend
 
     private void ShowEvent(EventBatch umaEvent)
     {
-        UpdatePanel(GetEventArea, umaEvent.Events.FirstOrDefault()?.ToString(), "Event Area",
+        UpdatePanel(GetEventArea, umaEvent.Events.FirstOrDefault()?.Name, "Event Area",
             horizontalAlignment: HorizontalAlignment.Center);
     }
 

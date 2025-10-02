@@ -1,36 +1,32 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using UmaEventReaderV2.Services;
-using UmaEventReaderV2.Web.Extensions;
-
-// todo: maybe move these to the `WinForms` Project somehow
-// use of overlay manager or smth
-// if (Environment.OSVersion.Version.Major >= 6)
-//     SetProcessDPIAware();
-
-// Application.EnableVisualStyles();
-// Application.SetCompatibleTextRenderingDefault(false);
+using UmaEventReaderV2.Console;
 
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services
-    .AddUmaEventReaderServices()
     .AddSingleton<SpectreUmaFrontend>();
+
+// SignalR Hub
+builder.Services.AddSingleton(sp =>
+{
+    var hubConnection = new HubConnectionBuilder()
+        .WithUrl("https://localhost:7252/events") // backend hub
+        .WithAutomaticReconnect()
+        .Build();
+
+    return hubConnection;
+});
 
 var app = builder.Build();
 
 var scope = app.Services.CreateScope();
 
-var umaEventReader = scope.ServiceProvider.GetRequiredService<UmaEventReader>();
 var frontend = scope.ServiceProvider.GetRequiredService<SpectreUmaFrontend>();
 
-_ = Task.Run(() => frontend.Run());
-
-await umaEventReader.RunAsync();
+await frontend.RunAsync();
 
 return;
-
-// [DllImport("user32.dll")]
-// extern static bool SetProcessDPIAware();

@@ -8,15 +8,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CommandLineParser" Version="2.9.1" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.9" />
-      <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.9" />
+        <PackageReference Include="CommandLineParser" Version="2.9.1"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.9"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.9"/>
+        <PackageReference Include="Spectre.Console" Version="0.51.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.2.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.9"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\UmaEventReaderV2.Backend.Abstractions\UmaEventReaderV2.Backend.Abstractions.csproj" />
-      <ProjectReference Include="..\UmaEventReaderV2.Backend.Services\UmaEventReaderV2.Backend.Services.csproj" />
-      <ProjectReference Include="..\UmaEventReaderV2.Backend\UmaEventReaderV2.Backend.csproj" />
-      <ProjectReference Include="..\UmaEventReaderV2.Common\UmaEventReaderV2.Common.csproj" />
+        <ProjectReference Include="..\UmaEventReaderV2.Common.Models\UmaEventReaderV2.Common.Models.csproj"/>
+        <ProjectReference Include="..\UmaEventReaderV2.Common\UmaEventReaderV2.Common.csproj"/>
     </ItemGroup>
 </Project>

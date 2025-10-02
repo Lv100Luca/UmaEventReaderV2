@@ -6,27 +6,4 @@ public class UmaEvent
     public string Name { get; init; } = string.Empty;
 
     public List<UmaEventChoice> Choices { get; init; } = [];
-
-    // override public string ToString()
-    // {
-    //     var sb = new StringBuilder();
-    //
-    //     sb.AppendLine($"{EventName} ({CharacterName})");
-    //     sb.AppendLine();
-    //
-    //     foreach (var choice in Choices.Values)
-    //     {
-    //         sb.AppendLine($"  Choice #{choice.ChoiceNumber}: {choice.ChoiceText} ({choice.SuccessType})");
-    //
-    //         if (choice.Outcomes.Count > 0)
-    //         {
-    //             // Use ToString() on each outcome or customize
-    //             sb.AppendLine("    - Outcomes: " + string.Join(", ", choice.Outcomes.Values));
-    //         }
-    //
-    //         sb.AppendLine();
-    //     }
-    //
-    //     return sb.ToString();
-    // }
 }

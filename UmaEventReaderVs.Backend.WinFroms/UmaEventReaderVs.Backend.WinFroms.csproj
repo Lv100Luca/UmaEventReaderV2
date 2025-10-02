@@ -5,6 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <UseWindowsForms>true</UseWindowsForms>
+        <RootNamespace>UmaEventReaderVs.WinForms</RootNamespace>
     </PropertyGroup>
 
 </Project>

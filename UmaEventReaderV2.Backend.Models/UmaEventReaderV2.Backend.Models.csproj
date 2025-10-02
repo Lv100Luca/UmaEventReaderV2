@@ -4,11 +4,8 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>UmaEventReaderV2.Models</RootNamespace>
     </PropertyGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\UmaEventReaderV2.Models\UmaEventReaderV2.Models.csproj" />
-    </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="System.Drawing.Common" Version="9.0.9" />

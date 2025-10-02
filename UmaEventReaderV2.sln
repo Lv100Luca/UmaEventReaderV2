@@ -1,12 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Models", "UmaEventReaderV2.Models\UmaEventReaderV2.Models.csproj", "{E725A21A-3B67-449A-BC7F-CD5C59C98526}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Backend.Models", "UmaEventReaderV2.Backend.Models\UmaEventReaderV2.Backend.Models.csproj", "{E725A21A-3B67-449A-BC7F-CD5C59C98526}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Services", "UmaEventReaderV2.Services\UmaEventReaderV2.Services.csproj", "{6110AC18-CA47-4A07-82D8-8E2D855CC042}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Backend.Services", "UmaEventReaderV2.Backend.Services\UmaEventReaderV2.Backend.Services.csproj", "{6110AC18-CA47-4A07-82D8-8E2D855CC042}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Abstractions", "UmaEventReaderV2.Abstractions\UmaEventReaderV2.Abstractions.csproj", "{A28D4447-6DB0-4C73-85AF-1DC40C5AAEC4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Backend.Abstractions", "UmaEventReaderV2.Backend.Abstractions\UmaEventReaderV2.Backend.Abstractions.csproj", "{A28D4447-6DB0-4C73-85AF-1DC40C5AAEC4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{291BB449-C9D1-4389-9990-5FD1557528AF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solution Items", "{291BB449-C9D1-4389-9990-5FD1557528AF}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		compose.yaml = compose.yaml
@@ -14,15 +14,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		umaEventData.json = umaEventData.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderVs.WinForms", "UmaEventReaderVs.WinForms\UmaEventReaderVs.WinForms.csproj", "{848D01FF-F63A-493A-B5E4-FD69700DAFB0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderVs.Backend.WinFroms", "UmaEventReaderVs.Backend.WinFroms\UmaEventReaderVs.Backend.WinFroms.csproj", "{848D01FF-F63A-493A-B5E4-FD69700DAFB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Web", "UmaEventReaderV2.Web\UmaEventReaderV2.Web.csproj", "{FB644A20-0870-42F4-9D31-D24F6011FBF6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Backend", "UmaEventReaderV2.Backend\UmaEventReaderV2.Backend.csproj", "{FB644A20-0870-42F4-9D31-D24F6011FBF6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.WebClient", "UmaEventReaderV2.WebClient\UmaEventReaderV2.WebClient.csproj", "{15085BA8-255A-4BE7-A7FE-E41D0557BCB4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Website", "UmaEventReaderV2.Website\UmaEventReaderV2.Website.csproj", "{15085BA8-255A-4BE7-A7FE-E41D0557BCB4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Common", "UmaEventReaderV2.Common\UmaEventReaderV2.Common.csproj", "{B1263862-58E4-4EC4-8E02-0345819A2AB0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderV2.Console", "UmaEventReaderV2.Console\UmaEventReaderV2.Console.csproj", "{33503A27-7FC2-4A0C-83AD-978E4DA4E70C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Backend", "Backend", "{341F7A5D-2399-4929-92BA-F1B1B9F2ADBB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Website", "Website", "{DB971A8B-357C-4E44-8877-80F4FA390F4F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Console", "Console", "{39A3DD98-D35E-4A3D-8BE1-23BADC39F546}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,5 +76,14 @@ Global
 		{33503A27-7FC2-4A0C-83AD-978E4DA4E70C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33503A27-7FC2-4A0C-83AD-978E4DA4E70C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33503A27-7FC2-4A0C-83AD-978E4DA4E70C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A28D4447-6DB0-4C73-85AF-1DC40C5AAEC4} = {341F7A5D-2399-4929-92BA-F1B1B9F2ADBB}
+		{E725A21A-3B67-449A-BC7F-CD5C59C98526} = {341F7A5D-2399-4929-92BA-F1B1B9F2ADBB}
+		{6110AC18-CA47-4A07-82D8-8E2D855CC042} = {341F7A5D-2399-4929-92BA-F1B1B9F2ADBB}
+		{FB644A20-0870-42F4-9D31-D24F6011FBF6} = {341F7A5D-2399-4929-92BA-F1B1B9F2ADBB}
+		{33503A27-7FC2-4A0C-83AD-978E4DA4E70C} = {39A3DD98-D35E-4A3D-8BE1-23BADC39F546}
+		{15085BA8-255A-4BE7-A7FE-E41D0557BCB4} = {DB971A8B-357C-4E44-8877-80F4FA390F4F}
+		{848D01FF-F63A-493A-B5E4-FD69700DAFB0} = {341F7A5D-2399-4929-92BA-F1B1B9F2ADBB}
 	EndGlobalSection
 EndGlobal

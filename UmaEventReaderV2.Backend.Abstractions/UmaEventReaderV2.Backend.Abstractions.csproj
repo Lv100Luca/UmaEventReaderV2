@@ -4,7 +4,12 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>UmaEventReaderV2.Abstractions</RootNamespace>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\UmaEventReaderV2.Backend.Models\UmaEventReaderV2.Backend.Models.csproj" />
+    </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="System.Drawing.Common" Version="9.0.9" />

@@ -3,11 +3,30 @@ nav {
     top: 0;
     z-index: 1000;
 
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+
+    gap: 10rem;
+
     height: var(--navbar-height);
     width: 100%;
 
     padding: 1rem;
 
-    border-bottom: 1px solid lightgrey;
-    background-color: #f8f9fa;
+    backdrop-filter: blur(10px);
+}
+
+.left {
+    display: flex;
+    gap: 1rem;
+}
+
+.center {
+    display: flex;
+    gap: 0.5rem
+}
+
+.right {
+    justify-self: end;
 }

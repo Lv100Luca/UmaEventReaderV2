@@ -1,28 +1,30 @@
 @page "/Search"
 @using System.Collections.ObjectModel
 
+@inject NavigationManager NavigationManager
 @inject UmaEventHub Hub
 
 <MudStack>
-    <MudTextField T="string" Variant="Variant.Outlined" Placeholder="Search Event" ValueChanged="@Callback"/>
-    <MudStack>
-        @foreach (var umaEvent in umaEvents)
-        {
-            <EventDisplay Event="umaEvent"></EventDisplay>
-        }
-    </MudStack>
+    <MudText Typo="Typo.h4"> Search (@umaEvents.Count - Results)</MudText>
+    @foreach (var umaEvent in umaEvents)
+    {
+        <EventDisplay Event="umaEvent"></EventDisplay>
+    }
 </MudStack>
 
 @code {
-    private readonly ObservableCollection<UmaEvent> umaEvents = [];
+    [SupplyParameterFromQuery(Name = "query")]
+    public string SearchQuery { get; set; } = string.Empty;
 
-    private async Task Callback(string searchText)
+    protected override async Task OnParametersSetAsync()
     {
         var searchModel = new EventSearchModel
         {
-            Name = searchText
+            Name = SearchQuery
         };
 
         umaEvents.Fill(await Hub.InvokeSearchAsync(searchModel));
     }
+
+    private readonly ObservableCollection<UmaEvent> umaEvents = [];
 }

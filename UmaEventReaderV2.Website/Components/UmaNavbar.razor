@@ -1,14 +1,61 @@
+@inject NavigationManager NavigationManager
 <nav>
     <div class="left">
-        <MudButton Class="allstats" Href="/" Variant="Variant.Outlined" Color="Color.Primary">Reader</MudButton>
-        <MudButton Class="allstats" Href="/styletest" Variant="Variant.Outlined" Color="Color.Primary">Styletest</MudButton>
-        <MudButton Class="allstats" Href="/search" Variant="Variant.Outlined" Color="Color.Primary">Search</MudButton>
+        <MudButton
+            Class="allstats"
+            Href="/"
+            Color="Color.Primary"
+            Variant="Variant.Outlined"
+            Size="Size.Large"
+            StartIcon="@Icons.Material.Outlined.DocumentScanner"
+        >
+            Reader
+        </MudButton>
+        <MudButton
+            Class="allstats"
+            Href="/search"
+            Color="Color.Primary"
+            Variant="Variant.Outlined"
+            Size="Size.Large"
+            StartIcon="@Icons.Material.Outlined.Search"
+        >
+            Search
+        </MudButton>
+    </div>
+    <div class="center">
+        <MudTextField
+            T="string"
+            ValueChanged="Search"
+            Placeholder="Search"
+            Variant="Variant.Outlined"
+            AdornmentIcon="@Icons.Material.Outlined.Search"
+            Adornment="Adornment.Start"
+            Clearable
+        />
     </div>
     <div class="right">
-
+        <MudButton
+            Class="allstats"
+            Href="/styletest"
+            Color="Color.Primary"
+            Variant="Variant.Outlined"
+            Size="Size.Large"
+            StartIcon="@Icons.Custom.Uncategorized.Fish"
+        >
+            styletest
+        </MudButton>
     </div>
 </nav>
 
 @code {
+    private void Search(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text) && !IsOnSearchPage)
+            return;
 
+        var query = Uri.EscapeDataString(text);
+        NavigationManager.NavigateTo($"/search?query={query}");
+    }
+
+    private bool IsOnSearchPage => NavigationManager.Uri.Contains("/search");
 }

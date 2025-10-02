@@ -1,6 +1,6 @@
 using System.Drawing;
 using System.Drawing.Imaging;
-using UmaEventReaderV2.Models.Entities;
+using UmaEventReaderV2.Common.Models;
 
 namespace UmaEventReaderV2.Services;
 

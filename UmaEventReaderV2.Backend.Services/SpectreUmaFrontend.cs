@@ -1,7 +1,7 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
 using UmaEventReaderV2.Abstractions;
-using UmaEventReaderV2.Models;
+using UmaEventReaderV2.Common.Models;
 
 namespace UmaEventReaderV2.Services;
 

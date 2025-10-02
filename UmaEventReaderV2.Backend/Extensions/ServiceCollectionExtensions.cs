@@ -1,9 +1,8 @@
-using Microsoft.Extensions.DependencyInjection;
 using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Services;
 using UmaEventReaderV2.Services.Emitters;
 
-namespace UmaEventReaderV2.Common.Extensions;
+namespace UmaEventReaderV2.Web.Extensions;
 
 public static class ServiceCollectionExtensions
 {

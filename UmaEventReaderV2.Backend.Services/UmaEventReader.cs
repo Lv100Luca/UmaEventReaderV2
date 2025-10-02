@@ -1,7 +1,6 @@
-using System.Text;
 using UmaEventReaderV2.Abstractions;
+using UmaEventReaderV2.Common.Models;
 using UmaEventReaderV2.Models;
-using UmaEventReaderV2.Models.Entities;
 
 namespace UmaEventReaderV2.Services;
 

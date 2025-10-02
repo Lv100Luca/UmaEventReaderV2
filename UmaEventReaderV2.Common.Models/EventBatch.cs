@@ -1,6 +1,4 @@
-using UmaEventReaderV2.Models.Entities;
-
-namespace UmaEventReaderV2.Models;
+namespace UmaEventReaderV2.Common.Models;
 
 public class EventBatch
 {

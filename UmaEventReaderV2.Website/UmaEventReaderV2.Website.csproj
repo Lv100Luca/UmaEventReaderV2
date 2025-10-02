@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UmaEventReaderV2.Backend.Models\UmaEventReaderV2.Backend.Models.csproj" />
+    <ProjectReference Include="..\UmaEventReaderV2.Common.Models\UmaEventReaderV2.Common.Models.csproj" />
+    <ProjectReference Include="..\UmaEventReaderV2.Common\UmaEventReaderV2.Common.csproj" />
   </ItemGroup>
 </Project>

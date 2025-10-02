@@ -1,6 +1,6 @@
-using UmaEventReaderV2.Common.Extensions;
 using UmaEventReaderV2.Services;
 using UmaEventReaderV2.Web;
+using UmaEventReaderV2.Web.Extensions;
 using UmaEventReaderV2.Web.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);

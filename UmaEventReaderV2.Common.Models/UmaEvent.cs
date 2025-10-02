@@ -1,6 +1,4 @@
-using System.Text;
-
-namespace UmaEventReaderV2.Models.Entities;
+namespace UmaEventReaderV2.Common.Models;
 
 public class UmaEvent
 {

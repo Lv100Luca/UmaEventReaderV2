@@ -2,8 +2,8 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using UmaEventReaderV2.Common.Extensions;
 using UmaEventReaderV2.Services;
+using UmaEventReaderV2.Web.Extensions;
 
 // todo: maybe move these to the `WinForms` Project somehow
 // use of overlay manager or smth

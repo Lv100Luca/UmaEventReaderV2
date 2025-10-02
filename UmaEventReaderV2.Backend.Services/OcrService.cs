@@ -1,4 +1,3 @@
-using System.Drawing;
 using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Models;
 using UmaEventReaderV2.Services.Utility;

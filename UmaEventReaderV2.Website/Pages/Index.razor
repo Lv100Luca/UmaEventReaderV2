@@ -1,19 +1,16 @@
 @page "/"
 @using System.Collections.ObjectModel
-@using Microsoft.AspNetCore.SignalR.Client
-@using UmaEventReaderV2.Models
-@using UmaEventReaderV2.Models.Entities
 @inject HubConnection HubConnection
 
-    <h1>UmaEventReader Dashboard</h1>
-    <div class="dashboard-container">
-        <div class="events-panel">
-            @foreach (var e in events)
-            {
-                <EventDisplay Event="e"/>
-            }
-        </div>
+<h1>UmaEventReader Dashboard</h1>
+<div class="dashboard-container">
+    <div class="events-panel">
+        @foreach (var e in events)
+        {
+            <EventDisplay Event="e"/>
+        }
     </div>
+</div>
 
 @code {
     // private ObservableCollection<string> logMessages = new();
@@ -23,8 +20,8 @@
     {
         // HubConnection.On<string>("OnLog", msg =>
         // {
-            // logMessages.Add(msg);
-            // InvokeAsync(StateHasChanged);
+        // logMessages.Add(msg);
+        // InvokeAsync(StateHasChanged);
         // });
 
         HubConnection.On<EventBatch>("OnEventFound", batch =>

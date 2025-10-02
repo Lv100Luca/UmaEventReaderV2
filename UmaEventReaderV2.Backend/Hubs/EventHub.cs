@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 using UmaEventReaderV2.Abstractions;
-using UmaEventReaderV2.Models;
-using UmaEventReaderV2.Models.Entities;
-using UmaEventReaderV2.Services;
+using UmaEventReaderV2.Common.Models;
 
 namespace UmaEventReaderV2.Web.Hubs;
 

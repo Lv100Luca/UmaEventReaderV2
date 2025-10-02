@@ -1,4 +1,3 @@
-using System.Drawing;
 using UmaEventReaderV2.Models;
 
 namespace UmaEventReaderV2.Abstractions;

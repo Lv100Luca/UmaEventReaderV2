@@ -1,6 +1,6 @@
+using UmaEventReaderV2.Common.Models;
+using UmaEventReaderV2.Common.Models.Enums;
 using UmaEventReaderV2.Models.dtos;
-using UmaEventReaderV2.Models.Entities;
-using UmaEventReaderV2.Models.Enums;
 
 namespace UmaEventReaderV2.Services;
 

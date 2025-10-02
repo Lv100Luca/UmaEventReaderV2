@@ -1,7 +1,7 @@
 using System.Text.Json;
 using UmaEventReaderV2.Abstractions;
+using UmaEventReaderV2.Common.Models;
 using UmaEventReaderV2.Models.dtos;
-using UmaEvent = UmaEventReaderV2.Models.Entities.UmaEvent;
 
 namespace UmaEventReaderV2.Services;
 

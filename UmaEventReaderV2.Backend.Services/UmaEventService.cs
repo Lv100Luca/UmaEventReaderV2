@@ -1,5 +1,5 @@
 using UmaEventReaderV2.Abstractions;
-using UmaEventReaderV2.Models.Entities;
+using UmaEventReaderV2.Common.Models;
 using UmaEventReaderV2.Services.Extensions;
 
 namespace UmaEventReaderV2.Services;

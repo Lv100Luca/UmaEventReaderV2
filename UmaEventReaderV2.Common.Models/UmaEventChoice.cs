@@ -1,6 +1,6 @@
-using UmaEventReaderV2.Models.Enums;
+using UmaEventReaderV2.Common.Models.Enums;
 
-namespace UmaEventReaderV2.Models.Entities;
+namespace UmaEventReaderV2.Common.Models;
 
 public class UmaEventChoice
 {

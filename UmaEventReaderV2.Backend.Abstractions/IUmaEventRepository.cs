@@ -1,4 +1,4 @@
-using UmaEventReaderV2.Models.Entities;
+using UmaEventReaderV2.Common.Models;
 
 namespace UmaEventReaderV2.Abstractions;
 

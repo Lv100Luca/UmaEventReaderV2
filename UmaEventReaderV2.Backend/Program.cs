@@ -26,7 +26,8 @@ var app = builder.Build();
 
 app.UseCors();
 
-app.MapHub<EventHub>("/events");
+app.MapHub<BackendEventHub>("/events");
+app.MapHub<BackendSettingsHub>("/settings");
 app.MapControllers();
 
 // Ensure background services are initialized

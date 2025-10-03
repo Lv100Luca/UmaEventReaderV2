@@ -6,10 +6,10 @@ namespace UmaEventReaderV2.Web;
 
 public class EventHubBroadcaster
 {
-    private readonly IHubContext<EventHub> hub;
+    private readonly IHubContext<BackendEventHub> hub;
     private readonly IEventEmitter eventEmitter;
 
-    public EventHubBroadcaster(IHubContext<EventHub> hub, IEventEmitter eventEmitter)
+    public EventHubBroadcaster(IHubContext<BackendEventHub> hub, IEventEmitter eventEmitter)
     {
         this.hub = hub;
         this.eventEmitter = eventEmitter;

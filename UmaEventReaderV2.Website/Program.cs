@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor.Services;
 using UmaEventReaderV2.Website;
+using UmaEventReaderV2.Website.Hubs;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.SignalR.Client;
 using UmaEventReaderV2.Common.Models;
 
-namespace UmaEventReaderV2.Website;
+namespace UmaEventReaderV2.Website.Hubs;
 
 public class UmaEventHub(HubConnection hubConnection)
 {

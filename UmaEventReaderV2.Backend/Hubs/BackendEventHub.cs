@@ -6,7 +6,7 @@ using UmaEventReaderV2.Services;
 
 namespace UmaEventReaderV2.Web.Hubs;
 
-public class EventHub(IUmaEventRepository eventRepository, UmaEventReader reader) : Hub
+public class BackendEventHub(IUmaEventRepository eventRepository, UmaEventReader reader) : Hub
 {
     // called by backend when a new event is found
     public async Task BroadcastEvent(UmaEvent umaEvent)

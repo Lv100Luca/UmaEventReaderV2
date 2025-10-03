@@ -1,9 +1,6 @@
-using System.Drawing;
-using UmaEventReaderV2.Common.Models;
+namespace UmaEventReaderV2.Common.Models.dto;
 
-namespace UmaEventReaderV2.Services;
-
-public class UmaReaderSettingsProvider
+public class SettingsDto
 {
     public TimeSpan ScanInterval { get; set; } = TimeSpan.FromMilliseconds(250);
 
@@ -11,7 +8,6 @@ public class UmaReaderSettingsProvider
     public Uma? CareerCharacterOverride { get; set; }
 
     // TODO(LDI): replace this with selector for resolutions?
-    public bool OverrideArea { get; set; } = false;
-    public Rectangle? AreaOverride { get; set; }
+    // public bool OverrideArea { get; set; } = false;
+    // public Rectangle? AreaOverride { get; set; }
 }
-

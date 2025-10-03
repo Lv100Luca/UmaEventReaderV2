@@ -10,4 +10,5 @@ public interface IUmaEventRepository
     IEnumerable<UmaEvent> GetAll();
     IQueryable<UmaEvent> Query();
     IEnumerable<UmaEvent> GetAllWhereNameIsLike(string eventName);
+    IEnumerable<UmaEvent> GetAllForCharacterWhereNameIsLike(Uma? uma, string eventName);
 }

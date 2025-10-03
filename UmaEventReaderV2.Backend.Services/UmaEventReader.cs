@@ -15,13 +15,8 @@ public class UmaEventReader(
     UmaReaderSettingsProvider settings,
     float confidenceThreshold = 0.6f)
 {
-    private readonly TimeSpan checkInterval = TimeSpan.FromMilliseconds(250);
-
     private string lastText = string.Empty;
     private List<string> lastEventIds = [];
-
-    // public event Action<string>? OnLog;
-    // public event Action<EventBatch>? OnEventFound;
 
     public async Task RunAsync(CancellationToken cancellationToken = default)
     {
@@ -62,7 +57,7 @@ public class UmaEventReader(
             if (!TextValidator.IsValid(result, confidenceThreshold))
                 continue;
 
-            var events = umaEventRepository.GetAllWhereNameIsLike(result.Text).ToList();
+            var events = umaEventRepository.GetAllForCharacterWhereNameIsLike(settings.CareerCharacterOverride, result.Text).ToList();
 
             // var log = new StringBuilder()
             //     .AppendLine($"Processed {area.Name}")

@@ -54,6 +54,21 @@ public class UmaEventMemoryRepository(IUmaRepository umaRepository, ILogger<UmaE
         return Query().WhereEventNameContains(eventName);
     }
 
+    //this should return all event except traineeEvents that arent from the passed in character
+    public IEnumerable<UmaEvent> GetAllForCharacterWhereNameIsLike(Uma? uma, string eventName)
+    {
+        var query = Query().WhereEventNameContains(eventName);
+
+        if (uma is not null)
+        {
+            query = query.Where(e =>
+                !e.IsTraineeEvent ||
+                e.Umas.Any(u => u.Id == uma.Id));
+        }
+
+        return query;
+    }
+
     private IEnumerable<Uma> FindOrCreate(string[] names)
     {
         foreach (var name in names)

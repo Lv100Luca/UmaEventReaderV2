@@ -6,8 +6,6 @@
 
 <h2>Test Endpoints</h2>
 
-<MudButton Class="allstats" OnClick="Callback">TEST</MudButton>
-
 <h2>Outcomes</h2>
 
 <MudStack Style="max-width: 250px">
@@ -46,23 +44,4 @@
         OutcomeType.EndOfEventChain => "background-color:#9E9E9E; color:white;",
         _ => "background-color:#9E9E9E; color:white;"
     };
-
-    private async Task Callback(MouseEventArgs obj)
-    {
-
-        await hub.InvokeAsync("Test");
-
-        var model = new EventSearchModel
-        {
-            Name = "Test",
-            SearchMode = SearchMode.Contains
-        };
-
-        var result = await hub.InvokeAsync<IEnumerable<UmaEvent>>("Search", model);
-
-        foreach (var umaEvent in result)
-        {
-            Console.Out.WriteLine(umaEvent.Name);
-        }
-    }
 }

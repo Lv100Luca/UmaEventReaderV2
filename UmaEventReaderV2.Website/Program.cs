@@ -22,4 +22,9 @@ builder.Services.AddSingleton(sp =>
 
 builder.Services.AddSingleton<UmaEventHub>();
 
-await builder.Build().RunAsync();
+var app = builder.Build();
+
+var connection = app.Services.GetRequiredService<HubConnection>();
+await connection.StartAsync();
+
+await app.RunAsync();

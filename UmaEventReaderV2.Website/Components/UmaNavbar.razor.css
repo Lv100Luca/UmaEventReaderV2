@@ -7,7 +7,7 @@ nav {
     grid-template-columns: auto 1fr auto;
     align-items: center;
 
-    gap: 10rem;
+    gap: 5rem;
 
     height: var(--navbar-height);
     width: 100%;
@@ -17,14 +17,11 @@ nav {
     backdrop-filter: blur(10px);
 }
 
-.left {
+.left, .center, .right {
     display: flex;
     gap: 1rem;
-}
 
-.center {
-    display: flex;
-    gap: 0.5rem
+    align-items: center;
 }
 
 .right {

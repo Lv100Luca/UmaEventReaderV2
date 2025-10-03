@@ -14,10 +14,13 @@
 
 @code {
     [SupplyParameterFromQuery(Name = "query")]
-    public string SearchQuery { get; set; } = string.Empty;
+    public string? SearchQuery { get; set; } = string.Empty;
 
     protected override async Task OnParametersSetAsync()
     {
+        if (string.IsNullOrWhiteSpace(SearchQuery) || SearchQuery.Length < 3)
+            return;
+
         var searchModel = new EventSearchModel
         {
             Name = SearchQuery

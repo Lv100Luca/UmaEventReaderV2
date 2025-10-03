@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Common.Models;
 using UmaEventReaderV2.Models;
@@ -9,6 +10,7 @@ public class UmaEventReader(
     OcrService ocrService,
     IUmaEventService eventService,
     IEventEmitter eventEmitter,
+    ILogger<UmaEventReader> logger,
     float confidenceThreshold = 0.6f)
 {
     private readonly TimeSpan checkInterval = TimeSpan.FromMilliseconds(250);
@@ -34,20 +36,16 @@ public class UmaEventReader(
                 if (result == null)
                     continue;
 
-                // TODO(LDI): log emitter?
-                // if (result.Text != lastText)
-                // {
-                //     lastText = result.Text;
-                //     OnLog?.Invoke(result.ToString());
-                //     OnLog?.Invoke($"Detected text: '{lastText}', found {events.Count} events");
-                // }
-
                 await eventEmitter.EmitEventsAsync(events);
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            logger.LogError(ex, "Error in UmaEventReader");
+
+            await RunAsync(cancellationToken);
+
+            logger.LogInformation("Restarted Service");
         }
     }
 

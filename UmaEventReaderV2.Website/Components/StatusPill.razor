@@ -1,0 +1,56 @@
+@inject HubConnection HubConnection
+
+<MudTooltip Text="@TooltipText">
+    <MudChip T="string"
+             Color="@ChipColor"
+             Variant="Variant.Outlined"
+             Size="Size.Large">
+        <div class="status-pill">
+            <MudIcon Icon="@Icons.Material.Filled.Circle" Size="Size.Small"/>
+            @StatusText
+        </div>
+    </MudChip>
+</MudTooltip>
+
+@code {
+    private BackendStatus status = BackendStatus.Running;
+    private Timer? idleTimer;
+
+    private string StatusText => status switch
+    {
+        BackendStatus.Running => "Working",
+        BackendStatus.Deadge => "Error",
+        _ => "Unknown"
+    };
+
+    private string TooltipText => status switch
+    {
+        BackendStatus.Running => "Receiving events",
+        BackendStatus.Deadge => "Connection error",
+        _ => "Unknown"
+    };
+
+    private Color ChipColor => status switch
+    {
+        BackendStatus.Running => Color.Success,
+        BackendStatus.Deadge => Color.Error,
+        _ => Color.Default
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        HubConnection.On<UmaEvent>("OnEventFound", ev => SetStatus(BackendStatus.Running));
+
+        HubConnection.On<string>("OnLog", msg => SetStatus(BackendStatus.Running));
+
+        HubConnection.Closed += async _ => SetStatus(BackendStatus.Deadge);
+        HubConnection.Reconnecting += async _ => SetStatus(BackendStatus.Deadge);
+        HubConnection.Reconnected += async _ => SetStatus(BackendStatus.Running);
+    }
+
+    private void SetStatus(BackendStatus newStatus)
+    {
+        status = newStatus;
+        InvokeAsync(StateHasChanged);
+    }
+}

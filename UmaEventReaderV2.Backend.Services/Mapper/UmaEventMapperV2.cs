@@ -1,84 +1,73 @@
+using System.Security.Cryptography;
+using System.Text;
 using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Common.Models;
 using UmaEventReaderV2.Common.Models.Enums;
 using UmaEventReaderV2.Models.dtos;
 
-namespace UmaEventReaderV2.Services;
+namespace UmaEventReaderV2.Services.Mapper;
 
-public class UmaEventMapper(IUmaRepository umaRepository)
+public static class UmaEventMapperV2
 {
-    public Dictionary<long, UmaEvent> MapFromDtos(IEnumerable<UmaEventChoiceDto> dtos)
+    public static UmaEvent Map(IGrouping<string, UmaEventChoiceDto> grouping, IEnumerable<Uma> umas)
     {
-        var grouped = dtos.GroupBy(d => (d.EventName, d.CharacterName));
-        var eventsDict = new Dictionary<long, UmaEvent>();
-
-        foreach (var group in grouped)
+        var umaEvent = new UmaEvent
         {
-            if (!long.TryParse(group.First().Id, out var eventId))
-                throw new InvalidOperationException($"Invalid Event Id: {group.First().Id}");
+            Name = grouping.Key,
+            Choices = [],
+            Umas = umas,
+        };
 
+        foreach (var dto in grouping)
+        {
+            if (!int.TryParse(dto.ChoiceNumber, out var choiceNumber))
+                throw new InvalidOperationException($"Invalid Choice Number: {dto.ChoiceNumber}");
 
+            var successType = ParseSuccessType(dto.SuccessType);
 
-            var umaEvent = new UmaEvent
+            // Find existing choice or create a new one
+            var choice = umaEvent.Choices
+                .FirstOrDefault(c => c.ChoiceNumber == choiceNumber && c.ChoiceText == dto.ChoiceText);
+
+            if (choice == null)
             {
-                Name = group.Key.EventName,
-                Umas = [],
-                // CharacterName = group.Key.CharacterName,
-                Choices = []
-            };
-
-            foreach (var dto in group)
-            {
-                if (!int.TryParse(dto.ChoiceNumber, out var choiceNumber))
-                    throw new InvalidOperationException($"Invalid Choice Number: {dto.ChoiceNumber}");
-
-                var successType = ParseSuccessType(dto.SuccessType);
-
-                // Find existing choice or create a new one
-                var choice = umaEvent.Choices
-                    .FirstOrDefault(c => c.ChoiceNumber == choiceNumber && c.ChoiceText == dto.ChoiceText);
-
-                if (choice == null)
+                choice = new UmaEventChoice
                 {
-                    choice = new UmaEventChoice
+                    Header = new UmaEventChoiceHeader
                     {
-                        Header = new UmaEventChoiceHeader
-                        {
-                            Number = choiceNumber,
-                            Text = dto.ChoiceText
-                        },
-                        Outcomes = new List<UmaEventChoiceOutcomeGroup>()
-                    };
+                        Number = choiceNumber,
+                        Text = dto.ChoiceText
+                    },
+                    Outcomes = new List<UmaEventChoiceOutcomeGroup>()
+                };
 
-                    umaEvent.Choices.Add(choice);
-                }
-
-                // Parse the outcomes from the DTO
-                var parsedOutcomes = ParseOutcomes(dto.AllOutcomes);
-
-                // Find existing outcome group for this success type or create a new one
-                var outcomeGroup = choice.Outcomes.FirstOrDefault(g => g.SuccessType.Type == successType.Type &&
-                                                                       g.SuccessType.Additional == successType.Additional);
-
-                if (outcomeGroup == null)
-                {
-                    outcomeGroup = new UmaEventChoiceOutcomeGroup
-                    {
-                        SuccessType = successType,
-                        Outcomes = new List<UmaEventChoiceOutcome>()
-                    };
-
-                    choice.Outcomes.Add(outcomeGroup);
-                }
-
-                outcomeGroup.Outcomes.AddRange(parsedOutcomes);
+                umaEvent.Choices.Add(choice);
             }
 
-            eventsDict[eventId] = umaEvent;
+            // Parse the outcomes from the DTO
+            var parsedOutcomes = ParseOutcomes(dto.AllOutcomes);
+
+            // Find existing outcome group for this success type or create a new one
+            var outcomeGroup = choice.Outcomes.FirstOrDefault(g => g.SuccessType.Type == successType.Type &&
+                                                                   g.SuccessType.Additional == successType.Additional);
+
+            if (outcomeGroup == null)
+            {
+                outcomeGroup = new UmaEventChoiceOutcomeGroup
+                {
+                    SuccessType = successType,
+                    Outcomes = new List<UmaEventChoiceOutcome>()
+                };
+
+                choice.Outcomes.Add(outcomeGroup);
+            }
+
+            outcomeGroup.Outcomes.AddRange(parsedOutcomes);
         }
 
-        return eventsDict;
+        return umaEvent;
     }
+
 
     private static UmaEventChoiceSuccessType ParseSuccessType(string raw)
     {

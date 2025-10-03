@@ -6,6 +6,9 @@ namespace UmaEventReaderV2.Web.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers event area offset provider with options.
+    /// </summary>
     public static IServiceCollection AddEventAreaOffsetProvider(
         this IServiceCollection services,
         Action<EventAreaOffsetOptions> configure)
@@ -15,6 +18,10 @@ public static class ServiceCollectionExtensions
             .AddSingleton<EventAreaOffsetProvider>();
     }
 
+    /// <summary>
+    /// Registers a debug text extractor with predefined options.
+    /// Only used in DEBUG builds.
+    /// </summary>
     public static IServiceCollection AddDebugTextExtractor(
         this IServiceCollection services,
         Action<DebugTextExtractorOptions> options)
@@ -24,32 +31,46 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ITextExtractor, DebugTextExtractor>();
     }
 
+    /// <summary>
+    /// Registers all Uma Event Reader core services.
+    /// </summary>
     public static IServiceCollection AddUmaEventReaderServices(
         this IServiceCollection services)
     {
-        return services
-            // .AddSingleton<IUmaEventJsonProvider, PlaywrightUmaEventJsonProvider>()
-            .AddSingleton<IUmaEventJsonProvider, StaticUmaEventJsonProvider>()
-            .AddSingleton<UmaReaderSettingsProvider>()
-            .AddSingleton<IEventEmitter, CachingEventEmitter>()
-            .AddSingleton<IUmaEventRepository, UmaEventMemoryRepository>()
-            .AddSingleton<IUmaEventService, UmaEventService>()
-            .AddSingleton<IScreenshotAreaProvider, StaticScreenshotAreaProvider>()
-            .AddEventAreaOffsetProvider(options => options.Offset = 55)
-            .AddSingleton<OcrService>()
-            .AddSingleton<UmaEventReader>()
+        // Infrastructure / Providers
+        services
+            .AddSingleton<IUmaEventJsonProvider, PlaywrightUmaEventJsonProvider>()
+            // Alternative provider (for offline testing)
+            // .AddSingleton<IUmaEventJsonProvider, StaticUmaEventJsonProvider>()
             .AddSingleton<IScreenshotProvider, ScreenshotProvider>()
+            .AddSingleton<IScreenshotAreaProvider, StaticScreenshotAreaProvider>()
+            .AddEventAreaOffsetProvider(options => options.Offset = 55);
+
+        // Repositories
+        services
+            .AddSingleton<IUmaRepository, UmaRepository>()
+            .AddSingleton<IUmaEventRepository, UmaEventMemoryRepository>()
+            .AddSingleton<IRepositoryInitializer, RepositoryInitializer>();
+
+        // Core Services
+        services
+            .AddSingleton<UmaReaderSettingsProvider>()
+            .AddSingleton<UmaEventMapper>()
+            .AddSingleton<IEventEmitter, CachingEventEmitter>()
+            .AddSingleton<OcrService>()
+            .AddSingleton<UmaEventReader>();
+
+        // Text Extraction (debug vs production)
 #if DEBUG
-            .AddDebugTextExtractor(o =>
-            {
-                // todo debug this
-                // o.Result = "I'm not Afraid!";
-                o.Result = "Sunny Day Standoff";
-                // o.Result = "Who Do You Run For?";
-                o.Confidence = 1f;
-            });
+        services.AddDebugTextExtractor(o =>
+        {
+            o.Result = "Sunny Day Standoff";
+            o.Confidence = 1f;
+        });
 #else
-            .AddSingleton<ITextExtractor, TesseractTextExtractor>();
+        services.AddSingleton<ITextExtractor, TesseractTextExtractor>();
 #endif
+
+        return services;
     }
 }

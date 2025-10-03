@@ -6,7 +6,7 @@ using UmaEventReaderV2.Services;
 
 namespace UmaEventReaderV2.Web.Hubs;
 
-public class EventHub(IUmaEventService eventService, UmaEventReader reader) : Hub
+public class EventHub(IUmaEventRepository eventRepository, UmaEventReader reader) : Hub
 {
     // called by backend when a new event is found
     public async Task BroadcastEvent(UmaEvent umaEvent)
@@ -21,7 +21,7 @@ public class EventHub(IUmaEventService eventService, UmaEventReader reader) : Hu
 
     public async Task<IEnumerable<UmaEvent>> Search(EventSearchModel request)
     {
-        return eventService.GetAllWhereNameIsLike(request.Name);
+        return eventRepository.GetAllWhereNameIsLike(request.Name);
     }
 
     public async Task ReportStatus(BackendStatus status)

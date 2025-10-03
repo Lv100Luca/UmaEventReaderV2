@@ -8,7 +8,9 @@ public record RootDto(
     [property: JsonPropertyName("headingText")]
     string HeadingText,
     [property: JsonPropertyName("choiceArraySchema")]
-    ChoiceArraySchemaDto ChoiceArraySchema
+    ChoiceArraySchemaDto ChoiceArraySchema,
+    [property: JsonPropertyName("characterArraySchema")]
+    CharacterArraySchemaDto CharacterArraySchema
 );
 
 public record ChoiceArraySchemaDto(
@@ -16,6 +18,13 @@ public record ChoiceArraySchemaDto(
     RelationalDamreyDbSchemaDto RelationalDamreyDbSchemaDto,
     [property: JsonPropertyName("choices")]
     List<UmaEventChoiceDto> EventChoices
+);
+
+public record CharacterArraySchemaDto(
+    [property: JsonPropertyName("relationalDamreyDbSchema")]
+    RelationalDamreyDbSchemaDto RelationalDamreyDbSchemaDto,
+    [property: JsonPropertyName("characters")]
+    List<UmaDto> Characters
 );
 
 public record RelationalDamreyDbSchemaDto(

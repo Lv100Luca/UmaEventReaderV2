@@ -8,7 +8,8 @@ namespace UmaEventReaderV2.Services;
 public class UmaEventReader(
     IScreenshotAreaProvider screenshotAreaProvider,
     OcrService ocrService,
-    IUmaEventService eventService,
+    IUmaEventRepository umaEventRepository,
+    IRepositoryInitializer initializer,
     IEventEmitter eventEmitter,
     ILogger<UmaEventReader> logger,
     UmaReaderSettingsProvider settings,
@@ -26,7 +27,7 @@ public class UmaEventReader(
     {
         try
         {
-            await eventService.InitializeDataAsync();
+            await initializer.InitializeAsync(cancellationToken);
 
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -61,7 +62,7 @@ public class UmaEventReader(
             if (!TextValidator.IsValid(result, confidenceThreshold))
                 continue;
 
-            var events = eventService.GetAllWhereNameIsLike(result.Text).ToList();
+            var events = umaEventRepository.GetAllWhereNameIsLike(result.Text).ToList();
 
             // var log = new StringBuilder()
             //     .AppendLine($"Processed {area.Name}")

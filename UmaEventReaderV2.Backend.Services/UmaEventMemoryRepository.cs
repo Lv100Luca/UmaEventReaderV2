@@ -1,40 +1,73 @@
-using System.Text.Json;
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using UmaEventReaderV2.Abstractions;
+using UmaEventReaderV2.Common;
 using UmaEventReaderV2.Common.Models;
 using UmaEventReaderV2.Models.dtos;
+using UmaEventReaderV2.Services.Extensions;
+using UmaEventReaderV2.Services.Mapper;
 
 namespace UmaEventReaderV2.Services;
 
-public class UmaEventMemoryRepository(IUmaEventJsonProvider jsonProvider) : IUmaEventRepository
+public class UmaEventMemoryRepository(IUmaRepository umaRepository, ILogger<UmaEventMemoryRepository> logger)
+    : IUmaEventRepository
 {
-    private Dictionary<long, UmaEvent> events = [];
+    private readonly List<UmaEvent> events = [];
 
-    public async Task InitializeDataAsync()
+    // move to initializer class?
+    public async Task InitializeAsync(IEnumerable<UmaEventChoiceDto> dtos, CancellationToken cancellationToken = default)
     {
-        var json = await jsonProvider.GetJsonFileAsync();
+        var eventGroups = dtos.GroupBy(e => e.EventName);
 
-        var root = JsonSerializer.Deserialize<RootDto>(json);
+        foreach (var group in eventGroups)
+        {
+            var characterName = group.First().CharacterName;
 
-        if (root is null)
-            throw new Exception("Could not deserialize json");
+            var names = Regex
+                .Split(characterName, @",(?![^(]*\))")
+                .Select(p => p.Trim())
+                .Where(p => !string.IsNullOrEmpty(p))
+                .ToArray();
 
-        events = UmaEventMapper.MapFromDtos(root.ChoiceArraySchema.EventChoices);
-    }
+            var umas = FindOrCreate(names);
 
-    public UmaEvent? GetById(long id)
-    {
-        var found = events.TryGetValue(id, out var match);
+            var mappedEvent = UmaEventMapperV2.Map(group, umas);
 
-        return found ? match : null;
+            events.Add(mappedEvent);
+        }
+
+        logger.LogSuccess($"Event repository initialized with {events.Count} events.");
     }
 
     public IEnumerable<UmaEvent> GetAll()
     {
-        return events.Values;
+        return events;
     }
 
-    public IQueryable<KeyValuePair<long, UmaEvent>> Query()
+    public IQueryable<UmaEvent> Query()
     {
         return events.AsQueryable();
+    }
+
+    public IEnumerable<UmaEvent> GetAllWhereNameIsLike(string eventName)
+    {
+        return Query().WhereEventNameContains(eventName);
+    }
+
+    private IEnumerable<Uma> FindOrCreate(string[] names)
+    {
+        foreach (var name in names)
+        {
+            var foundUma = umaRepository.GetByFullName(name);
+
+            if (foundUma == null)
+            {
+                foundUma = UmaMapper.Map(name);
+
+                umaRepository.TryAddSupportUma(foundUma);
+            }
+
+            yield return foundUma;
+        }
     }
 }

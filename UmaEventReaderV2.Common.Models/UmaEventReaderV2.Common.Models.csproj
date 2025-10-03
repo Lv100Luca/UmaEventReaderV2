@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\UmaEventReaderV2.Common\UmaEventReaderV2.Common.csproj" />
+    </ItemGroup>
+
 </Project>

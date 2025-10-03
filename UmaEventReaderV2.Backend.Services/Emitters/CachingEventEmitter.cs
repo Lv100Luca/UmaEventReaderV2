@@ -27,6 +27,8 @@ public class CachingEventEmitter(ILogger<CachingEventEmitter> logger) : IEventEm
         lastEmittedTime = DateTime.Now;
         lastEmittedBatch = batch;
 
+        logger.LogInformation("emitting event " + events.Count());
+
         OnEventFound?.Invoke(batch);
     }
 }

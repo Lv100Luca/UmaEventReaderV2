@@ -62,7 +62,7 @@ public class UmaEventMemoryRepository(IUmaRepository umaRepository, ILogger<UmaE
 
             if (foundUma == null)
             {
-                foundUma = UmaMapper.Map(name);
+                foundUma = UmaMapper.Map(name, supportUma: true);
 
                 umaRepository.TryAddSupportUma(foundUma);
             }

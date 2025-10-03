@@ -10,6 +10,8 @@ public class Uma
     public required string Character { get; init; }
     public required string Variant { get; init; }
 
+    public bool SupportUma { get; init; }
+
     public Rarity Rarity { get; init; }
 
     public string ImageUrl { get; init; } = string.Empty;

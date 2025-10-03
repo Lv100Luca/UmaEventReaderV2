@@ -20,14 +20,15 @@ public static class UmaMapper
         };
     }
 
-    public static Uma Map(string name)
+    public static Uma Map(string name, bool supportUma = false)
     {
         return new Uma
         {
             Id = GuidGenerator.Generate(name),
             FullName = name,
             Character = GetCharacter(name),
-            Variant = GetVariant(name)
+            Variant = GetVariant(name),
+            SupportUma = supportUma
         };
     }
 

@@ -79,7 +79,11 @@ public class UmaEventMemoryRepository(IUmaRepository umaRepository, ILogger<UmaE
             {
                 foundUma = UmaMapper.Map(name, supportUma: true);
 
-                umaRepository.TryAddSupportUma(foundUma);
+                // actively decide not to add them here
+                // they will be present in the events
+                // but arent otherwise relevant
+
+                // umaRepository.TryAddSupportUma(foundUma);
             }
 
             yield return foundUma;

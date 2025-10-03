@@ -1,6 +1,6 @@
 @page "/"
 @using System.Collections.ObjectModel
-@inject HubConnection HubConnection
+@inject UmaEventHub EventHub
 
 <h1>UmaEventReader Dashboard</h1>
 <div class="dashboard-container">
@@ -24,7 +24,7 @@
         // InvokeAsync(StateHasChanged);
         // });
 
-        HubConnection.On<EventBatch>("OnEventFound", batch =>
+        EventHub.Connection.On<EventBatch>("OnEventFound", batch =>
         {
             events.Clear();
 
@@ -34,9 +34,9 @@
             InvokeAsync(StateHasChanged);
         });
 
-        if (HubConnection.State == HubConnectionState.Disconnected)
+        if (EventHub.Connection.State == HubConnectionState.Disconnected)
         {
-            await HubConnection.StartAsync();
+            await EventHub.Connection.StartAsync();
         }
     }
 }

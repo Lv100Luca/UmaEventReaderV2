@@ -1,6 +1,6 @@
 @page "/styletest"
 
-@inject HubConnection hub
+@inject WebUmaHub Hub
 
 <h1>Styletest</h1>
 
@@ -25,23 +25,10 @@
         };
     }
 
-    private string GetOutcomeStyle(OutcomeType type) => type switch
+    protected override async Task OnInitializedAsync()
     {
-        OutcomeType.Speed => "background-color:#39beff; color:white;",
-        OutcomeType.Stamina => "background-color:#ff8675; color:white;",
-        OutcomeType.Power => "background-color:#ffa714; color:white;",
-        OutcomeType.Guts => "background-color:#f564aa; color:white;",
-        OutcomeType.Wit => "background-color:#1bd29c; color:white;",
-        OutcomeType.Mood => "background-color:#FFCA28; color:white;",
-        OutcomeType.AllStats => "background-color:#FF7043; color:white;",
-        OutcomeType.Friendship => "background-color:#EC407A; color:white;",
-        OutcomeType.SkillPts => "background-color:#7E57C2; color:white;",
-        OutcomeType.SkillHint => "background-color:#8D6E63; color:white;",
-        OutcomeType.Energy => "background-color:#FF8F00; color:white;",
-        OutcomeType.MaxEnergy => "background-color:#9E9E9E; color:white;",
-        OutcomeType.GoodCondition => "background-color:#f49143; color:white;",
-        OutcomeType.BadCondition => "background-color:#55a2f5; color:white;",
-        OutcomeType.EndOfEventChain => "background-color:#9E9E9E; color:white;",
-        _ => "background-color:#9E9E9E; color:white;"
-    };
+        var umas = await Hub.GetUmas();
+
+        Console.Out.WriteLine(umas.Count());
+    }
 }

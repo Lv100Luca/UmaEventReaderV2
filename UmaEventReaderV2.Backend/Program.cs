@@ -28,6 +28,8 @@ app.UseCors();
 
 app.MapHub<BackendEventHub>("/events");
 app.MapHub<BackendSettingsHub>("/settings");
+app.MapHub<BackendUmaHub>("/umas");
+
 app.MapControllers();
 
 // Ensure background services are initialized

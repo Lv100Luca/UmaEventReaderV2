@@ -1,4 +1,4 @@
-@inject HubConnection HubConnection
+@* @inject HubConnection HubConnection *@
 
 <MudTooltip Text="@TooltipText">
     <MudChip T="string"
@@ -39,13 +39,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        HubConnection.On<UmaEvent>("OnEventFound", ev => SetStatus(BackendStatus.Running));
+        // HubConnection.On<UmaEvent>("OnEventFound", ev => SetStatus(BackendStatus.Running));
 
-        HubConnection.On<string>("OnLog", msg => SetStatus(BackendStatus.Running));
+        // HubConnection.On<string>("OnLog", msg => SetStatus(BackendStatus.Running));
 
-        HubConnection.Closed += async _ => SetStatus(BackendStatus.Deadge);
-        HubConnection.Reconnecting += async _ => SetStatus(BackendStatus.Deadge);
-        HubConnection.Reconnected += async _ => SetStatus(BackendStatus.Running);
+        // HubConnection.Closed += async _ => SetStatus(BackendStatus.Deadge);
+        // HubConnection.Reconnecting += async _ => SetStatus(BackendStatus.Deadge);
+        // HubConnection.Reconnected += async _ => SetStatus(BackendStatus.Running);
     }
 
     private void SetStatus(BackendStatus newStatus)

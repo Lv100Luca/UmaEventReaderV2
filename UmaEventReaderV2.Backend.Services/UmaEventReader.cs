@@ -11,6 +11,7 @@ public class UmaEventReader(
     IUmaEventService eventService,
     IEventEmitter eventEmitter,
     ILogger<UmaEventReader> logger,
+    UmaReaderSettingsProvider settings,
     float confidenceThreshold = 0.6f)
 {
     private readonly TimeSpan checkInterval = TimeSpan.FromMilliseconds(250);
@@ -29,7 +30,7 @@ public class UmaEventReader(
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                await Task.Delay(checkInterval, cancellationToken);
+                await Task.Delay(settings.ScanInterval, cancellationToken);
 
                 var result = TryProcessAreas(screenshotAreaProvider.GetAllAreas(), out var events);
 

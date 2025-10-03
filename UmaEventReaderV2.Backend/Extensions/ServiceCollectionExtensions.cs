@@ -30,6 +30,7 @@ public static class ServiceCollectionExtensions
         return services
             // .AddSingleton<IUmaEventJsonProvider, PlaywrightUmaEventJsonProvider>()
             .AddSingleton<IUmaEventJsonProvider, StaticUmaEventJsonProvider>()
+            .AddSingleton<UmaReaderSettingsProvider>()
             .AddSingleton<IEventEmitter, CachingEventEmitter>()
             .AddSingleton<IUmaEventRepository, UmaEventMemoryRepository>()
             .AddSingleton<IUmaEventService, UmaEventService>()

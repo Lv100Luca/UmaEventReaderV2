@@ -1,10 +1,3 @@
-using System.Text.Json;
-using Microsoft.Extensions.Logging;
-using UmaEventReaderV2.Abstractions;
-using UmaEventReaderV2.Common.Models;
-using UmaEventReaderV2.Models.dtos;
-using UmaEventReaderV2.Services.Mapper;
-
 namespace UmaEventReaderV2.Services;
 
 // public class UmaRepositoryFactory(IUmaEventJsonProvider jsonProvider, ILogger<UmaRepository> logger) : IRepositoryFactory<IUmaRepository>

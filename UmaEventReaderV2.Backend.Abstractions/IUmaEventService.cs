@@ -1,5 +1,3 @@
-using UmaEventReaderV2.Common.Models;
-
 namespace UmaEventReaderV2.Abstractions;
 
 // public interface IUmaEventService

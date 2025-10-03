@@ -11,7 +11,7 @@ public class UmaRepository(ILogger<UmaRepository> logger) : IUmaRepository
 {
     private readonly HashSet<Uma> umas = [];
 
-    public async Task InitializeAsync(IEnumerable<UmaDto> dtos,  CancellationToken cancellationToken = default)
+    public async Task InitializeAsync(IEnumerable<UmaDto> dtos, CancellationToken cancellationToken = default)
     {
         foreach (var dto in dtos)
         {
@@ -26,7 +26,7 @@ public class UmaRepository(ILogger<UmaRepository> logger) : IUmaRepository
     public bool TryAddSupportUma(Uma uma)
     {
         // if (uma is not SupportUma)
-            // return false;
+        // return false;
 
         return umas.Add(uma);
     }
@@ -38,12 +38,13 @@ public class UmaRepository(ILogger<UmaRepository> logger) : IUmaRepository
 
     public Uma? GetByFullName(string name)
     {
-        return umas.FirstOrDefault(u =>  u.FullName == name);
+        return umas.FirstOrDefault(u => u.FullName == name);
     }
 
     public IEnumerable<Uma> GetByNames(string[] names)
     {
         var nameSet = new HashSet<string>(names, StringComparer.OrdinalIgnoreCase);
+
         return umas.Where(u => nameSet.Contains(u.FullName));
     }
 }

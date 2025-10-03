@@ -9,6 +9,7 @@ public static class LoggerExtensions
         ArgumentNullException.ThrowIfNull(logger);
 
         var originalColor = Console.ForegroundColor;
+
         try
         {
             Console.ForegroundColor = ConsoleColor.Green;

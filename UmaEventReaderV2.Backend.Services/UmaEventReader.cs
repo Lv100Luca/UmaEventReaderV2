@@ -57,7 +57,8 @@ public class UmaEventReader(
             if (!TextValidator.IsValid(result, confidenceThreshold))
                 continue;
 
-            var events = umaEventRepository.GetAllForCharacterWhereNameIsLike(settings.CareerCharacterOverride, result.Text).ToList();
+            var events = umaEventRepository.GetAllForCharacterWhereNameIsLike(settings.CareerCharacterOverride, result.Text)
+                .ToList();
 
             // var log = new StringBuilder()
             //     .AppendLine($"Processed {area.Name}")

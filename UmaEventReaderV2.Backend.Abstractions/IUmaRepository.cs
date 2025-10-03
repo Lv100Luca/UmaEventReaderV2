@@ -13,5 +13,4 @@ public interface IUmaRepository
 
     Uma? GetByFullName(string name);
     IEnumerable<Uma> GetByNames(string[] names);
-
 }

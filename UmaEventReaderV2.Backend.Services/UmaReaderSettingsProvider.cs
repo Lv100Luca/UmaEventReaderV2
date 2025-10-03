@@ -14,4 +14,3 @@ public class UmaReaderSettingsProvider
     public bool OverrideArea { get; set; } = false;
     public Rectangle? AreaOverride { get; set; }
 }
-

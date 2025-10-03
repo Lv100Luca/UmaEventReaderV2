@@ -22,5 +22,4 @@ public class BackendSettingsHub(UmaReaderSettingsProvider settings) : Hub
         settings.CareerCharacterOverride = dto.CareerCharacterOverride;
         settings.ScanInterval = dto.ScanInterval;
     }
-
 }

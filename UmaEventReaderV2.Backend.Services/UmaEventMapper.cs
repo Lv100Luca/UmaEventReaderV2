@@ -17,8 +17,6 @@ public class UmaEventMapper(IUmaRepository umaRepository)
             if (!long.TryParse(group.First().Id, out var eventId))
                 throw new InvalidOperationException($"Invalid Event Id: {group.First().Id}");
 
-
-
             var umaEvent = new UmaEvent
             {
                 Name = group.Key.EventName,
@@ -47,7 +45,7 @@ public class UmaEventMapper(IUmaRepository umaRepository)
                             Number = choiceNumber,
                             Text = dto.ChoiceText
                         },
-                        Outcomes = new List<UmaEventChoiceOutcomeGroup>()
+                        Outcomes = []
                     };
 
                     umaEvent.Choices.Add(choice);

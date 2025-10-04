@@ -38,7 +38,7 @@ public class UmaRepository(ILogger<UmaRepository> logger) : IUmaRepository
 
     public Uma? GetByFullName(string name)
     {
-        return umas.FirstOrDefault(u => u.FullName == name);
+        return umas.FirstOrDefault(u => string.Equals(u.FullName, name, StringComparison.OrdinalIgnoreCase));
     }
 
     public IEnumerable<Uma> GetByNames(string[] names)

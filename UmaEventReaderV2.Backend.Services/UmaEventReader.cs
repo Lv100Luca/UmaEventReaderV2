@@ -16,9 +16,6 @@ public class UmaEventReader(
     UmaReaderSettingsProvider settings,
     float confidenceThreshold = 0.6f) : BackgroundService
 {
-    private string lastText = string.Empty;
-    private List<string> lastEventIds = [];
-
     override public async Task StartAsync(CancellationToken cancellationToken)
     {
         await initializer.InitializeAsync(cancellationToken);
@@ -31,7 +28,6 @@ public class UmaEventReader(
     {
         logger.LogInformation("Stopping UmaEventReader");
     }
-
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -52,10 +48,6 @@ public class UmaEventReader(
         catch (Exception ex)
         {
             logger.LogError(ex, "Error in UmaEventReader");
-
-            await ExecuteAsync(stoppingToken);
-
-            logger.LogInformation("Restarted Service");
         }
     }
 
@@ -73,14 +65,6 @@ public class UmaEventReader(
             var events = umaEventRepository.GetAllForCharacterWhereNameIsLike(settings.CareerCharacterOverride, result.Text)
                 .ToList();
 
-            // var log = new StringBuilder()
-            //     .AppendLine($"Processed {area.Name}")
-            //     .AppendLine($"- '{result.Text}'")
-            //     .AppendLine($"- {events.Count} events found")
-            //     .ToString();
-
-            // Console.Out.WriteLine(log);
-
             if (events.Count > 0)
             {
                 foundEvents = events;
@@ -89,6 +73,6 @@ public class UmaEventReader(
             }
         }
 
-        return null; // no area yielded any events
+        return null;
     }
 }

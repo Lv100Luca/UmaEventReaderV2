@@ -6,7 +6,7 @@ using UmaEventReaderV2.Services;
 
 namespace UmaEventReaderV2.Web.Hubs;
 
-public class BackendEventHub(IUmaEventRepository eventRepository, UmaEventReader reader) : Hub
+public class BackendEventHub(IUmaEventRepository eventRepository) : Hub
 {
     // called by backend when a new event is found
     public async Task BroadcastEvent(UmaEvent umaEvent)
@@ -27,12 +27,5 @@ public class BackendEventHub(IUmaEventRepository eventRepository, UmaEventReader
     public async Task ReportStatus(BackendStatus status)
     {
         await Clients.All.SendAsync("OnStatusChanged", status.ToString());
-    }
-
-    public async Task RestartReaderAsync()
-    {
-        await reader.RunAsync();
-
-        await Console.Out.WriteLineAsync("Restarted reader");
     }
 }

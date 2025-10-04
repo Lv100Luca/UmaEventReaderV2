@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Common.Models;
@@ -13,20 +14,32 @@ public class UmaEventReader(
     IEventEmitter eventEmitter,
     ILogger<UmaEventReader> logger,
     UmaReaderSettingsProvider settings,
-    float confidenceThreshold = 0.6f)
+    float confidenceThreshold = 0.6f) : BackgroundService
 {
     private string lastText = string.Empty;
     private List<string> lastEventIds = [];
 
-    public async Task RunAsync(CancellationToken cancellationToken = default)
+    override public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        await initializer.InitializeAsync(cancellationToken);
+
+
+        await base.StartAsync(cancellationToken);
+    }
+
+    override public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        logger.LogInformation("Stopping UmaEventReader");
+    }
+
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         try
         {
-            await initializer.InitializeAsync(cancellationToken);
-
-            while (!cancellationToken.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(settings.ScanInterval, cancellationToken);
+                await Task.Delay(settings.ScanInterval, stoppingToken);
 
                 var result = TryProcessAreas(screenshotAreaProvider.GetAllAreas(), out var events);
 
@@ -40,7 +53,7 @@ public class UmaEventReader(
         {
             logger.LogError(ex, "Error in UmaEventReader");
 
-            await RunAsync(cancellationToken);
+            await ExecuteAsync(stoppingToken);
 
             logger.LogInformation("Restarted Service");
         }

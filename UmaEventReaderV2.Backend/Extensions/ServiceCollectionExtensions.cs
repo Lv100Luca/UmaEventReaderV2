@@ -58,7 +58,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<UmaEventMapper>()
             .AddSingleton<IEventEmitter, CachingEventEmitter>()
             .AddSingleton<OcrService>()
-            .AddSingleton<UmaEventReader>();
+            .AddHostedService<UmaEventReader>();
 
         // Text Extraction (debug vs production)
 #if DEBUG

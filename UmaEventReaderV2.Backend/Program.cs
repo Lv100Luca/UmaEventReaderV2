@@ -35,8 +35,8 @@ app.MapControllers();
 
 // Ensure background services are initialized
 _ = app.Services.GetRequiredService<EventHubBroadcaster>();
-var reader = app.Services.GetRequiredService<UmaEventReader>();
+// var reader = app.Services.GetRequiredService<UmaEventReader>();
 
-_ = Task.Run(() => reader.RunAsync(app.Lifetime.ApplicationStopping));
+// _ = Task.Run(() => reader.RunAsync(app.Lifetime.ApplicationStopping));
 
 app.Run();

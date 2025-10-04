@@ -64,7 +64,8 @@ public static class ServiceCollectionExtensions
 #if DEBUG
         services.AddDebugTextExtractor(o =>
         {
-            o.Result = "Sunny Day Standoff";
+            o.Result = "Extra Training";
+            // o.Result = "Sunny Day Standoff";
             o.Confidence = 1f;
         });
 #else

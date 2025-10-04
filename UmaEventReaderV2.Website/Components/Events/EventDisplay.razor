@@ -2,16 +2,23 @@
 
 <MudCard Elevation="0" Class="mb-3" Style="border: 2px solid lightgrey">
     <MudCardHeader Class="pa-2">
-        <MudStack Spacing="2">
-            <MudText Typo="Typo.h6">
-                @Event.Name - @Event.IsTraineeEvent
-            </MudText>
-            <MudText Typo="Typo.body1">
-                @foreach (var uma in @Event.Umas)
-                {
-                    <span>@uma.FullName</span>
-                }
-            </MudText>
+        <MudStack Style="width: 100%" Row Justify="Justify.SpaceBetween">
+            <MudStack Spacing="2">
+                <MudText Typo="Typo.h6">
+                    @Event.Name
+                </MudText>
+                <MudText Typo="Typo.body1">
+                    @foreach (var uma in @Event.Umas)
+                    {
+                        <span>@uma.FullName</span>
+                    }
+                </MudText>
+            </MudStack>
+            <MudSpacer/>
+            @if (Event.IsTraineeEvent)
+            {
+                <MudImage Height="64" Src="@Event.Umas.First().ImageUrl"/>
+            }
         </MudStack>
     </MudCardHeader>
 

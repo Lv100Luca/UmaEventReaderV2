@@ -15,6 +15,31 @@
     }
 </MudStack>
 
+<MudDivider/>
+
+<MudContainer Class="mt-4">
+    <MudText Typo="Typo.h5" GutterBottom="true">All Umas</MudText>
+
+    <MudGrid>
+        @foreach (var uma in umas.OrderBy(u => u.FullName))
+        {
+            <MudItem xs="6" sm="3" md="2" lg="1">
+                <MudPaper Class="d-flex flex-column align-center pa-2"
+                          Elevation="2"
+                          Square="true"
+                          Style="height:140px; width:100%;">
+                    <MudImage Src="@uma.ImageUrl"
+                              Alt="@uma.FullName"
+                              Style="height:80px; width:auto; object-fit:contain;" />
+                    <MudText Typo="Typo.caption" Align="Align.Center" Class="mt-2">
+                        @uma.FullName
+                    </MudText>
+                </MudPaper>
+            </MudItem>
+        }
+    </MudGrid>
+</MudContainer>
+
 @code {
     private UmaEventChoiceOutcome Get(OutcomeType type)
     {
@@ -27,8 +52,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var umas = await Hub.GetUmas();
-
-        Console.Out.WriteLine(umas.Count());
+        umas = await Hub.GetUmas();
     }
+
+    private IEnumerable<Uma> umas = [];
 }

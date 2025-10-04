@@ -1,0 +1,75 @@
+@page "/settings"
+@using UmaEventReaderV2.Common.Models.dto
+@inject WebUmaHub UmaHub
+@inject WebSettingsHub SettingsHub
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-4" Elevation="2">
+
+    <MudText Typo="Typo.h5">Application Settings</MudText>
+    <MudDivider Class="my-2"/>
+
+    <MudStack Spacing="2">
+        <MudNumericField @bind-Value="ScanMillies"
+                         Label="Scan Interval (ms)"
+                         Min="50"
+                         Max="5000"
+                         Step="50"
+                         Variant="Variant.Outlined"
+                         Immediate="true"/>
+
+        <MudSwitch T="bool" @bind-Value="settings.TryDetermineCharacter"
+                   Color="Color.Primary"
+                   Label="Try Determine Character"/>
+
+        <MudAutocomplete T="Uma"
+                         @bind-Value="settings.CareerCharacterOverride"
+                         Label="Career Character Override"
+                         ToStringFunc="@(uma => uma?.FullName)"
+                         SearchFunc="SearchUmas"
+                         Clearable="true"
+                         Dense="true"
+                         CoerceText="true"
+                         ResetValueOnEmptyText="true"/>
+
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveSettings">
+            Save
+        </MudButton>
+    </MudStack>
+</MudPaper>
+
+@code {
+    private SettingsDto settings = new();
+
+    private int ScanMillies
+    {
+        get => settings.ScanInterval.Milliseconds;
+        set => settings.ScanInterval = TimeSpan.FromMilliseconds(value);
+    }
+
+    private IEnumerable<Uma> umas = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        settings = await SettingsHub.GetSettingsAsync();
+
+        umas = await UmaHub.GetUmas();
+    }
+
+    private async Task SaveSettings()
+    {
+        Console.WriteLine($"ScanInterval: {settings.ScanInterval}, Character: {settings.CareerCharacterOverride?.FullName}");
+
+        await SettingsHub.SaveSettingsAsync(settings);
+
+        Snackbar.Add("Settings saved successfully.", Severity.Success);
+    }
+
+    private async Task<IEnumerable<Uma>> SearchUmas(string? name, CancellationToken cancellation)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return umas;
+
+        return umas.Where(u => u.FullName.Contains(name, StringComparison.OrdinalIgnoreCase));
+    }
+}

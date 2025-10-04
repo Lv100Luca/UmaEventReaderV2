@@ -3,7 +3,7 @@ using UmaEventReaderV2.Common.Models.dto;
 
 namespace UmaEventReaderV2.Website.Hubs;
 
-public class WebSettingsHub() : HubBase("/settings")
+public class WebSettingsHub() : HubBase("settings")
 {
     public async Task<SettingsDto> GetSettingsAsync()
     {

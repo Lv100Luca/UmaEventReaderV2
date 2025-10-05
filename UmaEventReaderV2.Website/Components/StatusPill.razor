@@ -1,4 +1,4 @@
-@* @inject HubConnection HubConnection *@
+@inject ConnectionStatusHub StatusHub
 
 <MudTooltip Text="@TooltipText">
     <MudChip T="string"
@@ -13,44 +13,81 @@
 </MudTooltip>
 
 @code {
-    private BackendStatus status = BackendStatus.Running;
-    private Timer? idleTimer;
+    private HubConnectionState Status { get; set; }
 
-    private string StatusText => status switch
+    private string StatusText => Status switch
     {
-        BackendStatus.Running => "Working",
-        BackendStatus.Deadge => "Error",
+        HubConnectionState.Disconnected => "Disconnected",
+        HubConnectionState.Connecting => "Connecting...",
+        HubConnectionState.Reconnecting => "Reconnecting...",
+        HubConnectionState.Connected => "Connected",
         _ => "Unknown"
     };
 
-    private string TooltipText => status switch
+    private string TooltipText => Status switch
     {
-        BackendStatus.Running => "Receiving events",
-        BackendStatus.Deadge => "Connection error",
-        _ => "Unknown"
+        HubConnectionState.Disconnected => "No connection to backend",
+        HubConnectionState.Connecting => "Connecting to backend...",
+        HubConnectionState.Reconnecting => "Re-establishing connection...",
+        HubConnectionState.Connected => "Connected to backend",
+        _ => "Unknown state"
     };
 
-    private Color ChipColor => status switch
+    private Color ChipColor
     {
-        BackendStatus.Running => Color.Success,
-        BackendStatus.Deadge => Color.Error,
-        _ => Color.Default
-    };
+        get
+        {
+            if (Status == HubConnectionState.Connected && !IsAlive)
+                return Color.Warning;
+
+            return Status switch
+            {
+                HubConnectionState.Disconnected => Color.Error,
+                HubConnectionState.Connecting => Color.Info,
+                HubConnectionState.Reconnecting => Color.Info,
+                HubConnectionState.Connected => Color.Success,
+                _ => Color.Default
+            };
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        // HubConnection.On<UmaEvent>("OnEventFound", ev => SetStatus(BackendStatus.Running));
+        var a = await StatusHub.PingAsync();
 
-        // HubConnection.On<string>("OnLog", msg => SetStatus(BackendStatus.Running));
+        Console.Out.WriteLine(a);
 
-        // HubConnection.Closed += async _ => SetStatus(BackendStatus.Deadge);
-        // HubConnection.Reconnecting += async _ => SetStatus(BackendStatus.Deadge);
-        // HubConnection.Reconnected += async _ => SetStatus(BackendStatus.Running);
+        var cts = new CancellationTokenSource();
+
+        await MonitorPingAsync(cts.Token);
     }
 
-    private void SetStatus(BackendStatus newStatus)
+    public bool IsAlive { get; set; }
+
+    public async Task MonitorPingAsync(CancellationToken token)
     {
-        status = newStatus;
-        InvokeAsync(StateHasChanged);
+        try
+        {
+            while (!token.IsCancellationRequested)
+            {
+                Status = StatusHub.Connection.State;
+
+                await Console.Out.WriteLineAsync(Status.ToString());
+
+                if (Status == HubConnectionState.Connected)
+                    IsAlive = await StatusHub.PingAsync();
+
+                StateHasChanged();
+
+                await Task.Delay(TimeSpan.FromSeconds(1), token);
+            }
+        }
+        catch (Exception e)
+        {
+            Status = HubConnectionState.Disconnected;
+            IsAlive = false;
+            StateHasChanged();
+        }
     }
 }
+

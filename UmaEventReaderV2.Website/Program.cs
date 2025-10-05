@@ -24,6 +24,7 @@ builder.Services.AddMudServices(config =>
 builder.Services.AddSingleton<UmaEventHub>();
 builder.Services.AddSingleton<WebSettingsHub>();
 builder.Services.AddSingleton<WebUmaHub>();
+builder.Services.AddSingleton<ConnectionStatusHub>();
 
 var app = builder.Build();
 

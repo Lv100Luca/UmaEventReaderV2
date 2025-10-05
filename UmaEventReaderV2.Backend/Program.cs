@@ -30,13 +30,10 @@ app.UseCors();
 app.MapHub<BackendEventHub>("/events");
 app.MapHub<BackendSettingsHub>("/settings");
 app.MapHub<BackendUmaHub>("/umas");
+app.MapHub<BackendConnectionStatusHub>("/status");
 
 app.MapControllers();
 
-// Ensure background services are initialized
 _ = app.Services.GetRequiredService<EventHubBroadcaster>();
-// var reader = app.Services.GetRequiredService<UmaEventReader>();
-
-// _ = Task.Run(() => reader.RunAsync(app.Lifetime.ApplicationStopping));
 
 app.Run();

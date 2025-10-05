@@ -17,6 +17,8 @@ public class UmaEventMemoryRepository(IUmaRepository umaRepository, ILogger<UmaE
     // move to initializer class?
     public async Task InitializeAsync(IEnumerable<UmaEventChoiceDto> dtos, CancellationToken cancellationToken = default)
     {
+        events.Clear();
+
         var eventGroups = dtos.GroupBy(e => e.EventName);
 
         foreach (var group in eventGroups)

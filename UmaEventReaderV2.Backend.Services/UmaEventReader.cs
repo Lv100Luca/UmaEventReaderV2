@@ -20,7 +20,6 @@ public class UmaEventReader(
     {
         await initializer.InitializeAsync(cancellationToken);
 
-
         await base.StartAsync(cancellationToken);
     }
 
@@ -48,6 +47,9 @@ public class UmaEventReader(
         catch (Exception ex)
         {
             logger.LogError(ex, "Error in UmaEventReader");
+
+            await StopAsync(stoppingToken);
+            await StartAsync(stoppingToken);
         }
     }
 

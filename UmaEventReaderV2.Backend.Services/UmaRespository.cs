@@ -13,6 +13,8 @@ public class UmaRepository(ILogger<UmaRepository> logger) : IUmaRepository
 
     public async Task InitializeAsync(IEnumerable<UmaDto> dtos, CancellationToken cancellationToken = default)
     {
+        umas.Clear();
+
         foreach (var dto in dtos)
         {
             var uma = UmaMapper.Map(dto);

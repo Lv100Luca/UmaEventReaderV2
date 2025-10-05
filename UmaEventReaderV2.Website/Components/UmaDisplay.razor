@@ -1,0 +1,20 @@
+<MudStack Row AlignItems="AlignItems.Center" Spacing="2">
+    @if (!string.IsNullOrEmpty(Uma.ImageUrl))
+    {
+        <MudImage Src="@Uma.ImageUrl"
+                  Alt="@Uma.FullName"
+                  Height="@Size"
+                  Width="@Size"
+                  Class="rounded"/>
+    }
+    @if (IncludeName)
+    {
+        <MudText>@Uma.FullName</MudText>
+    }
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired] public required Uma Uma { get; set; }
+    [Parameter] public int Size { get; set; } = 40;
+    [Parameter] public bool IncludeName { get; set; }
+}

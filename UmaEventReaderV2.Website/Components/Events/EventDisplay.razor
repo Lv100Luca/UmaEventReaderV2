@@ -15,10 +15,7 @@
                 </MudText>
             </MudStack>
             <MudSpacer/>
-            @if (Event.IsTraineeEvent)
-            {
-                <MudImage Height="64" Src="@Event.Umas.First().ImageUrl"/>
-            }
+            <UmaDisplay Uma="@(Event.Umas.First())" Size="64"></UmaDisplay>
         </MudStack>
     </MudCardHeader>
 

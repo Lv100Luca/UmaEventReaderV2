@@ -33,17 +33,7 @@
                          ResetValueOnEmptyText="true">
 
             <ItemTemplate Context="uma">
-                <MudStack Row AlignItems="AlignItems.Center" Spacing="2">
-                    @if (!string.IsNullOrEmpty(uma.ImageUrl))
-                    {
-                        <MudImage Src="@uma.ImageUrl"
-                                  Alt="@uma.FullName"
-                                  Height="40"
-                                  Width="40"
-                                  Class="rounded" />
-                    }
-                    <MudText>@uma.FullName</MudText>
-                </MudStack>
+                <UmaDisplay Uma="uma" IncludeName/>
             </ItemTemplate>
         </MudAutocomplete>
 

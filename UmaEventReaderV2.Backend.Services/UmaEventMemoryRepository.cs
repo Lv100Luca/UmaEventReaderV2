@@ -29,7 +29,13 @@ public class UmaEventMemoryRepository(IUmaRepository umaRepository, ILogger<UmaE
                 .Where(p => !string.IsNullOrEmpty(p))
                 .ToArray();
 
-            var umas = FindOrCreate(names);
+            var umas = FindOrCreate(names).ToList();
+
+            // fix for error in dataset
+            if (umas.Any(u => u.FullName == "Extra Training (Taiki Shuttle)"))
+                umas = [FindOrCreate("Taiki Shuttle (Wild Frontier)")];
+            else
+                throw new NotImplementedException("Dataset fixed");
 
             var mappedEvent = UmaEventMapperV2.Map(group, umas);
 
@@ -88,5 +94,23 @@ public class UmaEventMemoryRepository(IUmaRepository umaRepository, ILogger<UmaE
 
             yield return foundUma;
         }
+    }
+
+    private Uma FindOrCreate(string name)
+    {
+        var foundUma = umaRepository.GetByFullName(name);
+
+        if (foundUma == null)
+        {
+            foundUma = UmaMapper.Map(name, supportUma: true);
+
+            // actively decide not to add them here
+            // they will be present in the events
+            // but arent otherwise relevant
+
+            // umaRepository.TryAddSupportUma(foundUma);
+        }
+
+        return foundUma;
     }
 }

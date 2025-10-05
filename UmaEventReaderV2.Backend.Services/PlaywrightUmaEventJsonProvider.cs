@@ -1,35 +1,24 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
 using UmaEventReaderV2.Abstractions;
 
 namespace UmaEventReaderV2.Services;
 
 // todo move this to separate thing and put into pipeline?
-public class PlaywrightUmaEventJsonProvider : IUmaEventJsonProvider
+public class PlaywrightUmaEventJsonProvider(ILogger<PlaywrightUmaEventJsonProvider> logger) : IUmaEventJsonProvider
 {
-    private static void SetHttpClientHeaders(HttpClient client)
-    {
-        client.DefaultRequestHeaders.Add("User-Agent",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0");
-
-        client.DefaultRequestHeaders.Add("Accept", "application/json, text/plain, */*");
-        client.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.5");
-        client.DefaultRequestHeaders.Add("Referer", "https://game8.co/games/Umamusume-Pretty-Derby/archives/539000");
-
-        client.DefaultRequestHeaders.Add("X-CSRF-TOKEN",
-            "MTfW7p305Sfm7ufsHC/kF317cdL8hLKvCbA0GKpNKtneGWhPVz23kxSdHhCIhxR3IJ6jt3RipWskEj+PSsDvPA==");
-
-        client.DefaultRequestHeaders.Add("Cookie",
-            "gtuid=de114a98-1d43-499a-9018-c4b34b2202d2; _session_id=e650b83e9dcd1ef7e900622c95fe68f3; gtsid=bf3bd09e-d79a-43b4-b6a0-4355f8dbd037");
-    }
-
     public async Task<string> GetJsonFileAsync()
     {
+        logger.LogInformation("Starting Playwright");
+
         using var playwright = await Playwright.CreateAsync();
 
         await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
             Headless = true
         });
+
+        logger.LogInformation("Initialized Browser");
 
         var context = await browser.NewContextAsync();
         var page = await context.NewPageAsync();
@@ -46,11 +35,13 @@ public class PlaywrightUmaEventJsonProvider : IUmaEventJsonProvider
 
         await page.GotoAsync("https://game8.co/games/Umamusume-Pretty-Derby/archives/539000");
 
-        await page.WaitForTimeoutAsync(2000);
-
         if (string.IsNullOrEmpty(jsonUrl))
             throw new Exception("JSON request not found");
 
-        return await page.EvaluateAsync<string>(@"url => fetch(url).then(r => r.text())", jsonUrl);
+        var json = await page.EvaluateAsync<string>(@"url => fetch(url).then(r => r.text())", jsonUrl);
+
+        logger.LogInformation("Got JSON File");
+
+        return json;
     }
 }

@@ -4,9 +4,9 @@ namespace UmaEventReaderV2.Website.Hubs;
 
 public abstract class HubBase(string path)
 {
-    protected const string BaseUrl = "https://localhost:7252";
+    private const string BaseUrl = "https://localhost:7252";
 
-    public HubConnection Connection = CreateHubConnection(path);
+    public readonly HubConnection Connection = CreateHubConnection(path);
 
     private static HubConnection CreateHubConnection(string path)
     {
@@ -16,7 +16,7 @@ public abstract class HubBase(string path)
             .Build();
     }
 
-    protected async Task StartHubIfDisconnected()
+    public async Task StartHubIfDisconnected()
     {
         if (Connection.State == HubConnectionState.Disconnected)
             await Connection.StartAsync();

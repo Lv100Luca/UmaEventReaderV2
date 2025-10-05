@@ -1,42 +1,56 @@
 @page "/"
-@using System.Collections.ObjectModel
+@using UmaEventReaderV2.Common.Models.dto
 @inject UmaEventHub EventHub
+@inject WebSettingsHub SettingsHub
 
-<h1>UmaEventReader Dashboard</h1>
-<div class="dashboard-container">
-    <div class="events-panel">
-        @foreach (var e in events)
+<MudStack Spacing="2">
+    <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+        <MudText Typo="Typo.h4">Events</MudText>
+        @if (Settings?.CareerCharacterOverride is { } uma)
         {
-            <EventDisplay Event="e"/>
+            <UmaDisplay Uma="uma" IncludeName/>
+        }
+        else
+        {
+            <MudText>No Trainee Selected</MudText>
+        }
+    </MudStack>
+    <div class="dashboard-container">
+        @if (events.Any())
+        {
+            <div class="events-panel">
+                @foreach (var e in events)
+                {
+                    <EventDisplay Event="e"/>
+                }
+            </div>
         }
     </div>
-</div>
+</MudStack>
 
 @code {
-    // private ObservableCollection<string> logMessages = new();
-    private readonly ObservableCollection<UmaEvent> events = [];
+    private List<UmaEvent> events = [];
+
+    public required SettingsDto? Settings { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        // HubConnection.On<string>("OnLog", msg =>
-        // {
-        // logMessages.Add(msg);
-        // InvokeAsync(StateHasChanged);
-        // });
+        EventHub.OnEventFound += HandleEventsFound;
 
-        EventHub.Connection.On<EventBatch>("OnEventFound", batch =>
-        {
-            events.Clear();
+        Settings = await SettingsHub.GetSettingsAsync();
 
-            foreach (var e in batch.Events)
-                events.Add(e);
+        await EventHub.StartHubIfDisconnected();
+    }
 
-            InvokeAsync(StateHasChanged);
-        });
+    private void HandleEventsFound(EventBatch batch)
+    {
+        if (events.Count == batch.Events.Count() &&
+            events
+                .Zip(batch.Events, (a, b) => a.Name == b.Name)
+                .All(x => x))
+            return;
 
-        if (EventHub.Connection.State == HubConnectionState.Disconnected)
-        {
-            await EventHub.Connection.StartAsync();
-        }
+        events = batch.Events.ToList();
+        InvokeAsync(StateHasChanged);
     }
 }

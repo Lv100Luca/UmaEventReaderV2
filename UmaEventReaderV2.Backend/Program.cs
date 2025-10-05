@@ -1,9 +1,23 @@
-using UmaEventReaderV2.Services;
+using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
 using UmaEventReaderV2.Web;
 using UmaEventReaderV2.Web.Extensions;
 using UmaEventReaderV2.Web.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+
+builder.Host.UseSerilog((context, provider, loggerConfig) =>
+{
+    loggerConfig
+        .ReadFrom.Configuration(context.Configuration)
+        .Enrich.With<ShortSourceContextEnricher>()
+        .WriteTo.Console(
+            outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3} - {ServiceName}] {Message:lj}{NewLine}{Exception}",
+            theme: AnsiConsoleTheme.Literate
+        );
+});
 
 builder.Services
     .AddUmaEventReaderServices()
@@ -21,7 +35,6 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSignalR();
-builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -31,8 +44,6 @@ app.MapHub<BackendEventHub>("/events");
 app.MapHub<BackendSettingsHub>("/settings");
 app.MapHub<BackendUmaHub>("/umas");
 app.MapHub<BackendConnectionStatusHub>("/status");
-
-app.MapControllers();
 
 _ = app.Services.GetRequiredService<EventHubBroadcaster>();
 

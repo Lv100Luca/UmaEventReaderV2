@@ -30,7 +30,22 @@
                          Clearable="true"
                          Dense="true"
                          CoerceText="true"
-                         ResetValueOnEmptyText="true"/>
+                         ResetValueOnEmptyText="true">
+
+            <ItemTemplate Context="uma">
+                <MudStack Row AlignItems="AlignItems.Center" Spacing="2">
+                    @if (!string.IsNullOrEmpty(uma.ImageUrl))
+                    {
+                        <MudImage Src="@uma.ImageUrl"
+                                  Alt="@uma.FullName"
+                                  Height="40"
+                                  Width="40"
+                                  Class="rounded" />
+                    }
+                    <MudText>@uma.FullName</MudText>
+                </MudStack>
+            </ItemTemplate>
+        </MudAutocomplete>
 
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveSettings">
             Save

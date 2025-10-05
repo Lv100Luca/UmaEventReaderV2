@@ -34,8 +34,6 @@ public class UmaEventMemoryRepository(IUmaRepository umaRepository, ILogger<UmaE
             // fix for error in dataset
             if (umas.Any(u => u.FullName == "Extra Training (Taiki Shuttle)"))
                 umas = [FindOrCreate("Taiki Shuttle (Wild Frontier)")];
-            else
-                throw new NotImplementedException("Dataset fixed");
 
             var mappedEvent = UmaEventMapperV2.Map(group, umas);
 

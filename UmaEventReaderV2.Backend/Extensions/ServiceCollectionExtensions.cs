@@ -2,7 +2,7 @@ using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Services;
 using UmaEventReaderV2.Services.Emitters;
 
-namespace UmaEventReaderV2.Web.Extensions;
+namespace UmaEventReaderV2.Backend.Extensions;
 
 public static class ServiceCollectionExtensions
 {

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 
-namespace UmaEventReaderV2.Web.Hubs;
+namespace UmaEventReaderV2.Backend.Hubs;
 
 public class BackendConnectionStatusHub : Hub
 {

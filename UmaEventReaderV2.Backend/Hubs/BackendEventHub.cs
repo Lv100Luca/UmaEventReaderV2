@@ -2,9 +2,8 @@ using Microsoft.AspNetCore.SignalR;
 using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Common.Models;
 using UmaEventReaderV2.Common.Models.Enums;
-using UmaEventReaderV2.Services;
 
-namespace UmaEventReaderV2.Web.Hubs;
+namespace UmaEventReaderV2.Backend.Hubs;
 
 public class BackendEventHub(IUmaEventRepository eventRepository) : Hub
 {

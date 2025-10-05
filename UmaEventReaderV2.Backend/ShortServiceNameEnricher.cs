@@ -1,7 +1,7 @@
 using Serilog.Core;
 using Serilog.Events;
 
-namespace UmaEventReaderV2.Web;
+namespace UmaEventReaderV2.Backend;
 
 public class ShortSourceContextEnricher : ILogEventEnricher
 {

@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.SignalR;
 using UmaEventReaderV2.Abstractions;
-using UmaEventReaderV2.Web.Hubs;
+using UmaEventReaderV2.Backend.Hubs;
 
-namespace UmaEventReaderV2.Web;
+namespace UmaEventReaderV2.Backend;
 
 public class EventHubBroadcaster
 {

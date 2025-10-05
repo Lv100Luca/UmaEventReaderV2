@@ -1,8 +1,8 @@
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
-using UmaEventReaderV2.Web;
-using UmaEventReaderV2.Web.Extensions;
-using UmaEventReaderV2.Web.Hubs;
+using UmaEventReaderV2.Backend;
+using UmaEventReaderV2.Backend.Extensions;
+using UmaEventReaderV2.Backend.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 

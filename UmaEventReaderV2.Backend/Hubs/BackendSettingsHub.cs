@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.SignalR;
 using UmaEventReaderV2.Common.Models.dto;
 using UmaEventReaderV2.Services;
 
-namespace UmaEventReaderV2.Web.Hubs;
+namespace UmaEventReaderV2.Backend.Hubs;
 
 public class BackendSettingsHub(UmaReaderSettingsProvider settings) : Hub
 {

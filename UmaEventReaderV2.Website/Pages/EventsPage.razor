@@ -5,7 +5,7 @@
 
 <MudStack Spacing="2">
     <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-        <MudText Typo="Typo.h4">Events</MudText>
+        <MudText Typo="Typo.h4">Events (@events.Count - Results)</MudText>
         @if (Settings?.CareerCharacterOverride is { } uma)
         {
             <UmaDisplay Uma="uma" IncludeName/>

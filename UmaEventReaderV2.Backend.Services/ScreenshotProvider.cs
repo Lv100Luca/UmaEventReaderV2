@@ -13,28 +13,20 @@ public class ScreenshotProvider(ILogger<ScreenshotProvider> logger) : IScreensho
             return null;
 
         var bounds = ScreenBounds.VirtualScreen;
+
         if (!bounds.Contains(area))
         {
             area.Intersect(bounds);
+
             if (area.Width <= 0 || area.Height <= 0)
                 return null;
         }
 
+        var bmp = new Bitmap(area.Width, area.Height);
+        using var g = Graphics.FromImage(bmp);
+        g.CopyFromScreen(area.Location, Point.Empty, area.Size);
 
-        try
-        {
-            var bmp = new Bitmap(area.Width, area.Height);
-            using var g = Graphics.FromImage(bmp);
-            g.CopyFromScreen(area.Location, Point.Empty, area.Size);
-
-            return bmp;
-        }
-        catch (Exception e)
-        {
-            logger.LogWarning(e, "Failed to take screenshot");
-
-            return null;
-        }
+        return bmp;
     }
 }
 
@@ -56,6 +48,7 @@ internal static partial class ScreenBounds
             int y = GetSystemMetrics(SM_YVIRTUALSCREEN);
             int width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
             int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+
             return new Rectangle(x, y, width, height);
         }
     }

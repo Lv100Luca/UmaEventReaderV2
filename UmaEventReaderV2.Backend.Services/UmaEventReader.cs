@@ -32,6 +32,8 @@ public class UmaEventReader(
     {
         try
         {
+            var previous = string.Empty;
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 await Task.Delay(settings.ScanInterval, stoppingToken);
@@ -40,6 +42,11 @@ public class UmaEventReader(
 
                 if (result == null)
                     continue;
+
+                if (previous != result.Text)
+                    logger.LogInformation("Text {text}", result.Text);
+
+                previous = result.Text;
 
                 await eventEmitter.EmitEventsAsync(events);
             }

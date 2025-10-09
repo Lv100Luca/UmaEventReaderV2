@@ -22,7 +22,7 @@ public class UmaRepository(ILogger<UmaRepository> logger) : IUmaRepository
             umas.Add(uma);
         }
 
-        logger.LogSuccess($"UmaRepository initialized with {umas.Count} umas.");
+        logger.LogInformation($"UmaRepository initialized with {umas.Count} umas.");
     }
 
     public bool TryAddSupportUma(Uma uma)

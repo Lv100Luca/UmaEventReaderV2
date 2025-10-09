@@ -42,7 +42,7 @@ public class UmaEventMemoryRepository(IUmaRepository umaRepository, ILogger<UmaE
             events.Add(mappedEvent);
         }
 
-        logger.LogSuccess($"Event repository initialized with {events.Count} events.");
+        logger.LogInformation($"Event repository initialized with {events.Count} events.");
     }
 
     public IEnumerable<UmaEvent> GetAll()

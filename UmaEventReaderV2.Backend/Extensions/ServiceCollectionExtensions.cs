@@ -1,6 +1,7 @@
 using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Services;
 using UmaEventReaderV2.Services.Emitters;
+using UmaEventReaderVs.WinForms;
 
 namespace UmaEventReaderV2.Backend.Extensions;
 
@@ -39,12 +40,15 @@ public static class ServiceCollectionExtensions
     {
         // Infrastructure / Providers
         services
-            .AddSingleton<IUmaEventJsonProvider, PlaywrightUmaEventJsonProvider>()
+            .AddSingleton<SelectAreaOverlay>()
+            .AddEventAreaOffsetProvider(options => options.Offset = 55)
             // Alternative provider (for offline testing)
+            .AddSingleton<IUmaEventJsonProvider, PlaywrightUmaEventJsonProvider>()
             // .AddSingleton<IUmaEventJsonProvider, StaticUmaEventJsonProvider>()
-            .AddSingleton<IScreenshotProvider, ScreenshotProvider>()
+            // use selector
+            // .AddSingleton<IScreenshotAreaProvider, ScreenshotAreaSelector>()
             .AddSingleton<IScreenshotAreaProvider, StaticScreenshotAreaProvider>()
-            .AddEventAreaOffsetProvider(options => options.Offset = 55);
+            .AddSingleton<IScreenshotProvider, ScreenshotProvider>();
 
         // Repositories
         services

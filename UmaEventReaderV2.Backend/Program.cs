@@ -1,8 +1,14 @@
+using System.Windows.Forms;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 using UmaEventReaderV2.Backend;
 using UmaEventReaderV2.Backend.Extensions;
 using UmaEventReaderV2.Backend.Hubs;
+
+
+Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+Application.EnableVisualStyles();
+Application.SetCompatibleTextRenderingDefault(false);
 
 var builder = WebApplication.CreateBuilder(args);
 

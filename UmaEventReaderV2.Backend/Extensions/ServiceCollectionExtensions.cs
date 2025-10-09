@@ -61,6 +61,7 @@ public static class ServiceCollectionExtensions
         services
             .AddSingleton<UmaEventMapper>()
             .AddSingleton<IEventEmitter, CachingEventEmitter>()
+            // .AddSingleton<IEventEmitter, CachingEventEmitter>()
             .AddSingleton<OcrService>()
             .AddHostedService<UmaEventReader>();
 

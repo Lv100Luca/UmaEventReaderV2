@@ -9,9 +9,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solution Items", "{291BB449-C9D1-4389-9990-5FD1557528AF}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		compose.yaml = compose.yaml
 		README.md = README.md
-		umaEventData.json = umaEventData.json
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UmaEventReaderVs.Backend.WinFroms", "UmaEventReaderVs.Backend.WinFroms\UmaEventReaderVs.Backend.WinFroms.csproj", "{848D01FF-F63A-493A-B5E4-FD69700DAFB0}"

@@ -46,8 +46,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IUmaEventJsonProvider, PlaywrightUmaEventJsonProvider>()
             // .AddSingleton<IUmaEventJsonProvider, StaticUmaEventJsonProvider>()
             // use selector
-            // .AddSingleton<IScreenshotAreaProvider, ScreenshotAreaSelector>()
-            .AddSingleton<IScreenshotAreaProvider, StaticScreenshotAreaProvider>()
+            .AddSingleton<ScreenshotAreaSelector>()
+            .AddSingleton<IScreenshotAreaProvider, ScreenshotAreaProvider>()
             .AddSingleton<IScreenshotProvider, ScreenshotProvider>();
 
         // Repositories

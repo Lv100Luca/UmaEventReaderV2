@@ -40,6 +40,12 @@
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveSettings">
             Save
         </MudButton>
+        <MudDivider/>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="SelectNewArea">
+            Select New Area
+        </MudButton>
     </MudStack>
 </MudPaper>
 
@@ -76,5 +82,15 @@
             return umas;
 
         return umas.Where(u => u.FullName.Contains(name, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private async Task SelectNewArea()
+    {
+        var success = await SettingsHub.SelectNewAreaAsync();
+
+        if (success)
+            Snackbar.Add("Area selected Successfully", Severity.Success);
+        else
+            Snackbar.Add("Error selecting Area", Severity.Error);
     }
 }

@@ -1,3 +1,4 @@
+using System.Drawing;
 using Microsoft.AspNetCore.SignalR.Client;
 using UmaEventReaderV2.Common.Models.dto;
 
@@ -17,5 +18,19 @@ public class WebSettingsHub() : HubBase("settings")
         await StartHubIfDisconnected();
 
         await Connection.InvokeAsync("SaveSettings", dto);
+    }
+
+    public async Task<bool> SelectNewAreaAsync()
+    {
+        await StartHubIfDisconnected();
+
+        return await Connection.InvokeAsync<bool>("SelectNewAreaAsync");
+    }
+
+    public async Task<bool> SetNewAreaAsync(Rectangle area)
+    {
+        await StartHubIfDisconnected();
+
+        return await Connection.InvokeAsync<bool>("SetNewAreaAsync", area);
     }
 }

@@ -1,10 +1,19 @@
+using System.Drawing;
 using Microsoft.AspNetCore.SignalR;
+using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Common.Models.dto;
 using UmaEventReaderV2.Services;
+using UmaEventReaderVs.WinForms;
 
 namespace UmaEventReaderV2.Backend.Hubs;
 
-public class BackendSettingsHub(UmaReaderSettingsProvider settings) : Hub
+// TODO(LDI): Create BackendSettingsService to manage higher level settings features
+public class BackendSettingsHub
+(
+    UmaReaderSettingsProvider settings,
+    IScreenshotAreaProvider screenshotAreaProvider,
+    ScreenshotAreaSelector screenshotAreaSelector,
+    ILogger<BackendEventHub> logger) : Hub
 {
     public async Task<SettingsDto> GetSettings()
     {
@@ -21,5 +30,32 @@ public class BackendSettingsHub(UmaReaderSettingsProvider settings) : Hub
         settings.TryDetermineCharacter = dto.TryDetermineCharacter;
         settings.CareerCharacterOverride = dto.CareerCharacterOverride;
         settings.ScanInterval = dto.ScanInterval;
+    }
+
+    public async Task<bool> SelectNewAreaAsync()
+    {
+        Rectangle newArea;
+
+        try
+        {
+            newArea = screenshotAreaSelector.SelectArea();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error selecting area");;
+
+            return false;
+        }
+
+        screenshotAreaProvider.UpdateBaseArea(newArea);
+
+        return true;
+    }
+
+    public async Task<bool> SetNewAreaAsync(Rectangle area)
+    {
+        screenshotAreaProvider.UpdateBaseArea(area);
+
+        return true;
     }
 }

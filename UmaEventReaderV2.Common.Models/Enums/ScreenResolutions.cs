@@ -51,7 +51,7 @@ public static class ScreenResolutionsLookup
 {
     private readonly static Dictionary<ScreenResolutions, Rectangle> PresetAreas = new()
     {
-        { ScreenResolutions.R1080p_16_9, new Rectangle(0, 0, 1920, 1080) },
+        { ScreenResolutions.R1080p_16_9, new Rectangle(240, 194, 550, 244) },
         { ScreenResolutions.R1080p_16_10, new Rectangle(0, 0, 1920, 1200) },
         { ScreenResolutions.R1080p_21_9, new Rectangle(0, 0, 2560, 1080) },
         { ScreenResolutions.R1080p_32_9, new Rectangle(0, 0, 3840, 1080) },

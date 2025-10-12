@@ -19,8 +19,9 @@
                          Immediate="true"/>
 
         <MudAutocomplete T="Uma"
-                         @bind-Value="settings.FilteredCharacter"
+                         @bind-Value="FilteredUma"
                          Label="Career Character Override"
+                         Variant="Variant.Outlined"
                          ToStringFunc="@(uma => uma?.FullName)"
                          SearchFunc="SearchUmas"
                          Clearable="true"
@@ -35,16 +36,31 @@
         <MudDivider Class="my-2"/>
 
         <SettingsEventArea Title="Event Area"
-                           @bind-Value="settings.EventArea"
+                           @bind-Value="EventArea"
                            OnSelectArea="SelectNewArea"/>
 
         <MudDivider Class="my-2"/>
 
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   OnClick="SaveSettings">
-            Save Settings
-        </MudButton>
+        <MudStack AlignItems="AlignItems.Center"
+                  Justify="Justify.SpaceBetween" Row>
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Error"
+                       OnClick="ClearArea"
+                       Disabled="@(!Dirty)">
+                Clear
+            </MudButton>
+
+            <MudBadge Overlap
+                      Visible="Dirty"
+                      Color="Color.Warning"
+                      Icon="@Icons.Material.Filled.Warning">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Success"
+                           OnClick="SaveSettings">
+                    Save Settings
+                </MudButton>
+            </MudBadge>
+        </MudStack>
     </MudStack>
 </MudPaper>
 
@@ -55,19 +71,51 @@
     private int ScanMillies
     {
         get => (int)settings.ScanInterval.TotalMilliseconds;
-        set => settings.ScanInterval = TimeSpan.FromMilliseconds(value);
+        set
+        {
+            MakeDirty();
+
+            settings.ScanInterval = TimeSpan.FromMilliseconds(value);
+        }
     }
+
+    private Uma? FilteredUma
+    {
+        get => settings.FilteredCharacter;
+        set
+        {
+            MakeDirty();
+            settings.FilteredCharacter = value;
+        }
+    }
+
+    private Rectangle? EventArea
+    {
+        get => settings.EventArea;
+        set
+        {
+            MakeDirty();
+
+            settings.EventArea = value;
+        }
+    }
+
+    public bool Dirty { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         settings = await SettingsHub.GetSettingsAsync();
         umas = await UmaHub.GetUmas();
+
+        Initialized = true;
     }
 
     private async Task SaveSettings()
     {
         await SettingsHub.SaveSettingsAsync(settings);
         Snackbar.Add("Settings saved successfully.", Severity.Success);
+
+        Dirty = false;
     }
 
     private async Task<IEnumerable<Uma>> SearchUmas(string? name, CancellationToken cancellation)
@@ -93,4 +141,25 @@
 
         settings.EventArea = rect;
     }
+
+    private async Task ClearArea(MouseEventArgs arg)
+    {
+        settings = await SettingsHub.GetSettingsAsync();
+
+        Snackbar.Add("Settings cleared", Severity.Success);
+
+        Dirty = false;
+    }
+
+    private void MakeDirty()
+    {
+        if (Initialized)
+        {
+            StateHasChanged();
+            Dirty = true;
+            Console.Out.WriteLine("Dirty");
+        }
+    }
+
+    public bool Initialized { get; set; } = false;
 }

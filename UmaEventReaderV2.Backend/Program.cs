@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Windows.Forms;
 using Humanizer;
 using Serilog;
@@ -29,7 +30,15 @@ builder.Host.UseSerilog((context, provider, loggerConfig) =>
             FilteredCharacter = settings.FilteredCharacter?.FullName ?? "None",
             Interval = settings.ScanInterval.Humanize(),
             Area = settings.EventArea,
-        });
+        })
+        .Destructure.ByTransforming<Rectangle>(r => new
+        {
+            r.X,
+            r.Y,
+            r.Width,
+            r.Height
+        })
+        ;
 });
 
 builder.Services

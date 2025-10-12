@@ -4,33 +4,26 @@ using UmaEventReaderV2.Common.Models;
 
 namespace UmaEventReaderV2.Website.Hubs;
 
-public class WebSettingsHub() : HubBase("settings")
+public class WebSettingsHub() : HubBase("settings"), ISettingsHub
 {
     public async Task<UmaEventReaderSettings> GetSettingsAsync()
     {
         await StartHubIfDisconnected();
 
-        return await Connection.InvokeAsync<UmaEventReaderSettings>("GetSettings");
+        return await Connection.InvokeAsync<UmaEventReaderSettings>(nameof(GetSettingsAsync));
     }
 
     public async Task SaveSettingsAsync(UmaEventReaderSettings settings)
     {
         await StartHubIfDisconnected();
 
-        await Connection.InvokeAsync("SaveSettings", settings);
+        await Connection.InvokeAsync(nameof(SaveSettingsAsync), settings);
     }
 
-    public async Task<bool> SelectNewAreaAsync()
+    public async Task<Rectangle?> SelectNewAreaAsync()
     {
         await StartHubIfDisconnected();
 
-        return await Connection.InvokeAsync<bool>("SelectNewAreaAsync");
-    }
-
-    public async Task<bool> SetNewAreaAsync(Rectangle area)
-    {
-        await StartHubIfDisconnected();
-
-        return await Connection.InvokeAsync<bool>("SetNewAreaAsync", area);
+        return await Connection.InvokeAsync<Rectangle?>(nameof(SelectNewAreaAsync));
     }
 }

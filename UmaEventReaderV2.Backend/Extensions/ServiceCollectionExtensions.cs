@@ -44,8 +44,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<SelectAreaOverlay>()
             .AddEventAreaOffsetProvider(options => options.Offset = 55)
             // Alternative provider (for offline testing)
-            .AddSingleton<IUmaEventJsonProvider, PlaywrightUmaEventJsonProvider>()
-            // .AddSingleton<IUmaEventJsonProvider, StaticUmaEventJsonProvider>()
+            // .AddSingleton<IUmaEventJsonProvider, PlaywrightUmaEventJsonProvider>()
+            .AddSingleton<IUmaEventJsonProvider, StaticUmaEventJsonProvider>()
             // use selector
             .AddSingleton<ScreenshotAreaSelector>()
             .AddSingleton<IScreenshotAreaProvider, ScreenshotAreaProvider>()

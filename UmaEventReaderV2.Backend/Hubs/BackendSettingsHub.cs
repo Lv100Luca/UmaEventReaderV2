@@ -1,59 +1,48 @@
 using System.Drawing;
 using Microsoft.AspNetCore.SignalR;
-using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Common.Models;
+using UmaEventReaderV2.Abstractions;
 using UmaEventReaderVs.WinForms;
 
 namespace UmaEventReaderV2.Backend.Hubs;
 
-public class BackendSettingsHub
-(
+public class BackendSettingsHub(
     ISettingsService settingsService,
     IScreenshotAreaProvider screenshotAreaProvider,
     ScreenshotAreaSelector screenshotAreaSelector,
-    ILogger<BackendEventHub> logger) : Hub
+    ILogger<BackendEventHub> logger)
+    : Hub, ISettingsHub
 {
-    public async Task<UmaEventReaderSettings> GetSettings()
+    public async Task<UmaEventReaderSettings> GetSettingsAsync()
     {
         return settingsService.Settings;
     }
 
-    public async Task SaveSettings(UmaEventReaderSettings settings)
+    public async Task SaveSettingsAsync(UmaEventReaderSettings settings)
     {
-        Action<UmaEventReaderSettings> update = readerSettings =>
+        await settingsService.UpdateSettingsAsync(readerSettings =>
         {
             readerSettings.ScanInterval = settings.ScanInterval;
             readerSettings.FilteredCharacter = settings.FilteredCharacter;
             readerSettings.EventArea = settings.EventArea;
-        };
-
-        await settingsService.UpdateSettingsAsync(update);
+        });
     }
 
-    public async Task<bool> SelectNewAreaAsync()
+    public async Task<Rectangle?> SelectNewAreaAsync()
     {
-        Rectangle newArea;
-
         try
         {
-            newArea = screenshotAreaSelector.SelectArea();
+            var newArea = screenshotAreaSelector.SelectArea();
+
+            logger.LogInformation("Selected Area {@Area}", newArea);
+
+            return newArea;
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error selecting area");;
+            logger.LogError(e, "Error selecting area");
 
-            return false;
+            return null;
         }
-
-        screenshotAreaProvider.UpdateBaseArea(newArea);
-
-        return true;
-    }
-
-    public async Task<bool> SetNewAreaAsync(Rectangle area)
-    {
-        screenshotAreaProvider.UpdateBaseArea(area);
-
-        return true;
     }
 }

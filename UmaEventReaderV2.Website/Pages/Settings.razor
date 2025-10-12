@@ -10,7 +10,6 @@
     <MudDivider Class="my-2"/>
 
     <MudStack Spacing="2">
-        <!-- Scan interval -->
         <MudNumericField @bind-Value="ScanMillies"
                          Label="Scan Interval (ms)"
                          Min="50"
@@ -19,7 +18,6 @@
                          Variant="Variant.Outlined"
                          Immediate="true"/>
 
-        <!-- Character override -->
         <MudAutocomplete T="Uma"
                          @bind-Value="settings.FilteredCharacter"
                          Label="Career Character Override"
@@ -42,7 +40,6 @@
 
         <MudDivider Class="my-2"/>
 
-        <!-- Save -->
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
                    OnClick="SaveSettings">
@@ -59,43 +56,6 @@
     {
         get => (int)settings.ScanInterval.TotalMilliseconds;
         set => settings.ScanInterval = TimeSpan.FromMilliseconds(value);
-    }
-
-    // 🟦 Event area manual binding helpers
-    private int EventAreaX
-    {
-        get => settings.EventArea?.X ?? 0;
-        set => SetEventArea(x: value);
-    }
-
-    private int EventAreaY
-    {
-        get => settings.EventArea?.Y ?? 0;
-        set => SetEventArea(y: value);
-    }
-
-    private int EventAreaWidth
-    {
-        get => settings.EventArea?.Width ?? 0;
-        set => SetEventArea(width: value);
-    }
-
-    private int EventAreaHeight
-    {
-        get => settings.EventArea?.Height ?? 0;
-        set => SetEventArea(height: value);
-    }
-
-    private void SetEventArea(int? x = null, int? y = null, int? width = null, int? height = null)
-    {
-        var area = settings.EventArea ?? new Rectangle();
-
-        settings.EventArea = new Rectangle(
-            x ?? area.X,
-            y ?? area.Y,
-            width ?? area.Width,
-            height ?? area.Height
-        );
     }
 
     protected override async Task OnInitializedAsync()
@@ -120,20 +80,17 @@
 
     private async Task SelectNewArea()
     {
-        var success = await SettingsHub.SelectNewAreaAsync();
+        var rect = await SettingsHub.SelectNewAreaAsync();
 
-        if (success)
-            Snackbar.Add("Area selected successfully.", Severity.Success);
-        else
+        if (rect is null)
+        {
             Snackbar.Add("Error selecting area.", Severity.Error);
 
-        // optionally reload updated area from backend
-        settings = await SettingsHub.GetSettingsAsync();
-    }
+            return;
+        }
 
-    private void ClearArea()
-    {
-        settings.EventArea = null;
-        Snackbar.Add("Event area cleared.", Severity.Info);
+        Snackbar.Add("Area selected successfully.", Severity.Success);
+
+        settings.EventArea = rect;
     }
 }

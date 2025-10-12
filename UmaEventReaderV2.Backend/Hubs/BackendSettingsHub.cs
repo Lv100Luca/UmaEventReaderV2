@@ -1,35 +1,33 @@
 using System.Drawing;
 using Microsoft.AspNetCore.SignalR;
 using UmaEventReaderV2.Abstractions;
-using UmaEventReaderV2.Common.Models.dto;
-using UmaEventReaderV2.Services;
+using UmaEventReaderV2.Common.Models;
 using UmaEventReaderVs.WinForms;
 
 namespace UmaEventReaderV2.Backend.Hubs;
 
-// TODO(LDI): Create BackendSettingsService to manage higher level settings features
 public class BackendSettingsHub
 (
-    UmaReaderSettingsProvider settings,
+    ISettingsService settingsService,
     IScreenshotAreaProvider screenshotAreaProvider,
     ScreenshotAreaSelector screenshotAreaSelector,
     ILogger<BackendEventHub> logger) : Hub
 {
-    public async Task<SettingsDto> GetSettings()
+    public async Task<UmaEventReaderSettings> GetSettings()
     {
-        return new SettingsDto
-        {
-            ScanInterval = settings.ScanInterval,
-            CareerCharacterOverride = settings.CareerCharacterOverride,
-            TryDetermineCharacter = settings.TryDetermineCharacter,
-        };
+        return settingsService.Settings;
     }
 
-    public async Task SaveSettings(SettingsDto dto)
+    public async Task SaveSettings(UmaEventReaderSettings settings)
     {
-        settings.TryDetermineCharacter = dto.TryDetermineCharacter;
-        settings.CareerCharacterOverride = dto.CareerCharacterOverride;
-        settings.ScanInterval = dto.ScanInterval;
+        Action<UmaEventReaderSettings> update = readerSettings =>
+        {
+            readerSettings.ScanInterval = settings.ScanInterval;
+            readerSettings.FilteredCharacter = settings.FilteredCharacter;
+            readerSettings.EventArea = settings.EventArea;
+        };
+
+        await settingsService.UpdateSettingsAsync(update);
     }
 
     public async Task<bool> SelectNewAreaAsync()

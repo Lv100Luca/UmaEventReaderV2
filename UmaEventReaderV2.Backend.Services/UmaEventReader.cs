@@ -13,9 +13,11 @@ public class UmaEventReader(
     IRepositoryInitializer initializer,
     IEventEmitter eventEmitter,
     ILogger<UmaEventReader> logger,
-    UmaReaderSettingsProvider settings,
+    ISettingsService settingsService,
     float confidenceThreshold = 0.6f) : BackgroundService
 {
+    private UmaEventReaderSettings Settings => settingsService.Settings;
+
     override public async Task StartAsync(CancellationToken cancellationToken)
     {
         await initializer.InitializeAsync(cancellationToken);
@@ -36,7 +38,7 @@ public class UmaEventReader(
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(settings.ScanInterval, stoppingToken);
+                await Task.Delay(Settings.ScanInterval, stoppingToken);
 
                 var result = TryProcessAreas(screenshotAreaProvider.GetAllAreas(), out var events);
 
@@ -71,7 +73,7 @@ public class UmaEventReader(
             if (!TextValidator.IsValid(result, confidenceThreshold))
                 continue;
 
-            var events = umaEventRepository.GetAllForCharacterWhereNameIsLike(settings.CareerCharacterOverride, result.Text)
+            var events = umaEventRepository.GetAllForCharacterWhereNameIsLike(Settings.FilteredCharacter, result.Text)
                 .ToList();
 
             if (events.Count > 0)

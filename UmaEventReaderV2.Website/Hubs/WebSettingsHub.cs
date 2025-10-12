@@ -1,23 +1,23 @@
 using System.Drawing;
 using Microsoft.AspNetCore.SignalR.Client;
-using UmaEventReaderV2.Common.Models.dto;
+using UmaEventReaderV2.Common.Models;
 
 namespace UmaEventReaderV2.Website.Hubs;
 
 public class WebSettingsHub() : HubBase("settings")
 {
-    public async Task<SettingsDto> GetSettingsAsync()
+    public async Task<UmaEventReaderSettings> GetSettingsAsync()
     {
         await StartHubIfDisconnected();
 
-        return await Connection.InvokeAsync<SettingsDto>("GetSettings");
+        return await Connection.InvokeAsync<UmaEventReaderSettings>("GetSettings");
     }
 
-    public async Task SaveSettingsAsync(SettingsDto dto)
+    public async Task SaveSettingsAsync(UmaEventReaderSettings settings)
     {
         await StartHubIfDisconnected();
 
-        await Connection.InvokeAsync("SaveSettings", dto);
+        await Connection.InvokeAsync("SaveSettings", settings);
     }
 
     public async Task<bool> SelectNewAreaAsync()

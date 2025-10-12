@@ -40,6 +40,7 @@ public static class ServiceCollectionExtensions
     {
         // Infrastructure / Providers
         services
+            .AddSingleton<ISettingsService,SettingsService>()
             .AddSingleton<SelectAreaOverlay>()
             .AddEventAreaOffsetProvider(options => options.Offset = 55)
             // Alternative provider (for offline testing)
@@ -58,7 +59,6 @@ public static class ServiceCollectionExtensions
 
         // Core Services
         services
-            .AddSingleton<UmaReaderSettingsProvider>()
             .AddSingleton<UmaEventMapper>()
             .AddSingleton<IEventEmitter, CachingEventEmitter>()
             .AddSingleton<OcrService>()

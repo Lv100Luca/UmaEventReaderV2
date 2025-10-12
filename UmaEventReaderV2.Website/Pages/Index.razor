@@ -1,12 +1,11 @@
 @page "/"
-@using UmaEventReaderV2.Common.Models.dto
 @inject UmaEventHub EventHub
 @inject WebSettingsHub SettingsHub
 
 <MudStack Spacing="2">
     <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
         <MudText Typo="Typo.h4">Events (@events.Count - Results)</MudText>
-        @if (Settings?.CareerCharacterOverride is { } uma)
+        @if (Settings?.FilteredCharacter is { } uma)
         {
             <UmaDisplay Uma="uma" IncludeName/>
         }
@@ -31,7 +30,7 @@
 @code {
     private List<UmaEvent> events = [];
 
-    public required SettingsDto? Settings { get; set; }
+    public required UmaEventReaderSettings? Settings { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

@@ -1,9 +1,11 @@
 using System.Windows.Forms;
+using Humanizer;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 using UmaEventReaderV2.Backend;
 using UmaEventReaderV2.Backend.Extensions;
 using UmaEventReaderV2.Backend.Hubs;
+using UmaEventReaderV2.Common.Models;
 
 
 Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
@@ -22,7 +24,12 @@ builder.Host.UseSerilog((context, provider, loggerConfig) =>
         .WriteTo.Console(
             outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3} - {ServiceName}] {Message:lj}{NewLine}{Exception}",
             theme: AnsiConsoleTheme.Literate
-        );
+        ).Destructure.ByTransforming<UmaEventReaderSettings>(settings => new
+        {
+            FilteredCharacter = settings.FilteredCharacter?.FullName ?? "None",
+            Interval = settings.ScanInterval.Humanize(),
+            Area = settings.EventArea,
+        });
 });
 
 builder.Services

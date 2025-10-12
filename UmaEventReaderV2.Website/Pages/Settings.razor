@@ -1,5 +1,4 @@
 @page "/settings"
-@using UmaEventReaderV2.Common.Models.dto
 @inject WebUmaHub UmaHub
 @inject WebSettingsHub SettingsHub
 @inject ISnackbar Snackbar
@@ -18,12 +17,8 @@
                          Variant="Variant.Outlined"
                          Immediate="true"/>
 
-        <MudSwitch T="bool" @bind-Value="settings.TryDetermineCharacter"
-                   Color="Color.Primary"
-                   Label="Try Determine Character"/>
-
         <MudAutocomplete T="Uma"
-                         @bind-Value="settings.CareerCharacterOverride"
+                         @bind-Value="settings.FilteredCharacter"
                          Label="Career Character Override"
                          ToStringFunc="@(uma => uma?.FullName)"
                          SearchFunc="SearchUmas"
@@ -50,7 +45,7 @@
 </MudPaper>
 
 @code {
-    private SettingsDto settings = new();
+    private UmaEventReaderSettings settings = new();
 
     private int ScanMillies
     {
@@ -69,7 +64,7 @@
 
     private async Task SaveSettings()
     {
-        Console.WriteLine($"ScanInterval: {settings.ScanInterval}, Character: {settings.CareerCharacterOverride?.FullName}");
+        Console.WriteLine($"ScanInterval: {settings.ScanInterval}, Character: {settings.FilteredCharacter?.FullName}");
 
         await SettingsHub.SaveSettingsAsync(settings);
 

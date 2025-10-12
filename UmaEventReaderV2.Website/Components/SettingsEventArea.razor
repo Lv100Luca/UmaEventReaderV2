@@ -1,0 +1,113 @@
+@using System.Drawing
+@using Color = MudBlazor.Color
+
+<MudStack>
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+        <MudText Typo="Typo.h6">@Title</MudText>
+
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="HandleSelectAreaClicked"
+                   Disabled="Disabled">
+            Select New Area
+        </MudButton>
+    </MudStack>
+
+    <MudPaper Class="pa-4 mt-2" Elevation="1" Outlined="true">
+        <MudGrid>
+            <MudItem xs="6">
+                <MudNumericField @bind-Value="X"
+                                 Label="X"
+                                 Variant="Variant.Outlined"
+                                 Min="0" />
+            </MudItem>
+            <MudItem xs="6">
+                <MudNumericField @bind-Value="Y"
+                                 Label="Y"
+                                 Variant="Variant.Outlined"
+                                 Min="0" />
+            </MudItem>
+
+            <MudItem xs="6">
+                <MudNumericField @bind-Value="Width"
+                                 Label="Width"
+                                 Variant="Variant.Outlined"
+                                 Min="0" />
+            </MudItem>
+            <MudItem xs="6">
+                <MudNumericField @bind-Value="Height"
+                                 Label="Height"
+                                 Variant="Variant.Outlined"
+                                 Min="0" />
+            </MudItem>
+        </MudGrid>
+
+        <MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-2">
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Secondary"
+                       OnClick="ClearArea"
+                       Disabled="Disabled">
+                Clear
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+</MudStack>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Event Area";
+
+    [Parameter] public Rectangle? Value { get; set; }
+    [Parameter] public EventCallback<Rectangle?> ValueChanged { get; set; }
+
+    [Parameter] public EventCallback OnSelectArea { get; set; }
+
+    [Parameter] public bool Disabled { get; set; }
+
+    private int X
+    {
+        get => Value?.X ?? 0;
+        set => UpdateArea(x: value);
+    }
+
+    private int Y
+    {
+        get => Value?.Y ?? 0;
+        set => UpdateArea(y: value);
+    }
+
+    private int Width
+    {
+        get => Value?.Width ?? 0;
+        set => UpdateArea(width: value);
+    }
+
+    private int Height
+    {
+        get => Value?.Height ?? 0;
+        set => UpdateArea(height: value);
+    }
+
+    private void UpdateArea(int? x = null, int? y = null, int? width = null, int? height = null)
+    {
+        var current = Value ?? new Rectangle();
+        Value = new Rectangle(
+            x ?? current.X,
+            y ?? current.Y,
+            width ?? current.Width,
+            height ?? current.Height
+        );
+        ValueChanged.InvokeAsync(Value);
+    }
+
+    private async Task HandleSelectAreaClicked()
+    {
+        if (OnSelectArea.HasDelegate)
+            await OnSelectArea.InvokeAsync();
+    }
+
+    private void ClearArea()
+    {
+        Value = null;
+        ValueChanged.InvokeAsync(Value);
+    }
+}

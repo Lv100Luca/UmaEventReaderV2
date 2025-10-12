@@ -1,14 +1,16 @@
 @page "/settings"
+@using System.Drawing
+@using Color = MudBlazor.Color
 @inject WebUmaHub UmaHub
 @inject WebSettingsHub SettingsHub
 @inject ISnackbar Snackbar
 
 <MudPaper Class="pa-4" Elevation="2">
-
     <MudText Typo="Typo.h5">Application Settings</MudText>
     <MudDivider Class="my-2"/>
 
     <MudStack Spacing="2">
+        <!-- Scan interval -->
         <MudNumericField @bind-Value="ScanMillies"
                          Label="Scan Interval (ms)"
                          Min="50"
@@ -17,6 +19,7 @@
                          Variant="Variant.Outlined"
                          Immediate="true"/>
 
+        <!-- Character override -->
         <MudAutocomplete T="Uma"
                          @bind-Value="settings.FilteredCharacter"
                          Label="Career Character Override"
@@ -26,48 +29,84 @@
                          Dense="true"
                          CoerceText="true"
                          ResetValueOnEmptyText="true">
-
             <ItemTemplate Context="uma">
                 <UmaDisplay Uma="uma" IncludeName/>
             </ItemTemplate>
         </MudAutocomplete>
 
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveSettings">
-            Save
-        </MudButton>
-        <MudDivider/>
+        <MudDivider Class="my-2"/>
+
+        <SettingsEventArea Title="Event Area"
+                           @bind-Value="settings.EventArea"
+                           OnSelectArea="SelectNewArea"/>
+
+        <MudDivider Class="my-2"/>
+
+        <!-- Save -->
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
-                   OnClick="SelectNewArea">
-            Select New Area
+                   OnClick="SaveSettings">
+            Save Settings
         </MudButton>
     </MudStack>
 </MudPaper>
 
 @code {
     private UmaEventReaderSettings settings = new();
+    private IEnumerable<Uma> umas = [];
 
     private int ScanMillies
     {
-        get => settings.ScanInterval.Milliseconds;
+        get => (int)settings.ScanInterval.TotalMilliseconds;
         set => settings.ScanInterval = TimeSpan.FromMilliseconds(value);
     }
 
-    private IEnumerable<Uma> umas = [];
+    // 🟦 Event area manual binding helpers
+    private int EventAreaX
+    {
+        get => settings.EventArea?.X ?? 0;
+        set => SetEventArea(x: value);
+    }
+
+    private int EventAreaY
+    {
+        get => settings.EventArea?.Y ?? 0;
+        set => SetEventArea(y: value);
+    }
+
+    private int EventAreaWidth
+    {
+        get => settings.EventArea?.Width ?? 0;
+        set => SetEventArea(width: value);
+    }
+
+    private int EventAreaHeight
+    {
+        get => settings.EventArea?.Height ?? 0;
+        set => SetEventArea(height: value);
+    }
+
+    private void SetEventArea(int? x = null, int? y = null, int? width = null, int? height = null)
+    {
+        var area = settings.EventArea ?? new Rectangle();
+
+        settings.EventArea = new Rectangle(
+            x ?? area.X,
+            y ?? area.Y,
+            width ?? area.Width,
+            height ?? area.Height
+        );
+    }
 
     protected override async Task OnInitializedAsync()
     {
         settings = await SettingsHub.GetSettingsAsync();
-
         umas = await UmaHub.GetUmas();
     }
 
     private async Task SaveSettings()
     {
-        Console.WriteLine($"ScanInterval: {settings.ScanInterval}, Character: {settings.FilteredCharacter?.FullName}");
-
         await SettingsHub.SaveSettingsAsync(settings);
-
         Snackbar.Add("Settings saved successfully.", Severity.Success);
     }
 
@@ -84,8 +123,17 @@
         var success = await SettingsHub.SelectNewAreaAsync();
 
         if (success)
-            Snackbar.Add("Area selected Successfully", Severity.Success);
+            Snackbar.Add("Area selected successfully.", Severity.Success);
         else
-            Snackbar.Add("Error selecting Area", Severity.Error);
+            Snackbar.Add("Error selecting area.", Severity.Error);
+
+        // optionally reload updated area from backend
+        settings = await SettingsHub.GetSettingsAsync();
+    }
+
+    private void ClearArea()
+    {
+        settings.EventArea = null;
+        Snackbar.Add("Event area cleared.", Severity.Info);
     }
 }

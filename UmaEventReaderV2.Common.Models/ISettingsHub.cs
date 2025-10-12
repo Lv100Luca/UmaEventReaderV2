@@ -8,4 +8,6 @@ public interface ISettingsHub
     Task SaveSettingsAsync(UmaEventReaderSettings settings);
 
     Task<Rectangle?> SelectNewAreaAsync();
+
+    Task<string?> CapturePreviewScreenshotAsync(Rectangle area);
 }

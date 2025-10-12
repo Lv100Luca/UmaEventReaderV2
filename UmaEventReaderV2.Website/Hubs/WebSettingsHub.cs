@@ -26,4 +26,11 @@ public class WebSettingsHub() : HubBase("settings"), ISettingsHub
 
         return await Connection.InvokeAsync<Rectangle?>(nameof(SelectNewAreaAsync));
     }
+
+    public async Task<string?> CapturePreviewScreenshotAsync(Rectangle area)
+    {
+        await StartHubIfDisconnected();
+
+        return await Connection.InvokeAsync<string?>(nameof(CapturePreviewScreenshotAsync), area);
+    }
 }

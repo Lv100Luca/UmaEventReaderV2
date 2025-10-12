@@ -1,6 +1,7 @@
 @using System.Drawing
 @using Color = MudBlazor.Color
 
+@inject WebSettingsHub WebSettingsHub
 <MudStack>
     <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
         <MudText Typo="Typo.h6">@Title</MudText>
@@ -19,45 +20,72 @@
                 <MudNumericField @bind-Value="X"
                                  Label="X"
                                  Variant="Variant.Outlined"
-                                 Min="0" />
+                                 Min="0"/>
             </MudItem>
             <MudItem xs="6">
                 <MudNumericField @bind-Value="Y"
                                  Label="Y"
                                  Variant="Variant.Outlined"
-                                 Min="0" />
+                                 Min="0"/>
             </MudItem>
 
             <MudItem xs="6">
                 <MudNumericField @bind-Value="Width"
                                  Label="Width"
                                  Variant="Variant.Outlined"
-                                 Min="0" />
+                                 Min="0"/>
             </MudItem>
             <MudItem xs="6">
                 <MudNumericField @bind-Value="Height"
                                  Label="Height"
                                  Variant="Variant.Outlined"
-                                 Min="0" />
+                                 Min="0"/>
             </MudItem>
         </MudGrid>
 
-        <MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-2">
+        <MudStack Row Justify="Justify.SpaceBetween" Class="mt-2">
+            <MudStack Row>
+                <MudButton Color="Color.Primary"
+                           Variant="Variant.Outlined"
+                           OnClick="OnShowPreview"
+                >
+                    Get Preview
+                </MudButton>
+                <MudToggleIconButton
+                    @bind-Toggled="ShowPreview"
+                    Icon="@Icons.Material.Filled.Search"
+                    Color="Color.Primary"
+                    ToggledIcon="@Icons.Material.Filled.SearchOff"
+                    ToggledColor="Color.Error"
+                    Variant="Variant.Outlined"
+                    Disabled="@(ScreenshotData is null)"
+                />
+            </MudStack>
             <MudButton Variant="Variant.Outlined"
                        Color="Color.Error"
                        OnClick="ClearArea"
-                       Disabled="Disabled">
+            >
                 Clear
             </MudButton>
+
         </MudStack>
     </MudPaper>
+
+    @if (!string.IsNullOrEmpty(ScreenshotData) && ShowPreview)
+    {
+        <MudPaper Class="pa-2" Elevation="2" Style="display: flex; justify-content: center;">
+            <MudImage Src="@($"data:image/png;base64,{ScreenshotData}")" Alt="Screenshot"
+                      Style="max-width:100%; border-radius: 4px;"
+                      ObjectFit="ObjectFit.Contain"/>
+        </MudPaper>
+    }
 </MudStack>
 
 @code {
     [Parameter] public string Title { get; set; } = "Event Area";
 
-    [Parameter] public Rectangle? Value { get; set; }
-    [Parameter] public EventCallback<Rectangle?> ValueChanged { get; set; }
+    [Parameter] public Rectangle? Area { get; set; }
+    [Parameter] public EventCallback<Rectangle?> AreaChanged { get; set; }
 
     [Parameter] public EventCallback OnSelectArea { get; set; }
 
@@ -65,38 +93,42 @@
 
     private int X
     {
-        get => Value?.X ?? 0;
+        get => Area?.X ?? 0;
         set => UpdateArea(x: value);
     }
 
     private int Y
     {
-        get => Value?.Y ?? 0;
+        get => Area?.Y ?? 0;
         set => UpdateArea(y: value);
     }
 
     private int Width
     {
-        get => Value?.Width ?? 0;
+        get => Area?.Width ?? 0;
         set => UpdateArea(width: value);
     }
 
     private int Height
     {
-        get => Value?.Height ?? 0;
+        get => Area?.Height ?? 0;
         set => UpdateArea(height: value);
     }
 
+    public string? ScreenshotData { get; set; }
+
     private void UpdateArea(int? x = null, int? y = null, int? width = null, int? height = null)
     {
-        var current = Value ?? new Rectangle();
-        Value = new Rectangle(
+        var current = Area ?? new Rectangle();
+
+        Area = new Rectangle(
             x ?? current.X,
             y ?? current.Y,
             width ?? current.Width,
             height ?? current.Height
         );
-        ValueChanged.InvokeAsync(Value);
+
+        AreaChanged.InvokeAsync(Area);
     }
 
     private async Task HandleSelectAreaClicked()
@@ -105,9 +137,21 @@
             await OnSelectArea.InvokeAsync();
     }
 
-    private void ClearArea()
+    private async Task ClearArea()
     {
-        Value = null;
-        ValueChanged.InvokeAsync(Value);
+        Area = null;
+        ScreenshotData = null;
+        await AreaChanged.InvokeAsync(Area);
+    }
+
+    private bool ShowPreview = false;
+
+    private async Task OnShowPreview()
+    {
+        if (Area is not {} screenshotArea)
+            return;
+
+        ScreenshotData = await WebSettingsHub.CapturePreviewScreenshotAsync(screenshotArea);
+        ShowPreview = true;
     }
 }

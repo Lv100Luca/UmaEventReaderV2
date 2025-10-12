@@ -36,10 +36,9 @@
         <MudDivider Class="my-2"/>
 
         <SettingsEventArea Title="Event Area"
-                           @bind-Value="EventArea"
-                           OnSelectArea="SelectNewArea"/>
-
-        <MudDivider Class="my-2"/>
+                           @bind-Area="EventArea"
+                           OnSelectArea="SelectNewArea"
+        />
 
         <MudStack AlignItems="AlignItems.Center"
                   Justify="Justify.SpaceBetween" Row>

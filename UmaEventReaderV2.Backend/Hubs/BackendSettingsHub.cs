@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Drawing.Imaging;
 using Microsoft.AspNetCore.SignalR;
 using UmaEventReaderV2.Common.Models;
 using UmaEventReaderV2.Abstractions;
@@ -8,7 +9,7 @@ namespace UmaEventReaderV2.Backend.Hubs;
 
 public class BackendSettingsHub(
     ISettingsService settingsService,
-    IScreenshotAreaProvider screenshotAreaProvider,
+    IScreenshotProvider screenshotProvider,
     ScreenshotAreaSelector screenshotAreaSelector,
     ILogger<BackendEventHub> logger)
     : Hub, ISettingsHub
@@ -44,5 +45,21 @@ public class BackendSettingsHub(
 
             return null;
         }
+    }
+
+    public async Task<string?> CapturePreviewScreenshotAsync(Rectangle area)
+    {
+        var screenshot = screenshotProvider.TakeScreenshot(area);
+
+        if (screenshot is null)
+        {
+            logger.LogWarning("No screenshot taken");
+
+            return null;
+        }
+
+        using var ms = new MemoryStream();
+        screenshot.Save(ms, ImageFormat.Png);
+        return Convert.ToBase64String(ms.ToArray());
     }
 }

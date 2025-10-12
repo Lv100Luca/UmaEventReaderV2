@@ -16,6 +16,20 @@
 
     <MudPaper Class="pa-4 mt-2" Elevation="1" Outlined="true">
         <MudGrid>
+            <MudItem xs="12">
+
+                <MudSelect T="ScreenResolutions" xs="12" ValueChanged="OnPresetSelected" Label="Screen Preset" Variant="Variant.Outlined"
+                           Dense="true">
+                    @foreach (var preset in Enum.GetValues<ScreenResolutions>())
+                    {
+                        <MudSelectItem Value="preset"
+                                       Disabled="@(preset != ScreenResolutions.R1440p_16_9 && preset != ScreenResolutions.Unknown)">
+                            @preset.ToDisplayString()
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
             <MudItem xs="6">
                 <MudNumericField @bind-Value="X"
                                  Label="X"
@@ -73,7 +87,7 @@
 
     @if (!string.IsNullOrEmpty(ScreenshotData) && ShowPreview)
     {
-        <MudPaper Class="pa-2" Elevation="2" Style="display: flex; justify-content: center;">
+        <MudPaper Class="pa-2" Elevation="1" Style="display: flex; justify-content: center;">
             <MudImage Src="@($"data:image/png;base64,{ScreenshotData}")" Alt="Screenshot"
                       Style="max-width:100%; border-radius: 4px;"
                       ObjectFit="ObjectFit.Contain"/>
@@ -90,6 +104,8 @@
     [Parameter] public EventCallback OnSelectArea { get; set; }
 
     [Parameter] public bool Disabled { get; set; }
+
+    private ScreenResolutions SelectedPreset { get; set; }
 
     private int X
     {
@@ -148,10 +164,19 @@
 
     private async Task OnShowPreview()
     {
-        if (Area is not {} screenshotArea)
+        if (Area is not { } screenshotArea)
             return;
 
         ScreenshotData = await WebSettingsHub.CapturePreviewScreenshotAsync(screenshotArea);
         ShowPreview = true;
+    }
+
+    private void OnPresetSelected(ScreenResolutions selectedPreset)
+    {
+        SelectedPreset = selectedPreset;
+
+        var area = selectedPreset.GetPresetArea();
+
+        UpdateArea(area.X,area.Y, area.Width, area.Height);
     }
 }

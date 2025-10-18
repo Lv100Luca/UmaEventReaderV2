@@ -1,13 +1,12 @@
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
-using UmaEventReaderV2.Abstractions;
-using UmaEventReaderV2.Common;
+using UmaEventReaderV2.Abstractions.Repositories;
 using UmaEventReaderV2.Common.Models;
 using UmaEventReaderV2.Models.dtos;
 using UmaEventReaderV2.Services.Extensions;
 using UmaEventReaderV2.Services.Mapper;
 
-namespace UmaEventReaderV2.Services;
+namespace UmaEventReaderV2.Services.Repositories;
 
 public class UmaEventMemoryRepository(IUmaRepository umaRepository, ILogger<UmaEventMemoryRepository> logger)
     : IUmaEventRepository

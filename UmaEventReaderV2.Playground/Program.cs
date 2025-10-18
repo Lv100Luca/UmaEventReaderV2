@@ -4,10 +4,12 @@ using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UmaEventReaderV2.Abstractions;
+using UmaEventReaderV2.Abstractions.Repositories;
 using UmaEventReaderV2.Common.Models;
 using UmaEventReaderV2.Common.Models.Enums;
 using UmaEventReaderV2.Models.dtos;
 using UmaEventReaderV2.Services;
+using UmaEventReaderV2.Services.Repositories;
 
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 

@@ -1,4 +1,5 @@
 using UmaEventReaderV2.Abstractions;
+using UmaEventReaderV2.Abstractions.Repositories;
 using UmaEventReaderV2.Common.Models;
 using UmaEventReaderV2.Common.Models.Enums;
 using UmaEventReaderV2.Models.dtos;

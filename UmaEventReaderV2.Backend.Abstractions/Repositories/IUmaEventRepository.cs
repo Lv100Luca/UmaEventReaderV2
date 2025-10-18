@@ -1,7 +1,7 @@
 using UmaEventReaderV2.Common.Models;
 using UmaEventReaderV2.Models.dtos;
 
-namespace UmaEventReaderV2.Abstractions;
+namespace UmaEventReaderV2.Abstractions.Repositories;
 
 public interface IUmaEventRepository
 {

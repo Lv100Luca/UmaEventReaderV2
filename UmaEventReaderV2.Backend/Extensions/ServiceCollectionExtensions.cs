@@ -1,6 +1,8 @@
 using UmaEventReaderV2.Abstractions;
+using UmaEventReaderV2.Abstractions.Repositories;
 using UmaEventReaderV2.Services;
 using UmaEventReaderV2.Services.Emitters;
+using UmaEventReaderV2.Services.Repositories;
 using UmaEventReaderVs.WinForms;
 
 namespace UmaEventReaderV2.Backend.Extensions;
@@ -61,6 +63,7 @@ public static class ServiceCollectionExtensions
         services
             .AddSingleton<UmaEventMapper>()
             .AddSingleton<IEventEmitter, CachingEventEmitter>()
+            // .AddSingleton<IEventEmitter, CachingEventEmitter>()
             .AddSingleton<OcrService>()
             .AddHostedService<UmaEventReader>();
 

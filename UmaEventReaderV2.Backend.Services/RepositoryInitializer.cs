@@ -1,5 +1,6 @@
 using System.Text.Json;
 using UmaEventReaderV2.Abstractions;
+using UmaEventReaderV2.Abstractions.Repositories;
 using UmaEventReaderV2.Models.dtos;
 
 namespace UmaEventReaderV2.Services;

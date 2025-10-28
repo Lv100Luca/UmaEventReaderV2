@@ -23,7 +23,7 @@ public class ScreenshotProvider(ILogger<ScreenshotProvider> logger) : IScreensho
         }
 
         var bmp = new Bitmap(area.Width, area.Height);
-        using var g = Graphics.FromImage(bmp);
+        var g = Graphics.FromImage(bmp);
         g.CopyFromScreen(area.Location, Point.Empty, area.Size);
 
         return bmp;

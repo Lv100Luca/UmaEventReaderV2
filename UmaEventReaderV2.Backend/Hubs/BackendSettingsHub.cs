@@ -26,6 +26,7 @@ public class BackendSettingsHub(
             readerSettings.ScanInterval = settings.ScanInterval;
             readerSettings.FilteredCharacter = settings.FilteredCharacter;
             readerSettings.EventArea = settings.EventArea;
+            readerSettings.HighlightedSkills = settings.HighlightedSkills;
         });
     }
 

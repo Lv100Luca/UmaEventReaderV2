@@ -32,7 +32,22 @@ public class UmaEventMemoryRepository(ISettingsService settingsService, ILogger<
 
     public IEnumerable<UmaEvent> GetAllWhereNameIsLike(string eventName)
     {
-        return Query().WhereEventNameContains(eventName);
+        var query = Query().WhereEventNameContains(eventName).ToList();
+
+        if (settingsService.Settings.HighlightedSkills.Count == 0)
+            return query;
+
+        {
+            var eventsWithSkillHints = query.Where(e =>
+                e.Choices.SelectMany(b => b.Outcomes.SelectMany(c => c.Outcomes)).Any(g => g.Type == OutcomeType.SkillHint));
+
+            foreach (var eventsWithSkillHint in eventsWithSkillHints)
+            {
+                HighlightOutcome(eventsWithSkillHint);
+            }
+        }
+
+        return query;
     }
 
     //this should return all event except traineeEvents that arent from the passed in character
@@ -77,7 +92,7 @@ public class UmaEventMemoryRepository(ISettingsService settingsService, ILogger<
                 if (outcome is not SkillOutcome skillOutcome)
                     continue;
 
-                if (!settingsService.Settings.HighlightedSkills.Contains(skillOutcome.Skill))
+                if (settingsService.Settings.HighlightedSkills.All(s => s.Name != skillOutcome.Skill.Name))
                     continue;
 
                 Console.Out.WriteLine("Match");

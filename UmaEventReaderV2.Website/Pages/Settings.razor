@@ -34,10 +34,10 @@
             </ItemTemplate>
         </MudAutocomplete>
 
-        @if (highlightedSkills.Any())
+        @if (settings.HighlightedSkills.Any())
         {
             <MudChipSet T="UmaSkill" Class="my-2" OnClose="RemoveSkill" AllClosable Selec>
-                @foreach (var skill in highlightedSkills)
+                @foreach (var skill in settings.HighlightedSkills)
                 {
                     <MudChip Text="@skill.Name" Value="skill" Selected="false"
                              Color="Color.Info"
@@ -46,10 +46,9 @@
             </MudChipSet>
         }
 
-        <span>@highlightedSkills.Count</span>
+        <span>@settings.HighlightedSkills.Count</span>
 
         <MudAutocomplete T="UmaSkill"
-                         @ref="SkillAutocomplete"
                          Value="skillInput"
                          ValueChanged="AddSkillIfValid"
                          Label="Skills to highlight"
@@ -98,10 +97,6 @@
     private IEnumerable<Uma> umas = [];
     private IEnumerable<UmaSkill> skills = [];
     private UmaSkill? skillInput;
-
-    private ObservableCollection<UmaSkill> highlightedSkills = [];
-
-    private MudAutocomplete<UmaSkill> SkillAutocomplete;
 
     private int ScanMillies
     {
@@ -174,9 +169,9 @@
 
     private void AddSkillIfValid(UmaSkill skill)
     {
-        if (highlightedSkills.All(s => s.Name != skill.Name))
+        if (settings.HighlightedSkills.All(s => s.Name != skill.Name))
         {
-            highlightedSkills.Add(skill);
+            settings.HighlightedSkills.Add(skill);
 
             Console.Out.WriteLine("added" + skill.Name);
 
@@ -190,7 +185,7 @@
     private void RemoveSkill(MudChip<UmaSkill> mudChip)
     {
         if (mudChip.Value != null)
-            highlightedSkills.Remove(mudChip.Value);
+            settings.HighlightedSkills.Remove(mudChip.Value);
 
         MakeDirty();
     }

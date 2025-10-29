@@ -5,6 +5,11 @@
         </MudText>
     </MudCardHeader>
 
+    @if (Choice.IsHighlighted)
+    {
+        <span>Highlighted</span>
+    }
+
     <MudCardContent Class="pa-2">
         <MudStack Spacing="2">
             @foreach (var outcomeGroup in Choice.Outcomes.OrderBy(x => x.SuccessType.Type))

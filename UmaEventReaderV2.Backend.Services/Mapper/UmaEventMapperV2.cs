@@ -1,12 +1,48 @@
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
+using UmaEventReaderV2.Abstractions.Repositories;
 using UmaEventReaderV2.Common.Models;
 using UmaEventReaderV2.Common.Models.Enums;
 using UmaEventReaderV2.Models.dtos;
 
 namespace UmaEventReaderV2.Services.Mapper;
 
-public static class UmaEventMapperV2
+public class UmaEventMapperV2
+(
+    IUmaRepository umaRepository,
+    IUmaEventRepository umaEventRepository,
+    IUmaSkillRepository umaSkillRepository,
+    ILogger<UmaEventMapperV2> logger)
 {
-    public static UmaEvent Map(IGrouping<string, UmaEventChoiceDto> grouping, IEnumerable<Uma> umas)
+    public void MapEvents(IEnumerable<UmaEventChoiceDto> choices)
+    {
+        var eventGroups = choices.GroupBy(e => e.EventName);
+
+        foreach (var group in eventGroups)
+        {
+            var characterName = group.First().CharacterName;
+
+            var names = Regex
+                .Split(characterName, @",(?![^(]*\))")
+                .Select(p => p.Trim())
+                .Where(p => !string.IsNullOrEmpty(p))
+                .ToArray();
+
+            var umas = umaRepository.FindOrCreate(names).ToList();
+
+            // fix for error in dataset
+            if (umas.Any(u => u.FullName == "Extra Training (Taiki Shuttle)"))
+                umas = [umaRepository.FindOrCreate("Taiki Shuttle (Wild Frontier)")];
+
+            var mappedEvent = Map(group, umas);
+
+            umaEventRepository.Add(mappedEvent);
+        }
+
+        logger.LogInformation("Event repository initialized with {Count} events.", umaEventRepository.GetAll().Count());
+    }
+
+    private UmaEvent Map(IGrouping<string, UmaEventChoiceDto> grouping, IEnumerable<Uma> umas)
     {
         var umaEvent = new UmaEvent
         {
@@ -53,7 +89,7 @@ public static class UmaEventMapperV2
                 outcomeGroup = new UmaEventChoiceOutcomeGroup
                 {
                     SuccessType = successType,
-                    Outcomes = new List<UmaEventChoiceOutcome>()
+                    Outcomes = []
                 };
 
                 choice.Outcomes.Add(outcomeGroup);
@@ -87,9 +123,9 @@ public static class UmaEventMapperV2
             : throw new InvalidOperationException($"Invalid Success Type: {raw}");
     }
 
-    private static List<UmaEventChoiceOutcome> ParseOutcomes(string allOutcomes)
+    private List<EventChoiceOutcome> ParseOutcomes(string allOutcomes)
     {
-        var outcomes = new List<UmaEventChoiceOutcome>();
+        var outcomes = new List<EventChoiceOutcome>();
 
         if (string.IsNullOrWhiteSpace(allOutcomes))
             return outcomes;
@@ -98,32 +134,35 @@ public static class UmaEventMapperV2
 
         foreach (var part in parts)
         {
-            outcomes.Add(GetOutcome(part));
+            var outcome = GetOutcome(part);
+
+            if (outcome is not null)
+                outcomes.Add(outcome);
         }
 
         return outcomes;
     }
 
-    private static UmaEventChoiceOutcome GetOutcome(string outcome)
+    private EventChoiceOutcome? GetOutcome(string outcome)
     {
         if (IsGoodCondition(outcome))
-            return new UmaEventChoiceOutcome { Value = outcome, Type = OutcomeType.GoodCondition };
+            return new UmaEventChoiceOutcome(outcome, OutcomeType.GoodCondition);
 
         if (IsBadCondition(outcome))
-            return new UmaEventChoiceOutcome { Value = outcome, Type = OutcomeType.BadCondition };
+            return new UmaEventChoiceOutcome(outcome, OutcomeType.BadCondition);
 
         var parts = outcome.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
 
         if (parts.Length == 2 && Enum.TryParse(parts[1].Replace(" ", ""), true, out OutcomeType type))
-            return new UmaEventChoiceOutcome { Value = parts[0], Type = type };
+            return new UmaEventChoiceOutcome(parts[0], type);
 
         if (outcome.Contains("Skill Hint", StringComparison.OrdinalIgnoreCase))
-            return new UmaEventChoiceOutcome { Value = outcome, Type = OutcomeType.SkillHint };
+            return MapSkill(outcome);
 
         if (outcome.Contains("End of Chain Event", StringComparison.OrdinalIgnoreCase))
-            return new UmaEventChoiceOutcome { Value = outcome, Type = OutcomeType.EndOfEventChain };
+            return new UmaEventChoiceOutcome(outcome, OutcomeType.EndOfEventChain);
 
-        return new UmaEventChoiceOutcome { Value = outcome, Type = OutcomeType.Unknown };
+        return new UmaEventChoiceOutcome(outcome, OutcomeType.Unknown);
     }
 
     private static bool IsGoodCondition(string outcome)
@@ -159,4 +198,38 @@ public static class UmaEventMapperV2
         "Slow Metabolism",
         "Slacker",
     };
+
+    private SkillOutcome? MapSkill(string umaEventChoiceOutcome)
+    {
+        // split into parts
+        var skillHintParts = umaEventChoiceOutcome.Split('+', 2, StringSplitOptions.RemoveEmptyEntries);
+
+        var skillHint = skillHintParts[0].Replace("Skill Hint", "").Replace("(Random)", "").Trim();
+
+        var hintCount = 1;
+
+        if (skillHintParts.Length == 2)
+        {
+            var parts = skillHintParts[1];
+            var hints = parts.Split(" ")[0];
+
+            hintCount = int.TryParse(hints, out var count) ? count : 1;
+        }
+
+        var skillName = string.IsNullOrWhiteSpace(skillHint) ? null : skillHint;
+
+        if (skillName == null)
+            return null;
+
+        Console.Out.WriteLine("Found skillname: " + skillName + "+" + hintCount);
+
+        var skill =  new UmaSkill
+        {
+            Name = skillName,
+        };
+
+        umaSkillRepository.Add(skill);
+
+        return new SkillOutcome(skill, hintCount);
+    }
 }

@@ -9,6 +9,8 @@ public class UmaEventChoice
     public int ChoiceNumber => Header.Number;
     public string ChoiceText => Header.Text;
 
+    public bool IsHighlighted { get; set; }
+
     public List<UmaEventChoiceOutcomeGroup> Outcomes { get; set; } = [];
 }
 
@@ -36,5 +38,5 @@ public class UmaEventChoiceSuccessType
 public class UmaEventChoiceOutcomeGroup
 {
     public UmaEventChoiceSuccessType SuccessType { get; set; } = default!;
-    public List<UmaEventChoiceOutcome> Outcomes { get; set; } = new();
+    public List<EventChoiceOutcome> Outcomes { get; set; } = new();
 }

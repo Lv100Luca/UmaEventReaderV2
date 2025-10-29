@@ -43,11 +43,7 @@
 @code {
     private UmaEventChoiceOutcome Get(OutcomeType type)
     {
-        return new UmaEventChoiceOutcome
-        {
-            Type = type,
-            Value = type.ToString()
-        };
+        return new UmaEventChoiceOutcome(type.ToString(), type);
     }
 
     protected override async Task OnInitializedAsync()

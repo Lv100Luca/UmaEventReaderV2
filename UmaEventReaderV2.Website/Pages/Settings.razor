@@ -1,4 +1,5 @@
 @page "/settings"
+@using System.Collections.ObjectModel
 @using System.Drawing
 @using Color = MudBlazor.Color
 @inject WebUmaHub UmaHub
@@ -31,6 +32,35 @@
             <ItemTemplate Context="uma">
                 <UmaDisplay Uma="uma" IncludeName/>
             </ItemTemplate>
+        </MudAutocomplete>
+
+        @if (highlightedSkills.Any())
+        {
+            <MudChipSet T="UmaSkill" Class="my-2" OnClose="RemoveSkill" AllClosable Selec>
+                @foreach (var skill in highlightedSkills)
+                {
+                    <MudChip Text="@skill.Name" Value="skill" Selected="false"
+                             Color="Color.Info"
+                    />
+                }
+            </MudChipSet>
+        }
+
+        <span>@highlightedSkills.Count</span>
+
+        <MudAutocomplete T="UmaSkill"
+                         @ref="SkillAutocomplete"
+                         Value="skillInput"
+                         ValueChanged="AddSkillIfValid"
+                         Label="Skills to highlight"
+                         Variant="Variant.Outlined"
+                         Immediate
+                         ToStringFunc="@(skill => skill?.Name)"
+                         SearchFunc="SearchUmaSkills"
+                         Dense="true"
+                         CoerceText="true"
+                         ResetValueOnEmptyText="true"
+        >
         </MudAutocomplete>
 
         <MudDivider Class="my-2"/>
@@ -66,6 +96,12 @@
 @code {
     private UmaEventReaderSettings settings = new();
     private IEnumerable<Uma> umas = [];
+    private IEnumerable<UmaSkill> skills = [];
+    private UmaSkill? skillInput;
+
+    private ObservableCollection<UmaSkill> highlightedSkills = [];
+
+    private MudAutocomplete<UmaSkill> SkillAutocomplete;
 
     private int ScanMillies
     {
@@ -105,6 +141,9 @@
     {
         settings = await SettingsHub.GetSettingsAsync();
         umas = await UmaHub.GetUmas();
+        skills = await UmaHub.GetSkillsAsync();
+
+        Console.Out.WriteLine(skills.Count());
 
         Initialized = true;
     }
@@ -123,6 +162,37 @@
             return umas;
 
         return umas.Where(u => u.FullName.Contains(name, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private async Task<IEnumerable<UmaSkill>> SearchUmaSkills(string? name, CancellationToken cancellation)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return skills;
+
+        return skills.Where(s => s.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private void AddSkillIfValid(UmaSkill skill)
+    {
+        if (highlightedSkills.All(s => s.Name != skill.Name))
+        {
+            highlightedSkills.Add(skill);
+
+            Console.Out.WriteLine("added" + skill.Name);
+
+            MakeDirty();
+            StateHasChanged();
+        }
+
+        skillInput = null;
+    }
+
+    private void RemoveSkill(MudChip<UmaSkill> mudChip)
+    {
+        if (mudChip.Value != null)
+            highlightedSkills.Remove(mudChip.Value);
+
+        MakeDirty();
     }
 
     private async Task SelectNewArea()
@@ -156,7 +226,6 @@
         {
             StateHasChanged();
             Dirty = true;
-            Console.Out.WriteLine("Dirty");
         }
     }
 

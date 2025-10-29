@@ -2,6 +2,7 @@ using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Abstractions.Repositories;
 using UmaEventReaderV2.Services;
 using UmaEventReaderV2.Services.Emitters;
+using UmaEventReaderV2.Services.Mapper;
 using UmaEventReaderV2.Services.Repositories;
 using UmaEventReaderVs.WinForms;
 
@@ -46,8 +47,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<SelectAreaOverlay>()
             .AddEventAreaOffsetProvider(options => options.Offset = 55)
             // Alternative provider (for offline testing)
-            // .AddSingleton<IUmaEventJsonProvider, PlaywrightUmaEventJsonProvider>()
-            .AddSingleton<IUmaEventJsonProvider, StaticUmaEventJsonProvider>()
+            .AddSingleton<IUmaEventJsonProvider, PlaywrightUmaEventJsonProvider>()
+            // .AddSingleton<IUmaEventJsonProvider, StaticUmaEventJsonProvider>()
             // use selector
             .AddSingleton<ScreenshotAreaSelector>()
             .AddSingleton<IScreenshotAreaProvider, ScreenshotAreaProvider>()
@@ -57,11 +58,12 @@ public static class ServiceCollectionExtensions
         services
             .AddSingleton<IUmaRepository, UmaRepository>()
             .AddSingleton<IUmaEventRepository, UmaEventMemoryRepository>()
+            .AddSingleton<IUmaSkillRepository, UmaSkillRepository>()
             .AddSingleton<IRepositoryInitializer, RepositoryInitializer>();
 
         // Core Services
         services
-            .AddSingleton<UmaEventMapper>()
+            .AddSingleton<UmaEventMapperV2>()
             .AddSingleton<IEventEmitter, CachingEventEmitter>()
             // .AddSingleton<IEventEmitter, CachingEventEmitter>()
             .AddSingleton<OcrService>()

@@ -9,4 +9,6 @@ public class UmaEventReaderSettings
     public Uma? FilteredCharacter { get; set; }
 
     public Rectangle? EventArea { get; set; }
+
+    public List<UmaSkill> HighlightedSkills { get; set; } = [];
 }

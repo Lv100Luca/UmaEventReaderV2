@@ -7,7 +7,7 @@ public class UmaSkillRepository : IUmaSkillRepository
 {
     private readonly List<UmaSkill> skills = [];
 
-    public async Task AddAsync(UmaSkill umaSkill)
+    public void Add(UmaSkill umaSkill)
     {
         skills.Add(umaSkill);
     }

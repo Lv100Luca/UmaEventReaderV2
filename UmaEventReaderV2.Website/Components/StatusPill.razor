@@ -72,8 +72,6 @@
             {
                 Status = StatusHub.Connection.State;
 
-                await Console.Out.WriteLineAsync(Status.ToString());
-
                 if (Status == HubConnectionState.Connected)
                     IsAlive = await StatusHub.PingAsync();
 

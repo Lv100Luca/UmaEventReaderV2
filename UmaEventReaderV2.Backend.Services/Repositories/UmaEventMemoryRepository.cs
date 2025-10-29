@@ -1,47 +1,23 @@
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
+using UmaEventReaderV2.Abstractions;
 using UmaEventReaderV2.Abstractions.Repositories;
 using UmaEventReaderV2.Common.Models;
+using UmaEventReaderV2.Common.Models.Enums;
 using UmaEventReaderV2.Models.dtos;
 using UmaEventReaderV2.Services.Extensions;
 using UmaEventReaderV2.Services.Mapper;
 
 namespace UmaEventReaderV2.Services.Repositories;
 
-public class UmaEventMemoryRepository(IUmaRepository umaRepository, ILogger<UmaEventMemoryRepository> logger)
+public class UmaEventMemoryRepository(ISettingsService settingsService, ILogger<UmaEventMemoryRepository> logger)
     : IUmaEventRepository
 {
     private readonly List<UmaEvent> events = [];
 
-    // move to initializer class?
-    public async Task InitializeAsync(IEnumerable<UmaEventChoiceDto> dtos, CancellationToken cancellationToken = default)
+    public void Add(UmaEvent umaEvent)
     {
-        events.Clear();
-
-        var eventGroups = dtos.GroupBy(e => e.EventName);
-
-        foreach (var group in eventGroups)
-        {
-            var characterName = group.First().CharacterName;
-
-            var names = Regex
-                .Split(characterName, @",(?![^(]*\))")
-                .Select(p => p.Trim())
-                .Where(p => !string.IsNullOrEmpty(p))
-                .ToArray();
-
-            var umas = FindOrCreate(names).ToList();
-
-            // fix for error in dataset
-            if (umas.Any(u => u.FullName == "Extra Training (Taiki Shuttle)"))
-                umas = [FindOrCreate("Taiki Shuttle (Wild Frontier)")];
-
-            var mappedEvent = UmaEventMapperV2.Map(group, umas);
-
-            events.Add(mappedEvent);
-        }
-
-        logger.LogInformation($"Event repository initialized with {events.Count} events.");
+        events.Add(umaEvent);
     }
 
     public IEnumerable<UmaEvent> GetAll()
@@ -60,56 +36,54 @@ public class UmaEventMemoryRepository(IUmaRepository umaRepository, ILogger<UmaE
     }
 
     //this should return all event except traineeEvents that arent from the passed in character
+    // add service for higher level logic
     public IEnumerable<UmaEvent> GetAllForCharacterWhereNameIsLike(Uma? uma, string eventName)
     {
-        var query = Query().WhereEventNameContains(eventName);
+        var query = Query().WhereEventNameContains(eventName).ToList();
 
         if (uma is not null)
         {
             query = query.Where(e =>
                 !e.IsTraineeEvent ||
-                e.Umas.Any(u => u.Id == uma.Id));
+                e.Umas.Any(u => u.Id == uma.Id)).ToList();
+        }
+
+        if (settingsService.Settings.HighlightedSkills.Count == 0)
+            return query;
+
+        {
+            var eventsWithSkillHints = query.Where(e =>
+                e.Choices.SelectMany(b => b.Outcomes.SelectMany(c => c.Outcomes)).Any(g => g.Type == OutcomeType.SkillHint));
+
+            foreach (var eventsWithSkillHint in eventsWithSkillHints)
+            {
+                HighlightOutcome(eventsWithSkillHint);
+            }
         }
 
         return query;
     }
 
-    private IEnumerable<Uma> FindOrCreate(string[] names)
+    private void HighlightOutcome(UmaEvent umaEvent)
     {
-        foreach (var name in names)
-        {
-            var foundUma = umaRepository.GetByFullName(name);
+        var choices = umaEvent.Choices;
 
-            if (foundUma == null)
+        foreach (var choice in choices)
+        {
+            var outcomes = choice.Outcomes.SelectMany(o => o.Outcomes);
+
+            foreach (var outcome in outcomes)
             {
-                foundUma = UmaMapper.Map(name, supportUma: true);
+                if (outcome is not SkillOutcome skillOutcome)
+                    continue;
 
-                // actively decide not to add them here
-                // they will be present in the events
-                // but arent otherwise relevant
+                if (!settingsService.Settings.HighlightedSkills.Contains(skillOutcome.Skill))
+                    continue;
 
-                // umaRepository.TryAddSupportUma(foundUma);
+                Console.Out.WriteLine("Match");
+
+                choice.IsHighlighted = true;
             }
-
-            yield return foundUma;
         }
-    }
-
-    private Uma FindOrCreate(string name)
-    {
-        var foundUma = umaRepository.GetByFullName(name);
-
-        if (foundUma == null)
-        {
-            foundUma = UmaMapper.Map(name, supportUma: true);
-
-            // actively decide not to add them here
-            // they will be present in the events
-            // but arent otherwise relevant
-
-            // umaRepository.TryAddSupportUma(foundUma);
-        }
-
-        return foundUma;
     }
 }

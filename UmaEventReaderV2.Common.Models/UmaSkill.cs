@@ -5,7 +5,6 @@ namespace UmaEventReaderV2.Common.Models;
 
 public class UmaSkill
 {
-    public Guid Id { get; init; }
     public string Name { get; init; } = string.Empty;
 
     public SkillCondition Condition { get; init; }

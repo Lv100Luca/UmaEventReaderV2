@@ -11,4 +11,12 @@ public class WebUmaHub() : HubBase("umas")
 
         return await Connection.InvokeAsync<IEnumerable<Uma>>("GetUmas");
     }
+
+    public async Task<IEnumerable<UmaSkill>> GetSkillsAsync()
+    {
+        await StartHubIfDisconnected();
+
+        return await Connection.InvokeAsync<IEnumerable<UmaSkill>>("GetSkillsAsync");
+    }
+
 }

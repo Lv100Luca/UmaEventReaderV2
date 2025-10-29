@@ -21,7 +21,7 @@ public class UmaEventReader(
 
     override public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await initializer.InitializeAsync(cancellationToken);
+        await initializer.InitializeAsync();
 
         await base.StartAsync(cancellationToken);
     }

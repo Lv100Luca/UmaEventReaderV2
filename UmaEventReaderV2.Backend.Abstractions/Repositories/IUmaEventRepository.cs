@@ -5,7 +5,9 @@ namespace UmaEventReaderV2.Abstractions.Repositories;
 
 public interface IUmaEventRepository
 {
-    Task InitializeAsync(IEnumerable<UmaEventChoiceDto> dtos, CancellationToken cancellationToken = default);
+    // Task InitializeAsync(IEnumerable<UmaEventChoiceDto> dtos, CancellationToken cancellationToken = default);
+
+    void Add(UmaEvent umaEvent);
 
     IEnumerable<UmaEvent> GetAll();
     IQueryable<UmaEvent> Query();
